@@ -15526,6 +15526,153 @@ summary:focus-visible{
   overflow:visible!important;
 }
 
+/* ===== Stage 6D · taste-skill targeted polish (2026-07-06) ===== */
+#home-screen .home-manuscript#home-today-board{
+  padding-top:28px!important;
+  padding-bottom:22px!important;
+  border-top:1px solid rgba(36,28,19,.07)!important;
+  border-bottom:1px solid rgba(36,28,19,.08)!important;
+}
+
+#home-screen .home-manuscript-primary{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 42px!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:min(100%,330px)!important;
+  min-height:58px!important;
+  padding:0 8px 0 20px!important;
+  letter-spacing:.07em!important;
+  white-space:nowrap!important;
+}
+
+#home-screen .home-manuscript-primary i{
+  display:grid!important;
+  place-items:center!important;
+  width:42px!important;
+  height:32px!important;
+  margin:0!important;
+  font-style:normal!important;
+}
+
+#home-screen .home-manuscript-guide{
+  border-top:1px solid rgba(36,28,19,.08)!important;
+}
+
+#home-screen .home-directory-item{
+  min-height:58px!important;
+}
+
+#home-screen .home-directory-text strong,
+#home-screen .home-directory-text em{
+  overflow-wrap:anywhere;
+}
+
+#question-modal-overlay .question-modal{
+  padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+}
+
+#question-modal-overlay .question-modal .qm-sheet-actions{
+  position:sticky!important;
+  bottom:0!important;
+  margin:0 -20px!important;
+  padding:12px 20px max(14px,env(safe-area-inset-bottom))!important;
+  background:linear-gradient(180deg,rgba(246,239,223,.78),rgba(246,239,223,.98) 42%)!important;
+  border-top:1px solid rgba(36,28,19,.08)!important;
+}
+
+#question-modal-overlay .question-modal .qm-btns{
+  margin-top:0!important;
+}
+
+#question-modal-overlay .question-modal textarea{
+  border-color:rgba(49,95,104,.28)!important;
+}
+
+#question-modal-overlay .question-modal textarea:focus-visible{
+  outline:2px solid rgba(49,95,104,.22)!important;
+  outline-offset:3px!important;
+  border-color:rgba(49,95,104,.48)!important;
+}
+
+.sc-toast{
+  bottom:calc(18px + env(safe-area-inset-bottom))!important;
+  max-width:min(300px,calc(100vw - 36px))!important;
+  text-align:center!important;
+  background:rgba(36,28,19,.88)!important;
+  border:1px solid rgba(255,252,246,.10)!important;
+  border-radius:999px!important;
+}
+
+#divination-screen .result-landing-board{
+  padding-top:18px!important;
+  margin-top:12px!important;
+}
+
+#divination-screen .result-landing-headline{
+  max-width:15em!important;
+  text-wrap:balance;
+}
+
+#divination-screen .result-landing-brief,
+#divination-screen .result-landing-item{
+  grid-template-columns:48px minmax(0,1fr)!important;
+  padding:14px 0!important;
+}
+
+#divination-screen .result-landing-brief strong,
+#divination-screen .result-landing-item strong{
+  color:rgba(49,95,104,.90)!important;
+}
+
+#divination-screen .result-landing-item:nth-child(2) strong{
+  color:rgba(133,52,44,.80)!important;
+}
+
+#divination-screen .hex-derived-item,
+#divination-screen .next-step-btn,
+#divination-screen .ai-followup-block,
+#div-term-grid .term-row{
+  border-radius:12px 6px 12px 6px!important;
+}
+
+#divination-screen .ai-followup-panel,
+#divination-screen .next-steps-card{
+  margin-top:18px!important;
+  padding:18px 0!important;
+}
+
+#divination-screen .ai-followup-grid{
+  gap:8px!important;
+}
+
+#divination-screen .ai-followup-chip{
+  border-radius:999px!important;
+  min-height:42px!important;
+  padding-inline:12px!important;
+  white-space:normal!important;
+}
+
+#divination-screen .next-step-btn{
+  background:rgba(255,252,246,.48)!important;
+}
+
+@media (max-width:560px){
+  #home-screen .home-manuscript-primary{
+    width:calc(100% - 30px)!important;
+    max-width:324px!important;
+  }
+
+  #question-modal-overlay .question-modal{
+    max-height:calc(100dvh - 18px)!important;
+  }
+
+  #question-modal-overlay .question-modal .qm-sheet-actions{
+    margin-left:-20px!important;
+    margin-right:-20px!important;
+  }
+}
+
 </style>
 </head>
 <body>
