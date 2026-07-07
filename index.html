@@ -15743,36 +15743,40 @@ summary:focus-visible{
   position:relative;
   order:1;
   display:grid;
-  place-items:start center;
+  place-items:center;
   width:78px;
   height:78px;
-  padding-top:13px;
-  border:2px solid rgba(55,37,24,.72);
+  padding:0;
+  border:3px solid rgba(47,31,18,.78);
   border-radius:50%;
   background:
-    radial-gradient(circle at 50% 50%,#17110c 0 10px,transparent 11px),
-    radial-gradient(circle at 30% 21%,#b88b48 0 17%,transparent 30%),
-    radial-gradient(circle at 71% 73%,rgba(31,114,83,.34) 0 14%,transparent 23%),
-    radial-gradient(circle at 78% 23%,rgba(40,92,76,.20) 0 8%,transparent 16%),
-    repeating-radial-gradient(circle at 50% 50%,transparent 0 11px,rgba(29,18,12,.20) 12px 13px,transparent 14px 19px),
-    conic-gradient(from -18deg,#2e261b,#5e482d,#806136,#4d3b28,#242018,#625030,#2e261b);
-  color:rgba(28,17,10,.94);
+    linear-gradient(116deg,transparent 0 22%,rgba(255,242,183,.24) 23% 30%,transparent 31% 100%),
+    radial-gradient(circle at 50% 50%,rgba(246,238,216,.96) 0 10px,rgba(62,44,28,.88) 11px 15px,transparent 16px),
+    radial-gradient(circle at 29% 19%,rgba(239,178,89,.82) 0 12%,transparent 28%),
+    radial-gradient(circle at 68% 70%,rgba(29,117,83,.48) 0 13%,transparent 25%),
+    radial-gradient(circle at 76% 26%,rgba(57,129,96,.30) 0 8%,transparent 17%),
+    radial-gradient(circle at 23% 72%,rgba(26,82,67,.22) 0 7%,transparent 16%),
+    repeating-radial-gradient(circle at 49% 51%,transparent 0 13px,rgba(30,20,13,.24) 14px 15px,transparent 16px 23px),
+    conic-gradient(from -22deg,#2b2117,#5e4629,#9b7138,#4a3825,#1e1a15,#6b5630,#302317,#2b2117);
+  color:rgba(35,24,16,.92);
   font-family:var(--font-serif);
-  font-size:14px;
+  font-size:13px;
   font-weight:700;
-  letter-spacing:.16em;
+  letter-spacing:-.02em;
   line-height:1;
   text-shadow:
-    0 1px 0 rgba(226,184,105,.42),
-    0 -1px 0 rgba(29,19,12,.28);
+    0 1px 0 rgba(233,183,93,.42),
+    0 -1px 0 rgba(18,12,8,.46),
+    1px 0 0 rgba(110,72,31,.24);
   overflow:hidden;
   transform-style:preserve-3d;
   transition:transform .36s cubic-bezier(.2,.7,.2,1), box-shadow .2s, filter .2s;
   box-shadow:
-    inset 0 2px 7px rgba(243,213,134,.32),
-    inset 0 -9px 18px rgba(42,25,15,.58),
-    inset 5px 0 12px rgba(255,230,156,.08),
-    inset -7px 0 14px rgba(18,13,9,.28),
+    inset 0 3px 8px rgba(250,219,139,.34),
+    inset 0 -11px 18px rgba(38,25,17,.62),
+    inset 7px 0 12px rgba(255,228,151,.12),
+    inset -8px 0 15px rgba(12,9,7,.32),
+    0 0 0 1px rgba(255,236,174,.10),
     0 16px 28px rgba(36,28,19,.17);
 }
 
@@ -15784,28 +15788,46 @@ summary:focus-visible{
 }
 
 .coin-yao-slot::before{
-  inset:7px;
-  border:1px solid rgba(25,18,12,.42);
+  inset:8px;
+  border:2px solid rgba(35,24,16,.36);
   border-radius:50%;
   box-shadow:
-    inset 0 0 0 2px rgba(219,175,96,.14),
-    inset 0 0 18px rgba(18,13,9,.18),
-    0 0 0 1px rgba(42,27,17,.20);
+    inset 0 0 0 2px rgba(218,165,84,.15),
+    inset 0 0 16px rgba(18,13,9,.22),
+    0 0 0 1px rgba(88,58,28,.26);
 }
 
 .coin-yao-slot::after{
   left:50%;
   top:50%;
-  width:18px;
-  height:18px;
-  border:2px solid rgba(24,17,11,.72);
-  background:linear-gradient(135deg,rgba(246,238,216,.92),rgba(178,151,105,.78));
+  width:20px;
+  height:20px;
+  border:3px solid rgba(33,24,16,.78);
+  border-radius:3px;
+  background:linear-gradient(135deg,rgba(255,252,246,.92),rgba(176,151,106,.72));
   box-shadow:
-    inset 0 2px 5px rgba(28,19,12,.34),
-    0 0 0 1px rgba(222,181,98,.16),
-    0 2px 4px rgba(18,13,9,.20);
+    inset 0 2px 6px rgba(27,18,12,.46),
+    0 0 0 2px rgba(198,142,62,.13),
+    0 2px 5px rgba(18,13,9,.24);
   transform:translate(-50%,-50%);
 }
+
+.coin-yao-slot i{
+  position:absolute;
+  z-index:1;
+  font-style:normal;
+  font-size:12px;
+  line-height:1;
+  color:rgba(35,24,16,.80);
+  text-shadow:
+    0 1px 0 rgba(236,188,98,.42),
+    0 -1px 0 rgba(16,11,8,.42);
+}
+
+.coin-yao-slot i:nth-child(1){top:17px;left:50%;transform:translateX(-50%)}
+.coin-yao-slot i:nth-child(2){right:17px;top:50%;transform:translateY(-50%)}
+.coin-yao-slot i:nth-child(3){bottom:17px;left:50%;transform:translateX(-50%)}
+.coin-yao-slot i:nth-child(4){left:17px;top:50%;transform:translateY(-50%)}
 
 .coin-yao-row.is-flipping .coin-yao-slot{
   animation:coinFlip .46s cubic-bezier(.16,.84,.26,1);
@@ -15819,12 +15841,14 @@ summary:focus-visible{
 .coin-yao-row.is-yin .coin-yao-slot{
   color:rgba(107,38,29,.98);
   background:
-    radial-gradient(circle at 50% 50%,#17110c 0 10px,transparent 11px),
-    radial-gradient(circle at 33% 24%,#936a3d 0 17%,transparent 29%),
-    radial-gradient(circle at 70% 72%,rgba(28,111,80,.36) 0 13%,transparent 23%),
-    radial-gradient(circle at 78% 22%,rgba(33,92,76,.22) 0 8%,transparent 16%),
-    repeating-radial-gradient(circle at 50% 50%,transparent 0 11px,rgba(28,18,13,.22) 12px 13px,transparent 14px 19px),
-    conic-gradient(from 12deg,#2b241b,#54402b,#765536,#453326,#211d18,#55442d,#2b241b);
+    linear-gradient(116deg,transparent 0 22%,rgba(255,242,183,.16) 23% 30%,transparent 31% 100%),
+    radial-gradient(circle at 50% 50%,rgba(238,229,203,.9) 0 10px,rgba(55,40,26,.88) 11px 15px,transparent 16px),
+    radial-gradient(circle at 33% 24%,rgba(151,104,57,.88) 0 16%,transparent 30%),
+    radial-gradient(circle at 70% 72%,rgba(28,111,80,.43) 0 14%,transparent 24%),
+    radial-gradient(circle at 78% 22%,rgba(33,92,76,.27) 0 8%,transparent 16%),
+    radial-gradient(circle at 23% 72%,rgba(26,82,67,.22) 0 7%,transparent 16%),
+    repeating-radial-gradient(circle at 50% 50%,transparent 0 13px,rgba(28,18,13,.25) 14px 15px,transparent 16px 23px),
+    conic-gradient(from 12deg,#282117,#54402b,#765536,#433326,#211d18,#55442d,#282117);
 }
 
 .coin-yao-row.is-set .coin-yao-slot{
@@ -15861,8 +15885,10 @@ summary:focus-visible{
   border-radius:50%;
   border:2px solid rgba(94,60,26,.58);
   background:
-    radial-gradient(circle at 50% 50%,rgba(255,252,246,.72) 0 10px,rgba(82,52,24,.75) 11px 14px,transparent 15px),
-    radial-gradient(circle at 34% 24%,rgba(255,245,203,.96),rgba(191,129,46,.86) 38%,rgba(92,54,24,.98) 100%);
+    linear-gradient(116deg,transparent 0 24%,rgba(255,242,183,.22) 25% 31%,transparent 32% 100%),
+    radial-gradient(circle at 50% 50%,rgba(255,252,246,.76) 0 10px,rgba(71,49,29,.82) 11px 15px,transparent 16px),
+    radial-gradient(circle at 68% 70%,rgba(29,117,83,.42) 0 13%,transparent 25%),
+    radial-gradient(circle at 34% 24%,rgba(255,245,203,.88),rgba(191,129,46,.86) 38%,rgba(84,52,25,.98) 100%);
   display:grid;
   place-items:center;
   color:rgba(54,33,18,.78);
@@ -16547,12 +16573,12 @@ summary:focus-visible{
       </div>
       <div class="coin-cast-body">
         <div class="coin-hex-board" id="coin-hex-board" aria-label="依次点击六枚青铜币成卦">
-          <div class="coin-yao-row" data-line="4" role="button" tabindex="0"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="5" role="button" tabindex="0"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="6" role="button" tabindex="0"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="1" role="button" tabindex="0"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot">观心</span><em>先点</em></div>
-          <div class="coin-yao-row" data-line="2" role="button" tabindex="0"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="3" role="button" tabindex="0"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="4" role="button" tabindex="0"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="5" role="button" tabindex="0"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="6" role="button" tabindex="0"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="1" role="button" tabindex="0"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>先点</em></div>
+          <div class="coin-yao-row" data-line="2" role="button" tabindex="0"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="3" role="button" tabindex="0"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
         </div>
         <div class="coin-hex-preview" aria-label="铜币成卦预览">
           <strong>卦形</strong>
@@ -18345,6 +18371,8 @@ async function openSevenDayReview(){
   updateHomeReviewCard();
 }
 
+const COIN_FACE_HTML = '<i>观</i><i>心</i><i>守</i><i>正</i>';
+
 function resetBamboo(){
   coinCastThrows = [];
   coinCastLines = [];
@@ -18371,7 +18399,7 @@ function resetBamboo(){
     row.setAttribute('aria-disabled', line === 1 ? 'false' : 'true');
     if(line === 1) row.classList.add('is-next');
     var slot = row.querySelector('.coin-yao-slot');
-    if(slot) slot.textContent = '观心';
+    if(slot) slot.innerHTML = COIN_FACE_HTML;
     var note = row.querySelector('em');
     if(note) note.textContent = line === 1 ? '先点' : '未翻';
   });
@@ -18592,7 +18620,7 @@ function tossCoinYao(){
       row.setAttribute('aria-disabled','true');
       if(isMoving) row.classList.add('is-moving');
       var slot = row.querySelector('.coin-yao-slot');
-      if(slot) slot.textContent = isYang ? '阳' : '阴';
+      if(slot) slot.innerHTML = COIN_FACE_HTML;
       var note = row.querySelector('em');
       if(note) note.textContent = labelMap[sum] || (isYang ? '阳' : '阴');
     }
@@ -22799,11 +22827,16 @@ function openAIModal(state, data){
   var statusText = document.getElementById('ai-modal-status-text');
   var spinner = document.getElementById('ai-modal-spinner');
   var grid = document.getElementById('ai-modal-grid');
+  var secondaryAction = document.getElementById('ai-modal-secondary-action');
   var blocks = ['ai-modal-core','ai-modal-theme','ai-modal-action','ai-modal-boundary'];
   overlay.classList.add('active');
   syncOverlayAccessibility();
   document.body.classList.add('modal-open');
   if(status) status.classList.remove('ai-modal-error');
+  if(secondaryAction){
+    secondaryAction.textContent = '继续追问此卦';
+    secondaryAction.onclick = focusAIFollowupInput;
+  }
 
   if(state === 'loading'){
     if(kicker) kicker.textContent = 'AI 正在生成';
@@ -22825,6 +22858,10 @@ function openAIModal(state, data){
     if(spinner) spinner.style.display = 'none';
     if(status) status.classList.add('ai-modal-error');
     if(grid) grid.style.display = 'none';
+    if(secondaryAction){
+      secondaryAction.textContent = '设置 AI Key';
+      secondaryAction.onclick = openAIKeySettingsFromError;
+    }
     return;
   }
 
@@ -22844,6 +22881,11 @@ function openAIModal(state, data){
     var el = document.getElementById(id);
     if(el) el.textContent = values[id];
   });
+}
+
+function openAIKeySettingsFromError(){
+  closeAIModal();
+  openSettings();
 }
 
 function closeAIModal(){
@@ -23915,7 +23957,7 @@ function closeEncDetail(){
       </div>
       <div class="ai-modal-actions">
         <button class="btn btn-primary" type="button" onclick="closeAIModal()">留在当前页继续看</button>
-        <button class="btn btn-outline" type="button" onclick="focusAIFollowupInput()">继续追问此卦</button>
+        <button class="btn btn-outline" id="ai-modal-secondary-action" type="button" onclick="focusAIFollowupInput()">继续追问此卦</button>
       </div>
     </div>
   </section>
