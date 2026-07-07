@@ -144,6 +144,22 @@ body::after{
   color:var(--ink-deep);letter-spacing:0.08em;font-weight:500;
 }
 .page-topbar-spacer{width:84px;height:44px;flex-shrink:0}
+.result-ai-key-btn{
+  width:84px;
+  min-height:44px;
+  border:0;
+  background:transparent;
+  color:rgba(122,110,92,.86);
+  font-family:var(--font-serif);
+  font-size:12px;
+  letter-spacing:.08em;
+  cursor:pointer;
+}
+.result-ai-key-btn:hover,
+.result-ai-key-btn:focus-visible{
+  color:var(--cinnabar);
+  outline:none;
+}
 .swipe-back-hint{
   position:fixed;left:12px;top:50%;transform:translateY(-50%);
   width:3px;height:52px;border-radius:999px;background:rgba(168,60,50,0.18);
@@ -16577,7 +16593,7 @@ summary:focus-visible{
   <div class="page-topbar">
     <button class="page-back-btn" onclick="goBack()" aria-label="返回上一页">&#8592; 返回</button>
     <div class="page-title-text">占卦结果</div>
-    <div class="page-topbar-spacer"></div>
+    <button class="result-ai-key-btn" type="button" onclick="openSettings()" aria-label="设置 AI Key">AI Key</button>
   </div>
   <div class="div-inner">
     <h2 class="result-title" id="div-title">占卦结果</h2>
@@ -22676,7 +22692,7 @@ function saveApiKey(){
   }
   closeSettings();
   localStorage.removeItem('guanxin_apikey');
-  showToast('未填写本地 Key，将使用服务端环境变量');
+  showToast('已清空本地 Key，将尝试服务端代理');
 }
 
 function parseAIActionCard(text, hex){
@@ -23863,11 +23879,11 @@ function closeEncDetail(){
   <div class="question-modal" style="max-width:360px">
     <button class="qm-close" onclick="closeSettings()">&times;</button>
     <h3>设置</h3>
-    <p class="qm-sub">AI 解读优先走本地代理，也支持当前浏览器临时填写 Qwen Key</p>
+    <p class="qm-sub">填写 Qwen / DashScope Key 后，当前浏览器可直接生成 AI 解读。</p>
     <input type="password" id="api-key-input" class="num-input" style="width:100%;font-size:var(--text-sm);margin-top:var(--space-sm)" placeholder="sk-xxxxxxxxxxxxxxxx">
     <p style="font-size:var(--text-sm);color:var(--ink-light);margin-top:var(--space-xs);text-align:left;line-height:1.8">
-      不填写时：使用服务端环境变量 <code>DASHSCOPE_API_KEY</code>。<br>
-      填写后：仅保存在当前浏览器，并通过本地代理转发，不会直接暴露到页面外部。
+      Key 只保存在当前浏览器的 localStorage。<br>
+      不填写时会尝试服务端代理；静态线上版本可能无法使用代理。
     </p>
     <div class="qm-btns" style="margin-top:var(--space-md)">
       <button class="qm-btn qm-btn-skip" onclick="closeSettings()">取消</button>
