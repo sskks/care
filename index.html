@@ -12928,7 +12928,7 @@ summary:focus-visible{
   }
 
   .question-modal .qm-sheet-body{
-    padding:0 20px 14px;
+    padding:0 20px 116px;
   }
 
   .question-modal .qm-sheet-actions{
@@ -14302,6 +14302,12 @@ summary:focus-visible{
   padding:0 20px 18px;
 }
 
+@media (max-width:720px){
+  #question-modal-overlay .question-modal .qm-sheet-body{
+    padding:0 20px 116px;
+  }
+}
+
 #question-modal-overlay .question-modal h3{
   max-width:10em;
   font-size:clamp(1.25rem,5.4vw,1.6rem);
@@ -15587,6 +15593,7 @@ summary:focus-visible{
 
 #question-modal-overlay .question-modal textarea{
   border-color:rgba(49,95,104,.28)!important;
+  scroll-margin-bottom:150px!important;
 }
 
 #question-modal-overlay .question-modal textarea:focus-visible{
@@ -18123,6 +18130,21 @@ function openFlipFullResult(btn){
 /* 心念动时时间戳（毫秒级） */
 let mindMoment = 0;
 
+function keepQuestionFieldInView(field){
+  var modal = document.querySelector('#question-modal-overlay .question-modal');
+  var submit = document.getElementById('question-submit-btn');
+  if(!modal || !field || !submit) return;
+  setTimeout(function(){
+    var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    var fieldRect = field.getBoundingClientRect();
+    var submitRect = submit.getBoundingClientRect();
+    if(viewportHeight > 640 && fieldRect.bottom <= submitRect.top - 18) return;
+    var modalTop = modal.getBoundingClientRect().top;
+    var targetTop = modal.scrollTop + fieldRect.top - modalTop - 72;
+    modal.scrollTop = Math.max(0, targetTop);
+  }, 120);
+}
+
 async function doQuestionHex(){
   /* 弹出问题输入弹窗 */
   const overlay = document.getElementById('question-modal-overlay');
@@ -18138,7 +18160,23 @@ async function doQuestionHex(){
   setQuestionModalBusy(false);
   overlay.classList.add('active');
   syncOverlayAccessibility();
-  setTimeout(()=> input.focus(), 350);
+  input.onfocus = function(){ keepQuestionFieldInView(input); };
+  input.oninput = function(){ keepQuestionFieldInView(input); };
+  if(concernInput){
+    concernInput.onfocus = function(){ keepQuestionFieldInView(concernInput); };
+    concernInput.oninput = function(){ keepQuestionFieldInView(concernInput); };
+  }
+  if(window._questionViewportResizeHandler){
+    window.removeEventListener('resize', window._questionViewportResizeHandler);
+    if(window.visualViewport) window.visualViewport.removeEventListener('resize', window._questionViewportResizeHandler);
+  }
+  window._questionViewportResizeHandler = function(){
+    var active = document.activeElement;
+    if(active === input || active === concernInput) keepQuestionFieldInView(active);
+  };
+  window.addEventListener('resize', window._questionViewportResizeHandler);
+  if(window.visualViewport) window.visualViewport.addEventListener('resize', window._questionViewportResizeHandler);
+  setTimeout(()=>{ input.focus(); keepQuestionFieldInView(input); }, 350);
 
   /* Escape键关闭弹窗 */
   const escHandler = (e)=>{
@@ -18152,6 +18190,7 @@ function fillQuestionExample(text){
   if(!input) return;
   input.value = text || '';
   input.focus();
+  keepQuestionFieldInView(input);
   var error = document.getElementById('question-error');
   if(error){
     error.textContent = '';
@@ -18163,6 +18202,11 @@ function fillQuestionExample(text){
 function closeQuestionModal(){
   if(questionSubmitBusy) return;
   document.getElementById('question-modal-overlay').classList.remove('active');
+  if(window._questionViewportResizeHandler){
+    window.removeEventListener('resize', window._questionViewportResizeHandler);
+    if(window.visualViewport) window.visualViewport.removeEventListener('resize', window._questionViewportResizeHandler);
+    window._questionViewportResizeHandler = null;
+  }
   syncOverlayAccessibility();
 }
 
@@ -18211,6 +18255,11 @@ function submitQuestion(text){
     return;
   }
   overlay.classList.remove('active');
+  if(window._questionViewportResizeHandler){
+    window.removeEventListener('resize', window._questionViewportResizeHandler);
+    if(window.visualViewport) window.visualViewport.removeEventListener('resize', window._questionViewportResizeHandler);
+    window._questionViewportResizeHandler = null;
+  }
   syncOverlayAccessibility();
 
   const dateKey = createRecordId('mei');
@@ -20179,15 +20228,17 @@ function getHexRoleText(hex, questionContext){
   var bianLine = hex.bianHex ? getHexReadingLine(hex.bianHex) : '变卦看后续倾向，不当成最终结果。';
   var huKeys = hex.huHex ? getHexKeywordText(hex.huHex, 2) : '中间结构';
   var bianKeys = hex.bianHex ? getHexKeywordText(hex.bianHex, 2) : '后续倾向';
-  var qLine = parts.question ? '这次问题是“'+parts.question+'”，所以五观不是五个大范围结论，而是按顺序缩小范围：' : '';
-  var worryLine = parts.worry ? '你担心“'+parts.worry+'”，读动爻和变卦时尤其要看它怎么影响判断。' : '';
+  var qName = parts.question ? '你问的“'+parts.question+'”' : '这件事';
+  var worryLine = parts.worry ? '你担心“'+parts.worry+'”，所以读到动爻和变卦时，要特别看自己会不会被这份担心推着走。' : '';
+  var huName = hex.huHex ? '「'+hex.huHex.name+'」' : '互卦';
+  var bianName = hex.bianHex ? '「'+hex.bianHex.name+'」' : '变卦';
   return [
-    {name:'五观怎么用', text:qLine+'本卦看这件事的主局，上下卦看外部处境和内在用力是否对上，动爻看现在先动哪一层，互卦看中间暗线，变卦只看后续倾向。'+worryLine},
-    {name:'本卦', text:'「'+hex.name+'」是这次问题的主局，先抓「'+mainKeys+'」，不是直接判成败。'+mainLine},
-    {name:'上卦 / 下卦', text:'本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramReadingPhrase(up, 'outer')+'；下卦看里面：'+getTrigramReadingPhrase(lo, 'inner')+'。这层只核对当前问题里的外部事实和内在担心有没有对上。'},
-    {name:'动爻', text:'第'+hex.yao+'爻动。'+getYaoReadingPhrase(hex.yao)+' 它负责提示“先动哪一层”，不是让你一口气解释整件事。'},
-    {name:'互卦', text:hex.huHex ? '「'+hex.huHex.name+'」不是另起一卦，而是从本卦「'+hex.name+'」中间抽出来看内部机制。表面在看「'+mainKeys+'」，中间暗线更像「'+huKeys+'」。'+huLine : '互卦看中间隐藏结构，不替你另下一个结论。'},
-    {name:'变卦', text:hex.bianHex ? '「'+hex.bianHex.name+'」来自动爻变化，读的是“照现在这样动，局面容易往哪里转”。它把本卦的「'+mainKeys+'」带向「'+bianKeys+'」，所以只作趋势提醒：'+bianLine : '变卦看后续倾向，不当成最终结果。'}
+    {name:'读卦链路', text:'这条链路先从本卦「'+hex.name+'」看主局，再看第'+hex.yao+'爻这个转折点；互卦'+huName+'看藏在中间的暗线，变卦'+bianName+'看照现在这样动会转向哪里。所以读卦不是替你下决定，而是帮你把'+qName+'先收成一个能处理的切口。'+worryLine},
+    {name:'本卦', text:'「'+hex.name+'」是这次问题的主局，先抓「'+mainKeys+'」，不是直接判成败。放回'+qName+'里，它先让你看清现在最像哪一种局面：'+mainLine},
+    {name:'上卦 / 下卦', text:'本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramReadingPhrase(up, 'outer')+'；下卦看里面：'+getTrigramReadingPhrase(lo, 'inner')+'。所以这一步是在问：外面的事实和你心里的用力，是同向，还是已经拧着了。'},
+    {name:'动爻', text:'第'+hex.yao+'爻是这件事的转折点。'+getYaoReadingPhrase(hex.yao)+' 放回'+qName+'，它更像是在提醒：今天先处理最容易失衡的那一小层，不要把整件事一次判完。'},
+    {name:'互卦', text:hex.huHex ? huName+'不是另起一卦，而是从本卦「'+hex.name+'」中间抽出来看暗线。表面在看「'+mainKeys+'」，中间真正牵动你的可能是「'+huKeys+'」；所以它用来解释为什么这件事会卡住：'+huLine : '互卦看中间隐藏结构，不替你另下一个结论。'},
+    {name:'变卦', text:hex.bianHex ? bianName+'来自动爻变化，读的是“照现在这样动，局面容易往哪里转”。它把本卦的「'+mainKeys+'」带向「'+bianKeys+'」，所以这里只看趋势和提醒，不当成命运结论：'+bianLine : '变卦看后续倾向，不当成最终结果。'}
   ];
 }
 
