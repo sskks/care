@@ -16589,6 +16589,8 @@ const GUA_TAGS={
 
 const THEME_LABELS={
   all:'全部主题',
+  finance:'钱财与独立',
+  family:'家人与判断',
   work:'工作与方向',
   relationship:'关系与沟通',
   growth:'自我成长',
@@ -16596,10 +16598,12 @@ const THEME_LABELS={
   other:'未分类'
 };
 const THEME_KEYWORDS={
+  finance:['经济','独立','收入','支出','钱','财','赚钱','薪资','工资','存款','预算','花销','负债','成本','开销'],
+  family:['家里人','家人','家里','父母','妈妈','母亲','爸爸','父亲','孩子','亲人'],
   work:['工作','事业','职业','项目','老板','同事','客户','offer','晋升','跳槽','副业','赚钱','财运','合作','方向'],
-  relationship:['感情','爱情','关系','伴侣','对象','婚','分手','前任','朋友','家人','父母','孩子','相处','沟通'],
+  relationship:['感情','爱情','关系','伴侣','对象','婚','分手','前任','朋友','相处','沟通'],
   growth:['成长','学习','修身','改变','选择','坚持','自律','行动','目标','习惯','提升','反思'],
-  emotion:['焦虑','压力','情绪','内耗','失眠','害怕','难过','痛苦','迷茫','不安','担心','纠结']
+  emotion:['焦虑','压力','情绪','内耗','失眠','害怕','难过','痛苦','迷茫','不安','担心','纠结','混乱','初心','想法']
 };
 const HEX_THEME_FALLBACK={
   感情:'relationship',
@@ -17538,6 +17542,14 @@ function buildQuestionContext(question, worry){
   return parts.join('\n');
 }
 
+function splitQuestionContext(questionContext){
+  var raw = String(questionContext || '');
+  var worryMatch = raw.match(/我最担心的是[:：]\s*([^\n]+)/);
+  var worry = worryMatch ? normalizeWorryText(worryMatch[1]) : '';
+  var question = raw.replace(/我最担心的是[:：]\s*[^\n]+/g,'').trim();
+  return { question:question, worry:worry };
+}
+
 function normalizeWorryText(text){
   return String(text || '')
     .trim()
@@ -17546,8 +17558,25 @@ function normalizeWorryText(text){
 }
 
 function inferThemeKey(question, hex){
-  var q = (question || '').toLowerCase();
-  var keys = Object.keys(THEME_KEYWORDS);
+  var parts = splitQuestionContext(question || '');
+  var primary = (parts.question || question || '').toLowerCase();
+  var worry = (parts.worry || '').toLowerCase();
+  var keys = ['family','work','relationship','finance','emotion','growth'];
+  function matchTheme(text){
+    for(var i=0;i<keys.length;i++){
+      var themeKey = keys[i];
+      var words = THEME_KEYWORDS[themeKey];
+      for(var j=0;j<words.length;j++){
+        if(text.indexOf(words[j].toLowerCase())!==-1) return themeKey;
+      }
+    }
+    return '';
+  }
+  var primaryTheme = matchTheme(primary);
+  if(primaryTheme) return primaryTheme;
+  var worryTheme = matchTheme(worry);
+  if(worryTheme) return worryTheme;
+  var q = (primary + '\n' + worry).toLowerCase();
   for(var i=0;i<keys.length;i++){
     var themeKey = keys[i];
     var words = THEME_KEYWORDS[themeKey];
@@ -19187,6 +19216,20 @@ function getHexContentV2(hex){
 }
 
 const QUESTION_THEME_TRANSLATORS = {
+  finance:{
+    reality:'放到钱财里，先分清三件事：固定收入、固定支出、还能调整的弹性空间。别先问能不能独立，先看现金流哪里最紧。',
+    emotion:'钱的问题最容易把安全感压成一句“我是不是不行”。先承认压力，再把收入、支出和能力增长分开看。',
+    action:'今天只做一张小账：列出本月确定收入、必要支出和可暂停支出各三项，先找一个能立刻止血的口子。',
+    boundary:'不要把卦象当成投资、借贷或离职依据；钱财问题必须回到真实数字、合同、现金流和专业意见。',
+    review:'今晚回看：我今天有没有看见一个具体数字，还是只是在害怕“钱不够”？'
+  },
+  family:{
+    reality:'放到家人这件事里，先分清事实、担心和你能做的照看。卦不替家人下健康或命运判断，只帮你把心里的牵挂放稳。',
+    emotion:'家人的事最容易牵动责任感，也最容易影响你的判断。先承认你在担心，再问自己手里有什么确定信息。',
+    action:'今天只确认一件事实：打一个电话、问一个具体情况，或把需要谁帮忙写清楚，不用靠想象补完整个结果。',
+    boundary:'不要用卦象判断家人会不会出事；涉及健康、安全、法律或紧急情况，直接找现实支持和专业渠道。',
+    review:'今晚回看：我今天是在确认事实，还是让担心替我做判断？'
+  },
   work:{
     reality:'放到工作或项目里，先看这卦提示的现实结构：哪里正在失衡，哪里需要回应，哪里不能再靠单方面用力硬推。',
     emotion:'工作问题最容易把焦虑包装成效率。先承认你被什么催着走，再看事实里有没有资源、节奏和协作支撑。',
@@ -19224,20 +19267,65 @@ const QUESTION_THEME_TRANSLATORS = {
   }
 };
 
+function applyQuestionConcern(content, questionContext){
+  var parts = splitQuestionContext(questionContext);
+  var worry = parts.worry;
+  if(!content || !worry) return content;
+  var themeKey = content.themeKey || 'other';
+  var concernLine = '你最担心的是“' + worry + '”，这不是附带信息，而是这次解读要先照见的卡点。';
+  var map = {
+    work:{
+      emotion: concernLine + ' 先把“适不适合”拆成三项：有没有学到东西、时间有没有被消耗、钱有没有基本回报。',
+      action:'今天只核对三件事：这份工作最近一个月学到什么、换来多少收入、还需要忍受什么成本。三项写清后，再谈适不适合。',
+      boundary:'不要只凭一天的厌倦或一次反馈判断去留；如果长期学不到东西且钱也支撑不了生活，就要拿真实数据规划下一步。'
+    },
+    relationship:{
+      emotion: concernLine + ' 这里真正拉扯的不是“选谁”或“要不要”，而是心意、分寸和不甘心混在了一起。',
+      action:'今天只做一个选择前动作：写下你真正想靠近的是什么、害怕失去的是什么、可能贪多的是什么，各一句。',
+      boundary:'不要用卦象替你决定关系归属，也不要把不甘心当成心意；先看对方长期回应和你的真实需要是否对得上。'
+    },
+    emotion:{
+      emotion: concernLine + ' 混乱里最该先护住的，是你原来为什么出发，而不是马上整理出一个漂亮答案。',
+      action:'今天先写两列：我原本想守住什么，我现在被什么声音带乱。每列只写三条，先不做大决定。',
+      boundary:'不要在念头最乱的时候重写人生方向；先睡一觉、少承诺一件事，再回来看初心还剩哪一条。'
+    },
+    finance:{
+      emotion: concernLine + ' 这说明问题不只是“能不能独立”，而是现金流已经在提醒你：收入、支出和能力增长要分开处理。',
+      action:'今天先算一个最小独立线：每月必要支出是多少，稳定收入差多少，哪一项支出本周能先停掉。',
+      boundary:'不要把经济独立想成一次翻身；先让支出不继续失控，再谈增加收入或换赛道。'
+    },
+    family:{
+      emotion: concernLine + ' 你担心家人，也担心这份担心会把自己的判断带偏，所以这卦先帮你把事实和牵挂分开。',
+      action:'今天只确认一个事实来源：直接问家人近况，或问清楚具体需要你判断的事是什么，不用先替所有结果负责。',
+      boundary:'不要用卦象判断家人会不会好；家人的健康、安全和现实处境，要优先靠沟通、检查、求助和专业支持。'
+    }
+  };
+  var patch = map[themeKey];
+  if(!patch) return content;
+  content.emotion = patch.emotion;
+  content.action = patch.action;
+  content.boundary = patch.boundary;
+  content.review = '今晚回看：我有没有正面看见“' + worry + '”，而不是让它在背后推着我走？';
+  return content;
+}
+
 function getHexContentForQuestion(hex, question){
   var base = getHexContentV2(hex);
   if(!base) return null;
   var themeKey = inferThemeKey(question || '', hex);
   var translator = QUESTION_THEME_TRANSLATORS[themeKey] || QUESTION_THEME_TRANSLATORS.other;
   var content = Object.assign({themeKey:themeKey}, base);
-  if(themeKey !== inferThemeKey('', hex)){
+  var contextParts = splitQuestionContext(question || '');
+  var explicitText = (contextParts.question + ' ' + contextParts.worry).trim();
+  var explicitThemeKey = explicitText ? inferThemeKey(explicitText, null) : '';
+  if((explicitThemeKey && explicitThemeKey !== 'other') || themeKey !== inferThemeKey('', hex)){
     content.reality = translator.reality;
     content.emotion = translator.emotion;
     content.action = translator.action;
     content.boundary = translator.boundary;
     content.review = translator.review;
   }
-  return content;
+  return applyQuestionConcern(content, question || '');
 }
 
 function buildFallbackHexContent(hex){
@@ -20082,6 +20170,7 @@ function getYaoReadingPhrase(yao){
 
 function getHexRoleText(hex, questionContext){
   var content = getHexContentForQuestion(hex, questionContext);
+  var parts = splitQuestionContext(questionContext);
   var up = hex.up || {};
   var lo = hex.lo || {};
   var mainKeys = getHexKeywordText(hex, 2);
@@ -20090,10 +20179,12 @@ function getHexRoleText(hex, questionContext){
   var bianLine = hex.bianHex ? getHexReadingLine(hex.bianHex) : '变卦看后续倾向，不当成最终结果。';
   var huKeys = hex.huHex ? getHexKeywordText(hex.huHex, 2) : '中间结构';
   var bianKeys = hex.bianHex ? getHexKeywordText(hex.bianHex, 2) : '后续倾向';
+  var qLine = parts.question ? '这次问题是“'+parts.question+'”，所以五观不是五个大范围结论，而是按顺序缩小范围：' : '';
+  var worryLine = parts.worry ? '你担心“'+parts.worry+'”，读动爻和变卦时尤其要看它怎么影响判断。' : '';
   return [
-    {name:'五观怎么用', text:'先读本卦，知道这件事的主局；再读上下卦，分清“外面发生什么、里面承托什么”；动爻找当下最先要松动的一层；互卦看中间暗线；变卦只看后续倾向，不把它当命定结果。'},
-    {name:'本卦', text:'「'+hex.name+'」是这次问题的主局，核心不是断成败，而是先抓「'+mainKeys+'」。'+mainLine},
-    {name:'上卦 / 下卦', text:'本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramReadingPhrase(up, 'outer')+'；下卦看里面：'+getTrigramReadingPhrase(lo, 'inner')+'。这层用来核对：外面的形势，和你里面真正用力的地方，有没有对上。'},
+    {name:'五观怎么用', text:qLine+'本卦看这件事的主局，上下卦看外部处境和内在用力是否对上，动爻看现在先动哪一层，互卦看中间暗线，变卦只看后续倾向。'+worryLine},
+    {name:'本卦', text:'「'+hex.name+'」是这次问题的主局，先抓「'+mainKeys+'」，不是直接判成败。'+mainLine},
+    {name:'上卦 / 下卦', text:'本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramReadingPhrase(up, 'outer')+'；下卦看里面：'+getTrigramReadingPhrase(lo, 'inner')+'。这层只核对当前问题里的外部事实和内在担心有没有对上。'},
     {name:'动爻', text:'第'+hex.yao+'爻动。'+getYaoReadingPhrase(hex.yao)+' 它负责提示“先动哪一层”，不是让你一口气解释整件事。'},
     {name:'互卦', text:hex.huHex ? '「'+hex.huHex.name+'」不是另起一卦，而是从本卦「'+hex.name+'」中间抽出来看内部机制。表面在看「'+mainKeys+'」，中间暗线更像「'+huKeys+'」。'+huLine : '互卦看中间隐藏结构，不替你另下一个结论。'},
     {name:'变卦', text:hex.bianHex ? '「'+hex.bianHex.name+'」来自动爻变化，读的是“照现在这样动，局面容易往哪里转”。它把本卦的「'+mainKeys+'」带向「'+bianKeys+'」，所以只作趋势提醒：'+bianLine : '变卦看后续倾向，不当成最终结果。'}
