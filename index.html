@@ -15532,6 +15532,176 @@ summary:focus-visible{
   overflow:visible!important;
 }
 
+/* ===== Stage 6F · six-click coin casting (2026-07-07) ===== */
+.coin-cast-panel{
+  position:relative;
+  width:min(100%,430px);
+  margin:8px auto 20px;
+  padding:18px 16px 16px;
+  border:1px solid rgba(36,28,19,.16);
+  background:
+    linear-gradient(90deg,rgba(49,95,104,.20) 0 3px,transparent 3px),
+    rgba(255,252,246,.64);
+  box-shadow:0 18px 42px rgba(36,28,19,.08);
+}
+
+.coin-cast-panel::before{
+  content:'';
+  position:absolute;
+  inset:7px;
+  border:1px solid rgba(36,28,19,.07);
+  pointer-events:none;
+}
+
+.coin-cast-head{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+  color:var(--ink-light);
+  font-size:12px;
+  letter-spacing:.12em;
+}
+
+.coin-cast-head span{
+  color:var(--ink);
+}
+
+.coin-cast-head strong{
+  color:var(--cinnabar);
+  font-weight:500;
+}
+
+.coin-hex-board{
+  position:relative;
+  z-index:1;
+  display:grid;
+  gap:9px;
+  padding:8px 0 2px;
+}
+
+.coin-yao-row{
+  display:grid;
+  grid-template-columns:42px 1fr 46px;
+  align-items:center;
+  gap:12px;
+  min-height:28px;
+  color:var(--ink-light);
+  font-size:12px;
+}
+
+.coin-yao-label{
+  color:rgba(54,45,34,.72);
+  font-family:var(--font-serif);
+}
+
+.coin-yao-slot{
+  position:relative;
+  display:block;
+  height:8px;
+  background:linear-gradient(90deg,rgba(36,28,19,.12),rgba(36,28,19,.04));
+  overflow:hidden;
+}
+
+.coin-yao-slot::before,
+.coin-yao-slot::after{
+  content:'';
+  position:absolute;
+  top:0;
+  bottom:0;
+  background:var(--ink-deep);
+  transform:scaleX(0);
+  transform-origin:left center;
+  transition:transform .24s ease-out, background .24s ease-out;
+}
+
+.coin-yao-slot::before{
+  left:0;
+  width:100%;
+}
+
+.coin-yao-slot::after{
+  right:0;
+  width:42%;
+  transform-origin:right center;
+}
+
+.coin-yao-row.is-yang .coin-yao-slot::before{
+  transform:scaleX(1);
+}
+
+.coin-yao-row.is-yin .coin-yao-slot::before{
+  width:42%;
+  transform:scaleX(1);
+}
+
+.coin-yao-row.is-yin .coin-yao-slot::after{
+  transform:scaleX(1);
+}
+
+.coin-yao-row.is-moving .coin-yao-slot::before,
+.coin-yao-row.is-moving .coin-yao-slot::after{
+  background:var(--cinnabar);
+}
+
+.coin-yao-row.is-set em{
+  color:var(--ink);
+}
+
+.coin-yao-row em{
+  font-style:normal;
+  text-align:right;
+  color:rgba(122,110,92,.72);
+}
+
+.coin-disc{
+  position:absolute;
+  right:18px;
+  bottom:18px;
+  z-index:0;
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  border:1px solid rgba(151,117,55,.35);
+  background:
+    radial-gradient(circle at 34% 28%,rgba(255,252,246,.95),rgba(210,162,77,.28) 34%,rgba(151,117,55,.18) 72%),
+    rgba(255,252,246,.42);
+  display:grid;
+  place-items:center;
+  color:rgba(91,63,35,.46);
+  font-family:var(--font-display);
+  font-size:1.45rem;
+  box-shadow:inset 0 1px 4px rgba(255,252,246,.8),0 10px 24px rgba(36,28,19,.10);
+  transition:transform .34s cubic-bezier(.2,.7,.2,1), color .2s;
+}
+
+.coin-disc.is-flipping{
+  transform:rotateY(180deg) rotate(14deg) translateY(-5px);
+  color:rgba(168,60,50,.68);
+}
+
+.coin-toss-btn.is-complete{
+  background:linear-gradient(180deg,var(--jade),#264f57);
+  clip-path:none;
+}
+
+@media (max-width:430px){
+  .coin-cast-panel{
+    margin-top:0;
+    padding:16px 14px 14px;
+  }
+  .coin-yao-row{
+    grid-template-columns:38px 1fr 42px;
+    gap:10px;
+  }
+  .coin-disc{
+    display:none;
+  }
+}
+
 /* ===== Stage 6D · taste-skill targeted polish (2026-07-06) ===== */
 #home-screen .home-manuscript#home-today-board{
   padding-top:28px!important;
@@ -16080,47 +16250,39 @@ summary:focus-visible{
 <div id="bamboo-screen" class="screen">
   <button class="bamboo-back-btn" onclick="goBack()">&#8592; 返回</button>
   <div class="shake-scene">
-    <!-- 装饰性圆环 -->
-    <div class="shake-deco-ring" id="deco-ring"></div>
-    
-    <!-- 签筒主体 -->
-    <div class="shake-tube" id="qian-container">
-      <!-- 签条组 -->
-      <div class="stick-group" id="qian-sticks">
-        <span class="stick"></span>
-        <span class="stick"></span>
-        <span class="stick"></span>
-        <span class="stick"></span>
-        <span class="stick"></span>
-        <span class="stick"></span>
-        <span class="stick"></span>
+    <div class="coin-cast-panel" id="coin-cast-panel" aria-live="polite">
+      <div class="coin-cast-head">
+        <span>六爻点币</span>
+        <strong id="coin-cast-count">0 / 6</strong>
       </div>
-      <!-- 筒身 -->
-      <div class="tube-shell">
-        <div class="tube-rim"></div>
-        <div class="tube-body">
-          <div class="tube-label">灵签</div>
-        </div>
+      <div class="coin-hex-board" id="coin-hex-board" aria-label="六次点币成卦">
+        <div class="coin-yao-row" data-line="6"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
+        <div class="coin-yao-row" data-line="5"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
+        <div class="coin-yao-row" data-line="4"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
+        <div class="coin-yao-row" data-line="3"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
+        <div class="coin-yao-row" data-line="2"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
+        <div class="coin-yao-row" data-line="1"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
       </div>
+      <div class="coin-disc" id="coin-disc" aria-hidden="true">乾</div>
     </div>
     
     <!-- 文字 -->
     <div class="shake-text-area">
-    <p class="shake-main-text" id="bamboo-text">先停一下，把问题放稳</p>
-      <p class="shake-sub-text" id="bamboo-sub">接下来只做一件事：借卦象把局面、行动和边界分开。</p>
+      <p class="shake-main-text" id="bamboo-text">一爻一问，点六次成卦</p>
+      <p class="shake-sub-text" id="bamboo-sub">从初爻往上点币。每一次只看这一念落成阴还是阳，最后再看本卦、互卦和变卦。</p>
     </div>
     
     <!-- 按钮 -->
     <div class="shake-btn-wrap">
-      <button class="shake-btn" id="shake-btn">
-        <span class="btn-icon" aria-hidden="true">起</span>
-        <span>开始起卦</span>
+      <button class="shake-btn coin-toss-btn" id="coin-toss-btn" type="button">
+        <span class="btn-icon" aria-hidden="true">币</span>
+        <span>点币起初爻</span>
       </button>
       <div class="shake-progress-wrap" id="shake-progress-wrap">
         <div class="shake-progress-bar" id="shake-progress-bar"></div>
       </div>
     </div>
-    <p class="shake-hint" id="shake-hint">轻点按钮即可，不需要反复起卦</p>
+    <p class="shake-hint" id="shake-hint">同一件事点满六次即可，不需要反复重来。</p>
   </div>
 </div>
 
@@ -17541,6 +17703,8 @@ let lastDivWorry = null;
 let pendingCallback = null;
 let shakeListenerActive = false;
 let _homeReviewDateKey = null;
+let coinCastThrows = [];
+let coinCastLines = [];
 
 function buildQuestionContext(question, worry){
   var parts = [];
@@ -17880,14 +18044,29 @@ async function openSevenDayReview(){
 }
 
 function resetBamboo(){
-  const qian = document.getElementById('qian-container');
-  if(qian){ qian.classList.remove('shaking','releasing'); }
-  const btn = document.getElementById('shake-btn');
-  if(btn){ btn.disabled = false; btn.style.opacity='1'; btn.classList.remove('pressing'); }
+  coinCastThrows = [];
+  coinCastLines = [];
+  const btn = document.getElementById('coin-toss-btn');
+  if(btn){
+    btn.disabled = false;
+    btn.style.opacity='1';
+    btn.classList.remove('pressing','is-complete');
+    var label = btn.querySelector('span:last-child');
+    if(label) label.textContent = '点币起初爻';
+  }
   const hint = document.getElementById('shake-hint');
-  if(hint){ hint.style.display=''; hint.textContent='轻点按钮即可，不需要反复起卦'; }
+  if(hint){ hint.style.display=''; hint.textContent='同一件事点满六次即可，不需要反复重来。'; }
+  const count = document.getElementById('coin-cast-count');
+  if(count) count.textContent = '0 / 6';
+  const disc = document.getElementById('coin-disc');
+  if(disc){ disc.classList.remove('is-flipping'); disc.textContent = '乾'; }
+  document.querySelectorAll('.coin-yao-row').forEach(function(row){
+    row.classList.remove('is-set','is-yang','is-yin','is-moving');
+    var note = row.querySelector('em');
+    if(note) note.textContent = '未定';
+  });
   const sub = document.getElementById('bamboo-sub');
-  if(sub){ sub.textContent='同一件事先看一次，把提醒带回现实里观察'; }
+  if(sub){ sub.textContent='从初爻往上点币。每一次只看这一念落成阴还是阳，最后再看本卦、互卦和变卦。'; }
   const pw = document.getElementById('shake-progress-wrap');
   if(pw){ pw.classList.remove('visible'); }
   const pb = document.getElementById('shake-progress-bar');
@@ -18037,17 +18216,105 @@ function triggerBambooShake(){
   }, 3200);
 }
 
+function initCoinCastButton(){
+  const btn = document.getElementById('coin-toss-btn');
+  if(!btn || btn._coinBound) return;
+  btn._coinBound = true;
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    tossCoinYao();
+  });
+}
+
+function tossCoinYao(){
+  const btn = document.getElementById('coin-toss-btn');
+  const disc = document.getElementById('coin-disc');
+  const text = document.getElementById('bamboo-text');
+  const hint = document.getElementById('shake-hint');
+  if(!pendingCallback || !btn || btn.disabled) return;
+  if(coinCastThrows.length >= 6) return;
+
+  btn.disabled = true;
+  btn.classList.add('pressing');
+  if(disc) disc.classList.add('is-flipping');
+
+  setTimeout(function(){
+    var sum = 0;
+    for(var i=0;i<3;i++) sum += (Math.random() < 0.5 ? 2 : 3);
+    var isYang = sum === 7 || sum === 9;
+    var isMoving = sum === 6 || sum === 9;
+    var lineIndex = coinCastThrows.length + 1;
+    var labelMap = {6:'老阴',7:'少阳',8:'少阴',9:'老阳'};
+    var row = document.querySelector('.coin-yao-row[data-line="'+lineIndex+'"]');
+    coinCastThrows.push({value:sum, line:isYang ? 1 : 0, moving:isMoving});
+    coinCastLines.push(isYang ? 1 : 0);
+
+    if(row){
+      row.classList.add('is-set', isYang ? 'is-yang' : 'is-yin');
+      if(isMoving) row.classList.add('is-moving');
+      var note = row.querySelector('em');
+      if(note) note.textContent = labelMap[sum] || (isYang ? '阳' : '阴');
+    }
+    if(disc){
+      disc.textContent = isYang ? '阳' : '阴';
+      disc.classList.remove('is-flipping');
+    }
+    var count = document.getElementById('coin-cast-count');
+    if(count) count.textContent = coinCastThrows.length + ' / 6';
+    if(text) text.textContent = lineIndex < 6 ? '第'+lineIndex+'爻已定，继续往上点' : '六爻已成，正在合卦';
+    if(hint) hint.textContent = lineIndex < 6 ? '从初爻往上排，不需要猜结果。' : '先等它合成一卦，再看完整解读。';
+
+    if(coinCastThrows.length >= 6){
+      finishCoinCast();
+      return;
+    }
+    var nextLabel = btn.querySelector('span:last-child');
+    if(nextLabel) nextLabel.textContent = '点币起第'+(coinCastThrows.length + 1)+'爻';
+    btn.disabled = false;
+    btn.classList.remove('pressing');
+  }, 260);
+}
+
+function finishCoinCast(){
+  const btn = document.getElementById('coin-toss-btn');
+  const hint = document.getElementById('shake-hint');
+  var movingIndex = coinCastThrows.findIndex(function(item){ return item.moving; });
+  if(movingIndex < 0){
+    var total = coinCastThrows.reduce(function(sum, item){ return sum + item.value; }, 0);
+    movingIndex = total % 6;
+  }
+  var movingRow = document.querySelector('.coin-yao-row[data-line="'+(movingIndex + 1)+'"]');
+  if(movingRow) movingRow.classList.add('is-moving');
+  if(btn){
+    btn.classList.add('is-complete');
+    var label = btn.querySelector('span:last-child');
+    if(label) label.textContent = '卦象成形';
+  }
+  if(hint) hint.textContent = '动爻已标成朱砂色，接下来会揭示结果。';
+  setTimeout(function(){
+    const cb = pendingCallback;
+    pendingCallback = null;
+    if(cb){
+      cb({
+        source:'coin',
+        lines:coinCastLines.slice(0,6),
+        throws:coinCastThrows.slice(0,6),
+        movingYao:movingIndex + 1
+      });
+    }
+  }, 620);
+}
+
 /* 竹筒准备状态（等待用户触发） */
 function runBambooAnim(callback){
   goTo('bamboo');
   resetBamboo();
   const text = document.getElementById('bamboo-text');
   const sub = document.getElementById('bamboo-sub');
-  text.textContent = '先停一下，把问题放稳';
-  sub.textContent = '接下来只做一件事：借卦象把局面、行动和边界分开。';
+  text.textContent = '一爻一问，点六次成卦';
+  sub.textContent = '从初爻往上点币。每一次只看这一念落成阴还是阳，最后再看本卦、互卦和变卦。';
   pendingCallback = callback;
-  enableShakeDetection();
-  initShakeButton();
+  initCoinCastButton();
 }
 
 /* 签条翻转卡片 */
@@ -18266,9 +18533,9 @@ function submitQuestion(text){
   window._pendingDivRecordKey = dateKey;
   window._currentDivRecordKey = dateKey;
   /* 进入竹筒页面，等待用户摇签 */
-  runBambooAnim(async ()=>{
+  runBambooAnim(async (cast)=>{
     try{
-      const result = calcMeiHuaHex();
+      const result = (cast && cast.source === 'coin') ? calcCoinHex(cast) : calcMeiHuaHex();
       lastDivDate = dateKey;
       lastDivResult = result;
       lastDivQuestion = q;
@@ -18369,6 +18636,56 @@ function calcMeiHuaHex(){
             '互卦：第'+huHid+'卦 '+huHex.name+'（'+LUO[huUpN].name+'上'+LUO[huLoN].name+'下）\n' +
             '变卦：第'+bianHid+'卦 '+bianHex.name+'（'+LUO[bianUpN].name+'上'+LUO[bianLoN].name+'下）\n\n' +
             '同一件事不建议反复起卦，先把这次提醒带回现实里观察。'
+  };
+}
+
+function calcCoinHex(cast){
+  var lines = cast && cast.lines ? cast.lines.slice(0,6).map(function(v){ return v ? 1 : 0; }) : [];
+  if(lines.length !== 6) return calcMeiHuaHex();
+  var yao = Number(cast && cast.movingYao) || 1;
+  if(yao < 1 || yao > 6) yao = 1;
+
+  var triTTB = {'1,1,1':6,'0,0,0':2,'0,1,0':1,'1,0,1':9,'1,0,0':3,'1,1,0':7,'0,0,1':8,'0,1,1':4};
+  var loN = triTTB[lines[0]+','+lines[1]+','+lines[2]] || 6;
+  var upN = triTTB[lines[3]+','+lines[4]+','+lines[5]] || 6;
+  var up = LUO[upN], lo = LUO[loN];
+  var hid = HM_MAP[upN+','+loN] || 1;
+
+  var all = [lines[0],lines[1],lines[2],lines[3],lines[4],lines[5]];
+  var huLoN = triTTB[all[1]+','+all[2]+','+all[3]];
+  var huUpN = triTTB[all[2]+','+all[3]+','+all[4]];
+  var huHid = HM_MAP[huUpN+','+huLoN] || 1;
+  var huHex = {
+    id:huHid, name:HM[huHid], up:LUO[huUpN], lo:LUO[huLoN],
+    upN:huUpN, loN:huLoN, info:GUACI[huHid]||{c:'',a:''}
+  };
+
+  var bian = all.slice();
+  bian[yao-1] = 1 - bian[yao-1];
+  var bianLoN = triTTB[bian[0]+','+bian[1]+','+bian[2]];
+  var bianUpN = triTTB[bian[3]+','+bian[4]+','+bian[5]];
+  var bianHid = HM_MAP[bianUpN+','+bianLoN] || 1;
+  var bianHex = {
+    id:bianHid, name:HM[bianHid], up:LUO[bianUpN], lo:LUO[bianLoN],
+    upN:bianUpN, loN:bianLoN, info:GUACI[bianHid]||{c:'',a:''}
+  };
+
+  var labels = {6:'老阴',7:'少阳',8:'少阴',9:'老阳'};
+  var throws = (cast.throws || []).map(function(item, idx){
+    return '第'+(idx+1)+'爻：'+(labels[item.value] || (item.line ? '阳' : '阴'))+(item.moving ? '（动）' : '');
+  }).join('\n');
+
+  return {
+    id:hid, name:HM[hid], up:up, lo:lo, upN:upN, loN:loN, yao:yao,
+    info: GUACI[hid]||{c:'',a:''},
+    huHex:huHex, bianHex:bianHex,
+    detail:'六次点币成卦\n\n' +
+      throws + '\n\n' +
+      '下三爻成下卦'+lo.name+'（'+lo.nat+'），上三爻成上卦'+up.name+'（'+up.nat+'）。\n' +
+      '动爻取第'+yao+'爻，用来观察这件事里最先发生变化的一层。\n\n' +
+      '互卦：第'+huHid+'卦 '+huHex.name+'（'+LUO[huUpN].name+'上'+LUO[huLoN].name+'下）\n' +
+      '变卦：第'+bianHid+'卦 '+bianHex.name+'（'+LUO[bianUpN].name+'上'+LUO[bianLoN].name+'下）\n\n' +
+      '同一件事不建议反复起卦，先把这次提醒带回现实里观察。'
   };
 }
 
@@ -20217,6 +20534,46 @@ function getYaoReadingPhrase(yao){
   return map[Number(yao)] || '动爻表示这件事里最先松动、也最值得先处理的一层。';
 }
 
+function getThemeBlindSpot(themeKey, parts){
+  var worry = parts.worry || '';
+  var map = {
+    work:'把“适不适合”混成一个大判断，却没有把学习、收入、消耗和可替代方案分开核对。',
+    relationship:'把心意、不甘心和害怕失去揉在一起，于是选择看起来很急，真实需要反而被盖住。',
+    finance:'只问能不能独立，却还没有把现金流、必要支出和能力增长拆成三张账。',
+    emotion:'急着把混乱整理成答案，却忘了先护住自己原本为什么出发。',
+    family:'把对家人的牵挂直接变成自己的责任，容易还没核对事实就先替所有结果紧张。',
+    growth:'把“我要变好”当成压力，反而看不见今天能多做哪一个很小的选择。',
+    other:'急着要一个结论，却还没有把事实、猜测和自己能做的一步分开。'
+  };
+  var line = map[themeKey] || map.other;
+  if(worry) line += ' 你写下的担心是“'+worry+'”，它就是这次最该被照见的入口。';
+  return line;
+}
+
+function getTrigramImageLine(trigram, role){
+  var name = trigram && trigram.name ? trigram.name : '';
+  var nat = trigram && trigram.nat ? trigram.nat : '';
+  var map = {
+    '乾': role === 'outer' ? '天在外，像规则、目标和高处的压力先压下来' : '天在内，说明你心里仍想抓住方向和原则',
+    '坤': role === 'outer' ? '地在外，像现实条件、承接关系和耐心在托住局面' : '地在内，说明你需要先稳住根基，不要只靠意志硬顶',
+    '坎': role === 'outer' ? '水在外，像信息不明、风险未定、边走边探' : '水在内，说明担心、反复确认和不安全感正在牵动你',
+    '离': role === 'outer' ? '火在外，像事实需要被照亮，话要说清楚' : '火在内，说明你在找确认，也在等一个更清明的判断',
+    '艮': role === 'outer' ? '山在外，像边界、停顿或现实阻碍已经显出来' : '山在内，说明你其实需要先知止，别越急越越界',
+    '兑': role === 'outer' ? '泽在外，像沟通、回应、期待和口舌正在起作用' : '泽在内，说明你很在意被回应、被听见、被认可',
+    '震': role === 'outer' ? '雷在外，像事情被触发，变化来得突然' : '雷在内，说明你已经被触动，很想立刻行动',
+    '巽': role === 'outer' ? '风在外，像细节、风声、渗透和慢慢变化' : '风在内，说明更适合柔一点，先找入口，不要硬闯'
+  };
+  return map[name] || ((nat || '这一象') + (role === 'outer' ? '在外，看事情显出来的样子' : '在内，看你真正承托它的方式'));
+}
+
+function getYaoReadingDetail(hex){
+  var yaoData = hex && YAO_CI[hex.id];
+  var yaoText = (yaoData && yaoData[hex.yao-1]) ? yaoData[hex.yao-1] : null;
+  var base = getYaoReadingPhrase(hex && hex.yao);
+  if(!yaoText) return base;
+  return base + ' 爻辞里“' + yaoText.t + '”只取作提醒：' + summarizeInsightText(yaoText.a || '', '先看这层为什么会动。');
+}
+
 function getHexRoleText(hex, questionContext){
   var content = getHexContentForQuestion(hex, questionContext);
   var parts = splitQuestionContext(questionContext);
@@ -20232,13 +20589,19 @@ function getHexRoleText(hex, questionContext){
   var worryLine = parts.worry ? '你担心“'+parts.worry+'”，所以读到动爻和变卦时，要特别看自己会不会被这份担心推着走。' : '';
   var huName = hex.huHex ? '「'+hex.huHex.name+'」' : '互卦';
   var bianName = hex.bianHex ? '「'+hex.bianHex.name+'」' : '变卦';
+  var themeKey = content && content.themeKey ? content.themeKey : inferThemeKey(questionContext || '', hex);
+  var blindSpot = getThemeBlindSpot(themeKey, parts);
+  var mainReality = content ? ((content.reality || '') + ' ' + (content.emotion || '')).trim() : mainLine;
+  var huReality = huLine;
+  var bianReality = bianLine;
+  var actionLine = content && content.action ? content.action : getActionAdvice(hex);
   return [
-    {name:'读卦链路', text:'这条链路先从本卦「'+hex.name+'」看主局，再看第'+hex.yao+'爻这个转折点；互卦'+huName+'看藏在中间的暗线，变卦'+bianName+'看照现在这样动会转向哪里。所以读卦不是替你下决定，而是帮你把'+qName+'先收成一个能处理的切口。'+worryLine},
-    {name:'本卦', text:'「'+hex.name+'」是这次问题的主局，先抓「'+mainKeys+'」，不是直接判成败。放回'+qName+'里，它先让你看清现在最像哪一种局面：'+mainLine},
-    {name:'上卦 / 下卦', text:'本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramReadingPhrase(up, 'outer')+'；下卦看里面：'+getTrigramReadingPhrase(lo, 'inner')+'。所以这一步是在问：外面的事实和你心里的用力，是同向，还是已经拧着了。'},
-    {name:'动爻', text:'第'+hex.yao+'爻是这件事的转折点。'+getYaoReadingPhrase(hex.yao)+' 放回'+qName+'，它更像是在提醒：今天先处理最容易失衡的那一小层，不要把整件事一次判完。'},
-    {name:'互卦', text:hex.huHex ? huName+'不是另起一卦，而是从本卦「'+hex.name+'」中间抽出来看暗线。表面在看「'+mainKeys+'」，中间真正牵动你的可能是「'+huKeys+'」；所以它用来解释为什么这件事会卡住：'+huLine : '互卦看中间隐藏结构，不替你另下一个结论。'},
-    {name:'变卦', text:hex.bianHex ? bianName+'来自动爻变化，读的是“照现在这样动，局面容易往哪里转”。它把本卦的「'+mainKeys+'」带向「'+bianKeys+'」，所以这里只看趋势和提醒，不当成命运结论：'+bianLine : '变卦看后续倾向，不当成最终结果。'}
+    {name:'读卦链路', text:'这条链路不是先背术语，而是先把'+qName+'压回一个现实切口：本卦「'+hex.name+'」看主局，动爻看最先动的一层，互卦'+huName+'看暗线，变卦'+bianName+'看继续这样走会偏向哪里。你可能忽略的是：'+blindSpot+' '+worryLine},
+    {name:'本卦', text:'「'+hex.name+'」是这件事的主矛盾，先抓「'+mainKeys+'」，不是直接判成败。落到这件事，它不是在问最后会怎样，而是在问现在是哪股力量最占上风：'+mainReality},
+    {name:'上卦 / 下卦', text:'象上看，本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramImageLine(up, 'outer')+'；下卦看里面：'+getTrigramImageLine(lo, 'inner')+'。落到这件事，就是核对外部事实和内在用力有没有拧着，而不是只跟着情绪走。'},
+    {name:'动爻', text:'第'+hex.yao+'爻是今天先看的转折点。'+getYaoReadingDetail(hex)+' 放回'+qName+'，今天先做的不是把整件事判完，而是处理这一爻指出的那一小层：'+actionLine},
+    {name:'互卦', text:hex.huHex ? huName+'不是另起一卦，而是从本卦「'+hex.name+'」中间抽出来看暗线。表面在看「'+mainKeys+'」，中间真正牵动你的可能是「'+huKeys+'」。所以它解释的是为什么你会卡住：'+huReality : '互卦看中间隐藏结构，不替你另下一个结论。'},
+    {name:'变卦', text:hex.bianHex ? bianName+'来自动爻变化，读的是“如果继续按当前反应走，局面容易往哪里偏”。它把本卦的「'+mainKeys+'」带向「'+bianKeys+'」。所以这里只看趋势和提醒，不当成命运结论：'+bianReality : '变卦看后续倾向，不当成最终结果。'}
   ];
 }
 
