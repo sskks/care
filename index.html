@@ -15588,8 +15588,91 @@ summary:focus-visible{
   z-index:1;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:12px 10px;
+  gap:10px 9px;
   padding:8px 0 4px;
+}
+
+.coin-cast-body{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 72px;
+  gap:12px;
+  align-items:center;
+}
+
+.coin-hex-preview{
+  min-height:226px;
+  padding:12px 9px;
+  border-left:1px solid rgba(36,28,19,.10);
+  background:linear-gradient(180deg,rgba(216,206,188,.10),rgba(255,252,246,.16));
+}
+
+.coin-hex-preview strong{
+  display:block;
+  margin-bottom:10px;
+  color:rgba(54,45,34,.68);
+  font-family:var(--font-serif);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.18em;
+  text-align:center;
+}
+
+.coin-hex-lines{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center;
+}
+
+.coin-hex-line{
+  position:relative;
+  width:44px;
+  height:7px;
+  opacity:.28;
+}
+
+.coin-hex-line::before,
+.coin-hex-line::after{
+  content:'';
+  position:absolute;
+  top:0;
+  height:7px;
+  background:rgba(54,45,34,.55);
+  box-shadow:inset 0 1px 1px rgba(255,252,246,.30);
+}
+
+.coin-hex-line::before{left:0;width:100%}
+.coin-hex-line::after{display:none}
+
+.coin-hex-line.is-set{
+  opacity:1;
+}
+
+.coin-hex-line.is-yin::before,
+.coin-hex-line.is-yin::after{
+  width:18px;
+  background:rgba(78,55,39,.72);
+}
+
+.coin-hex-line.is-yin::after{
+  display:block;
+  right:0;
+}
+
+.coin-hex-line.is-yin::before{
+  left:0;
+}
+
+.coin-hex-line.is-yang::before{
+  width:100%;
+  background:rgba(46,34,24,.74);
+}
+
+.coin-hex-line.is-moving::before,
+.coin-hex-line.is-moving::after{
+  background:rgba(133,52,44,.78);
 }
 
 .coin-stage{
@@ -15652,10 +15735,11 @@ summary:focus-visible{
   border-radius:50%;
   background:
     radial-gradient(circle at 50% 50%,#17110c 0 10px,transparent 11px),
-    radial-gradient(circle at 31% 22%,#d79645 0 18%,transparent 30%),
-    radial-gradient(circle at 70% 72%,rgba(18,92,65,.24) 0 13%,transparent 22%),
+    radial-gradient(circle at 30% 21%,#b88b48 0 17%,transparent 30%),
+    radial-gradient(circle at 71% 73%,rgba(31,114,83,.34) 0 14%,transparent 23%),
+    radial-gradient(circle at 78% 23%,rgba(40,92,76,.20) 0 8%,transparent 16%),
     repeating-radial-gradient(circle at 50% 50%,transparent 0 11px,rgba(29,18,12,.20) 12px 13px,transparent 14px 19px),
-    conic-gradient(from -18deg,#3b2618,#9b5a28,#c47732,#75451f,#2c2117,#8f5428,#3b2618);
+    conic-gradient(from -18deg,#2e261b,#5e482d,#806136,#4d3b28,#242018,#625030,#2e261b);
   color:rgba(28,17,10,.94);
   font-family:var(--font-serif);
   font-size:14px;
@@ -15720,10 +15804,11 @@ summary:focus-visible{
   color:rgba(107,38,29,.98);
   background:
     radial-gradient(circle at 50% 50%,#17110c 0 10px,transparent 11px),
-    radial-gradient(circle at 34% 24%,#bd6f3a 0 17%,transparent 29%),
-    radial-gradient(circle at 70% 72%,rgba(16,91,66,.28) 0 13%,transparent 22%),
+    radial-gradient(circle at 33% 24%,#936a3d 0 17%,transparent 29%),
+    radial-gradient(circle at 70% 72%,rgba(28,111,80,.36) 0 13%,transparent 23%),
+    radial-gradient(circle at 78% 22%,rgba(33,92,76,.22) 0 8%,transparent 16%),
     repeating-radial-gradient(circle at 50% 50%,transparent 0 11px,rgba(28,18,13,.22) 12px 13px,transparent 14px 19px),
-    conic-gradient(from 12deg,#35241a,#7b4528,#a25d34,#603a27,#292019,#70462a,#35241a);
+    conic-gradient(from 12deg,#2b241b,#54402b,#765536,#453326,#211d18,#55442d,#2b241b);
 }
 
 .coin-yao-row.is-set .coin-yao-slot{
@@ -15860,15 +15945,34 @@ summary:focus-visible{
 @media (max-width:430px){
   .coin-cast-panel{
     margin-top:0;
-    padding:16px 12px 14px;
+    padding:16px 10px 14px;
+  }
+  .coin-cast-body{
+    grid-template-columns:minmax(0,1fr) 54px;
+    gap:8px;
   }
   .coin-yao-row{
-    min-height:104px;
+    min-height:100px;
   }
   .coin-yao-slot{
-    width:70px;
-    height:70px;
+    width:66px;
+    height:66px;
     font-size:12px;
+  }
+  .coin-hex-preview{
+    min-height:210px;
+    padding:10px 4px;
+  }
+  .coin-hex-preview strong{
+    font-size:11px;
+    letter-spacing:.12em;
+  }
+  .coin-hex-line{
+    width:34px;
+  }
+  .coin-hex-line.is-yin::before,
+  .coin-hex-line.is-yin::after{
+    width:14px;
   }
 }
 
@@ -16422,16 +16526,29 @@ summary:focus-visible{
   <div class="shake-scene">
       <div class="coin-cast-panel" id="coin-cast-panel" aria-live="polite">
       <div class="coin-cast-head">
-        <span>六枚古铜</span>
+        <span>六枚青铜</span>
         <strong id="coin-cast-count">初爻起</strong>
       </div>
-      <div class="coin-hex-board" id="coin-hex-board" aria-label="依次点击六枚古铜币成卦">
-        <div class="coin-yao-row" data-line="4" role="button" tabindex="0"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-        <div class="coin-yao-row" data-line="5" role="button" tabindex="0"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-        <div class="coin-yao-row" data-line="6" role="button" tabindex="0"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-        <div class="coin-yao-row" data-line="1" role="button" tabindex="0"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot">观心</span><em>先点</em></div>
-        <div class="coin-yao-row" data-line="2" role="button" tabindex="0"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
-        <div class="coin-yao-row" data-line="3" role="button" tabindex="0"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+      <div class="coin-cast-body">
+        <div class="coin-hex-board" id="coin-hex-board" aria-label="依次点击六枚青铜币成卦">
+          <div class="coin-yao-row" data-line="4" role="button" tabindex="0"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="5" role="button" tabindex="0"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="6" role="button" tabindex="0"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="1" role="button" tabindex="0"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot">观心</span><em>先点</em></div>
+          <div class="coin-yao-row" data-line="2" role="button" tabindex="0"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+          <div class="coin-yao-row" data-line="3" role="button" tabindex="0"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot">观心</span><em>未翻</em></div>
+        </div>
+        <div class="coin-hex-preview" aria-label="铜币成卦预览">
+          <strong>卦形</strong>
+          <div class="coin-hex-lines" id="coin-hex-lines">
+            <span class="coin-hex-line" data-line="6"></span>
+            <span class="coin-hex-line" data-line="5"></span>
+            <span class="coin-hex-line" data-line="4"></span>
+            <span class="coin-hex-line" data-line="3"></span>
+            <span class="coin-hex-line" data-line="2"></span>
+            <span class="coin-hex-line" data-line="1"></span>
+          </div>
+        </div>
       </div>
       <div class="coin-stage" aria-hidden="true">
         <div class="coin-disc" id="coin-disc">泉</div>
@@ -18242,6 +18359,9 @@ function resetBamboo(){
     var note = row.querySelector('em');
     if(note) note.textContent = line === 1 ? '先点' : '未翻';
   });
+  document.querySelectorAll('.coin-hex-line').forEach(function(line){
+    line.classList.remove('is-set','is-yang','is-yin','is-moving');
+  });
   const sub = document.getElementById('bamboo-sub');
   if(sub){ sub.textContent='从下排左侧初爻开始，按提示一枚一枚翻到上排。六枚翻完后再合成本卦、互卦和变卦。'; }
   const pw = document.getElementById('shake-progress-wrap');
@@ -18460,6 +18580,11 @@ function tossCoinYao(){
       var note = row.querySelector('em');
       if(note) note.textContent = labelMap[sum] || (isYang ? '阳' : '阴');
     }
+    var previewLine = document.querySelector('.coin-hex-line[data-line="'+lineIndex+'"]');
+    if(previewLine){
+      previewLine.classList.add('is-set', isYang ? 'is-yang' : 'is-yin');
+      if(isMoving) previewLine.classList.add('is-moving');
+    }
     if(disc){
       disc.classList.remove('is-flipping');
       disc.classList.add(isYang ? 'is-yang' : 'is-yin');
@@ -18501,6 +18626,8 @@ function finishCoinCast(){
   }
   var movingRow = document.querySelector('.coin-yao-row[data-line="'+(movingIndex + 1)+'"]');
   if(movingRow) movingRow.classList.add('is-moving');
+  var movingPreviewLine = document.querySelector('.coin-hex-line[data-line="'+(movingIndex + 1)+'"]');
+  if(movingPreviewLine) movingPreviewLine.classList.add('is-moving');
   if(btn){
     btn.classList.add('is-complete');
     var label = btn.querySelector('span:last-child');
