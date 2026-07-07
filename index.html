@@ -15583,6 +15583,16 @@ summary:focus-visible{
   padding:8px 0 2px;
 }
 
+.coin-stage{
+  position:relative;
+  z-index:1;
+  display:grid;
+  place-items:center;
+  min-height:92px;
+  margin:12px 0 4px;
+  perspective:680px;
+}
+
 .coin-yao-row{
   display:grid;
   grid-template-columns:42px 1fr 46px;
@@ -15658,29 +15668,73 @@ summary:focus-visible{
 }
 
 .coin-disc{
-  position:absolute;
-  right:18px;
-  bottom:18px;
-  z-index:0;
-  width:68px;
-  height:68px;
+  position:relative;
+  width:78px;
+  height:78px;
   border-radius:50%;
-  border:1px solid rgba(151,117,55,.35);
+  border:2px solid rgba(94,60,26,.58);
   background:
-    radial-gradient(circle at 34% 28%,rgba(255,252,246,.95),rgba(210,162,77,.28) 34%,rgba(151,117,55,.18) 72%),
-    rgba(255,252,246,.42);
+    radial-gradient(circle at 50% 50%,rgba(255,252,246,.72) 0 10px,rgba(82,52,24,.75) 11px 14px,transparent 15px),
+    radial-gradient(circle at 34% 24%,rgba(255,245,203,.96),rgba(191,129,46,.86) 38%,rgba(92,54,24,.98) 100%);
   display:grid;
   place-items:center;
-  color:rgba(91,63,35,.46);
+  color:rgba(54,33,18,.78);
   font-family:var(--font-display);
-  font-size:1.45rem;
-  box-shadow:inset 0 1px 4px rgba(255,252,246,.8),0 10px 24px rgba(36,28,19,.10);
-  transition:transform .34s cubic-bezier(.2,.7,.2,1), color .2s;
+  font-size:1.38rem;
+  line-height:1;
+  text-shadow:0 1px 0 rgba(255,245,203,.42);
+  box-shadow:
+    inset 0 3px 8px rgba(255,245,203,.55),
+    inset 0 -6px 14px rgba(54,33,18,.42),
+    0 12px 22px rgba(36,28,19,.16);
+  transform-style:preserve-3d;
+  transition:transform .42s cubic-bezier(.2,.7,.2,1), color .2s;
+}
+
+.coin-disc::before,
+.coin-disc::after{
+  content:'';
+  position:absolute;
+  pointer-events:none;
+}
+
+.coin-disc::before{
+  inset:9px;
+  border:1px solid rgba(54,33,18,.38);
+  border-radius:50%;
+  box-shadow:inset 0 0 0 1px rgba(255,245,203,.24);
+}
+
+.coin-disc::after{
+  width:17px;
+  height:17px;
+  border:2px solid rgba(54,33,18,.55);
+  background:rgba(255,252,246,.68);
+  box-shadow:inset 0 1px 4px rgba(54,33,18,.28);
 }
 
 .coin-disc.is-flipping{
-  transform:rotateY(180deg) rotate(14deg) translateY(-5px);
-  color:rgba(168,60,50,.68);
+  animation:coinFlip .46s cubic-bezier(.16,.84,.26,1);
+}
+
+.coin-disc.is-yang{
+  color:rgba(45,30,18,.88);
+}
+
+.coin-disc.is-yin{
+  color:rgba(124,54,43,.9);
+}
+
+@keyframes coinFlip{
+  0%{transform:translateY(0) rotateX(0) rotateZ(-4deg)}
+  42%{transform:translateY(-18px) rotateX(520deg) rotateZ(10deg)}
+  100%{transform:translateY(0) rotateX(720deg) rotateZ(0)}
+}
+
+.coin-toss-btn{
+  border-radius:3px!important;
+  clip-path:none!important;
+  overflow:visible!important;
 }
 
 .coin-toss-btn.is-complete{
@@ -15697,8 +15751,14 @@ summary:focus-visible{
     grid-template-columns:38px 1fr 42px;
     gap:10px;
   }
+  .coin-stage{
+    min-height:84px;
+    margin:10px 0 2px;
+  }
   .coin-disc{
-    display:none;
+    width:70px;
+    height:70px;
+    font-size:1.2rem;
   }
 }
 
@@ -16263,7 +16323,9 @@ summary:focus-visible{
         <div class="coin-yao-row" data-line="2"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
         <div class="coin-yao-row" data-line="1"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot"></span><em>未定</em></div>
       </div>
-      <div class="coin-disc" id="coin-disc" aria-hidden="true">乾</div>
+      <div class="coin-stage" aria-hidden="true">
+        <div class="coin-disc" id="coin-disc">泉</div>
+      </div>
     </div>
     
     <!-- 文字 -->
@@ -18059,7 +18121,10 @@ function resetBamboo(){
   const count = document.getElementById('coin-cast-count');
   if(count) count.textContent = '0 / 6';
   const disc = document.getElementById('coin-disc');
-  if(disc){ disc.classList.remove('is-flipping'); disc.textContent = '乾'; }
+  if(disc){
+    disc.classList.remove('is-flipping','is-yang','is-yin');
+    disc.textContent = '泉';
+  }
   document.querySelectorAll('.coin-yao-row').forEach(function(row){
     row.classList.remove('is-set','is-yang','is-yin','is-moving');
     var note = row.querySelector('em');
@@ -18236,7 +18301,13 @@ function tossCoinYao(){
 
   btn.disabled = true;
   btn.classList.add('pressing');
-  if(disc) disc.classList.add('is-flipping');
+  if(disc){
+    disc.classList.remove('is-yang','is-yin');
+    disc.textContent = '泉';
+    disc.classList.remove('is-flipping');
+    void disc.offsetWidth;
+    disc.classList.add('is-flipping');
+  }
 
   setTimeout(function(){
     var sum = 0;
@@ -18256,8 +18327,9 @@ function tossCoinYao(){
       if(note) note.textContent = labelMap[sum] || (isYang ? '阳' : '阴');
     }
     if(disc){
-      disc.textContent = isYang ? '阳' : '阴';
       disc.classList.remove('is-flipping');
+      disc.classList.add(isYang ? 'is-yang' : 'is-yin');
+      disc.textContent = isYang ? '阳' : '阴';
     }
     var count = document.getElementById('coin-cast-count');
     if(count) count.textContent = coinCastThrows.length + ' / 6';
