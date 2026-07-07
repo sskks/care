@@ -16198,11 +16198,11 @@ summary:focus-visible{
     <!-- AI主题追问 -->
     <div class="ai-followup-panel" id="ai-followup-panel">
       <div class="ai-followup-head">
-        <h4>想再细问</h4>
-        <p>看完三层后再选主题。AI 只围绕本卦整理，不替你做决定。</p>
+        <h4>贴身五观解读</h4>
+        <p>看完三层后，可以让 AI 按本卦、上下卦、动爻、互卦、变卦，把这次问题再收细一点。</p>
       </div>
       <div class="ai-followup-entry" id="ai-followup-entry">
-        <p>先读完局面、行动和边界；需要时再展开追问。</p>
+        <p>不必先选主题；直接生成会围绕你的问题和担心做一版贴身五观解读。</p>
       </div>
       <div class="ai-followup-body" id="ai-followup-body">
         <div class="ai-followup-grid">
@@ -16214,14 +16214,14 @@ summary:focus-visible{
           <button type="button" class="ai-followup-chip" data-followup-topic="timing" onclick="setAIFollowupTopic('timing', this)">现在是推进还是缓一缓</button>
         </div>
         <div class="ai-followup-form">
-          <div class="ai-followup-mode-note">追问会锁定本卦，不给绝对结论。</div>
-          <label class="ai-followup-label" for="ai-followup-input">补一句现实场景</label>
-          <textarea id="ai-followup-input" class="ai-followup-input" placeholder="例如：结合这卦，我想专门问问这段关系里我该先看什么？"></textarea>
+          <div class="ai-followup-mode-note">默认按五观细读；上面的主题只是帮它更聚焦。</div>
+          <label class="ai-followup-label" for="ai-followup-input">补一句现实场景（可不填）</label>
+          <textarea id="ai-followup-input" class="ai-followup-input" placeholder="例如：我更想知道这件事里最该先核对哪一个事实。"></textarea>
           <div class="ai-followup-actions">
-            <button class="btn btn-primary" id="ai-followup-submit-btn" type="button" onclick="requestAIInterpret()">生成细问回答</button>
+            <button class="btn btn-primary" id="ai-followup-submit-btn" type="button" onclick="requestAIInterpret()">生成贴身五观解读</button>
             <button class="btn btn-outline" type="button" onclick="resetAIFollowup()">清空追问</button>
           </div>
-          <div id="ai-loading" class="ai-loading">AI 正在围绕当前这卦整理主题回答...</div>
+          <div id="ai-loading" class="ai-loading">AI 正在围绕当前问题整理五观解读...</div>
         </div>
         <div id="ai-followup-result" class="ai-followup-result">
         <div class="ai-followup-structure">
@@ -22141,14 +22141,6 @@ async function requestAIInterpret(){
   var followupInput = document.getElementById('ai-followup-input');
   var freeQuestion = followupInput ? followupInput.value.trim() : '';
   var topicPrompt = _aiFollowupState.topic ? (AI_FOLLOWUP_TOPICS[_aiFollowupState.topic] || '') : '';
-  if(!freeQuestion && !topicPrompt){
-    setAIFollowupReady(false);
-    showToast('先选一个追问主题，或补一句你想问的具体场景');
-    if(followupInput){
-      followupInput.scrollIntoView({behavior:'smooth', block:'center'});
-    }
-    return;
-  }
   clearAIContent();
   openAIModal('loading');
 
@@ -22165,7 +22157,7 @@ async function requestAIInterpret(){
   var questionContext = buildQuestionContext(lastDivQuestion || '', worry);
   var yaoData = YAO_CI[hex.id];
   var yaoText = (yaoData && yaoData[hex.yao-1]) ? yaoData[hex.yao-1] : null;
-  var askLine = freeQuestion || topicPrompt || '请基于当前这卦，给出一个更聚焦的主题解释。';
+  var askLine = freeQuestion || topicPrompt || '请围绕用户当前问题和担心，生成一版贴身五观解读：本卦看主局，上下卦看外部处境与内在用力，动爻看最先松动处，互卦看中间暗线，变卦看后续倾向。';
   var content = getHexContentForQuestion(hex, questionContext || question) || {};
   var localContentBlock =
     '观心本地卦意结构：\n' +
@@ -22177,7 +22169,7 @@ async function requestAIInterpret(){
     '学习提示：' + (content.learning || '') + '\n' +
     '复盘问题：' + (content.review || '') + '\n';
 
-  var prompt = '你是观心里的传统文化追问助手。你的任务不是重新把整卦讲一遍，而是严格锚定当前这卦，回答用户追问的一个具体主题。不要替用户做决定，不要制造恐慌，不要说“你应该分手/辞职/投资”。只能做卦象翻译和现实提醒。\n\n' +
+  var prompt = '你是观心里的传统文化追问助手。你的任务不是重新把整卦讲一遍，而是严格锚定当前这卦，围绕用户当前问题生成贴身五观解读。五观不是五个结论，而是把范围逐步缩小的读法：本卦看主局，上下卦看外部处境与内在用力，动爻看最先松动处，互卦看中间暗线，变卦看后续倾向。不要替用户做决定，不要制造恐慌，不要说“你应该分手/辞职/投资”。只能做卦象翻译和现实提醒。\n\n' +
     '用户的问题：' + question + '\n' +
     (worry ? '用户最担心的是：' + worry + '\n' : '') +
     '用户现在追问：' + askLine + '\n' +
@@ -22191,7 +22183,7 @@ async function requestAIInterpret(){
     (hex.huHex ? '互卦：第' + hex.huHex.id + '卦 ' + hex.huHex.name + '\n' : '') +
     (hex.bianHex ? '变卦：第' + hex.bianHex.id + '卦 ' + hex.bianHex.name + '\n' : '') +
     localContentBlock +
-    '\n回答边界：必须优先锚定“观心本地卦意结构”，不要脱离本卦另起一套解释；不要完整复述本地内容，只选和用户追问最相关的一层来回答；如果用户追问感情、事业、钱财或身心，只能给观察角度和低风险行动，不做关系断言、职业断言、投资建议或医疗判断；依据只能来自本卦、动爻、互卦、变卦、卦辞爻辞和上方本地卦意结构，不能凭空引用没有给出的书句或新增术数体系。\n' +
+    '\n回答边界：必须优先锚定“观心本地卦意结构”，不要脱离本卦另起一套解释；不要完整复述本地内容，要把本卦、上卦、下卦、动爻、互卦、变卦各自怎么服务这次问题说清楚；如果用户追问感情、事业、钱财或身心，只能给观察角度和低风险行动，不做关系断言、职业断言、投资建议或医疗判断；依据只能来自本卦、动爻、互卦、变卦、卦辞爻辞和上方本地卦意结构，不能凭空引用没有给出的书句或新增术数体系。\n' +
     '\n请严格按以下格式输出，不要使用 markdown 标题，不要使用代码块。每项 1-2 句，合计尽量简短：\n' +
     '卦里怎么看：...\n' +
     '放到这个主题里：...\n' +
@@ -22199,7 +22191,7 @@ async function requestAIInterpret(){
     '边界提醒：...\n' +
     '依据从哪里来：...\n' +
     '最后再补一段“追问全文：...”作为完整解释，控制在180字内。\n' +
-    '要求：必须围绕当前这卦、本卦动爻、互卦、变卦来答；不要脱离卦象发挥，不要下绝对结论，不要代替用户做现实决定。';
+    '要求：必须围绕当前这卦、本卦动爻、互卦、变卦来答；放到这个主题里时要贴近用户原问题和担心，不要大范围套话；不要脱离卦象发挥，不要下绝对结论，不要代替用户做现实决定。';
 
   try{
     var localKey = (localStorage.getItem('guanxin_apikey') || '').trim();
@@ -22260,7 +22252,7 @@ async function requestAIInterpret(){
     if(submitBtn){
       submitBtn.disabled = false;
       submitBtn.removeAttribute('aria-busy');
-      submitBtn.textContent = '生成细问回答';
+      submitBtn.textContent = '生成贴身五观解读';
     }
     if(loading) loading.style.display = 'none';
   }
