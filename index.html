@@ -313,7 +313,10 @@ body::after{
 }
 
 /* ===== 生日页 · 水墨风 ===== */
-#birthday-screen{background:var(--paper)}
+#birthday-screen{
+  background:var(--paper);
+  padding-inline:var(--space-md);
+}
 #birthday-screen::after{
   content:'';position:absolute;top:0;left:10%;right:10%;height:2px;
   background:linear-gradient(90deg,transparent,rgba(44,36,24,0.08),transparent);
@@ -326,7 +329,12 @@ body::after{
   background:linear-gradient(90deg,transparent,var(--cinnabar),transparent);
 }
 .birthday-header p{font-size:var(--text-sm);color:var(--ink-light);margin-top:var(--space-xs)}
-.birthday-form{width:100%;max-width:420px;padding:0 var(--space-md)}
+.birthday-form{
+  width:100%;
+  max-width:420px;
+  margin-inline:auto;
+  padding:0;
+}
 .form-field{margin-bottom:var(--space-lg)}
 .form-field label{display:block;font-family:var(--font-serif);font-size:var(--text-sm);color:var(--ink-light);margin-bottom:var(--space-xs);letter-spacing:0.06em}
 .form-field select,.form-field input{
