@@ -16087,6 +16087,223 @@ summary:focus-visible{
   }
 }
 
+/* ===== Stage 6I · plum blossom casting trial (2026-07-08) ===== */
+.coin-cast-panel{
+  overflow:hidden;
+  background:
+    radial-gradient(ellipse at 18% 0%,rgba(190,58,54,.10),transparent 34%),
+    radial-gradient(ellipse at 88% 10%,rgba(47,93,95,.10),transparent 32%),
+    linear-gradient(180deg,rgba(255,252,246,.84),rgba(238,229,210,.46));
+}
+
+.coin-cast-panel::after{
+  content:'';
+  position:absolute;
+  left:-28px;
+  right:-20px;
+  top:30px;
+  height:86px;
+  pointer-events:none;
+  background:
+    radial-gradient(ellipse at 10% 92%,rgba(44,34,27,.30) 0 2px,transparent 4px),
+    radial-gradient(ellipse at 26% 66%,rgba(170,54,52,.18) 0 3px,transparent 8px),
+    radial-gradient(ellipse at 62% 35%,rgba(170,54,52,.14) 0 4px,transparent 10px),
+    linear-gradient(164deg,transparent 0 13%,rgba(43,31,25,.28) 14% 16%,transparent 17% 100%);
+  opacity:.58;
+}
+
+.coin-cast-head span{
+  color:rgba(75,39,39,.86);
+}
+
+.coin-cast-head strong{
+  color:rgba(153,49,48,.86);
+}
+
+.coin-hex-preview{
+  border-left-color:rgba(153,49,48,.12);
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(190,58,54,.08),transparent 38%),
+    linear-gradient(180deg,rgba(255,252,246,.22),rgba(223,213,192,.14));
+}
+
+.coin-yao-row.is-next .coin-yao-slot{
+  box-shadow:
+    0 0 0 2px rgba(153,49,48,.18),
+    0 12px 24px rgba(66,38,34,.14);
+}
+
+.coin-yao-slot{
+  width:78px;
+  height:78px;
+  overflow:visible;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 52%,rgba(255,252,246,.36) 0 18px,rgba(231,220,204,.16) 19px 30px,transparent 44px);
+  color:inherit;
+  filter:none;
+  text-shadow:none;
+  box-shadow:
+    inset 0 0 0 1px rgba(86,60,48,.05),
+    0 10px 20px rgba(48,34,25,.08);
+}
+
+.coin-yao-slot::before{
+  z-index:0;
+  left:-4px;
+  right:-4px;
+  top:36px;
+  height:8px;
+  inset:auto -4px auto -4px;
+  border:0;
+  border-radius:999px;
+  background:
+    linear-gradient(90deg,transparent 0 8%,rgba(45,34,27,.64) 10% 90%,transparent 92% 100%);
+  opacity:.34;
+  filter:none;
+  box-shadow:
+    0 1px 0 rgba(255,252,246,.38),
+    0 0 12px rgba(45,34,27,.10);
+}
+
+.coin-yao-row.is-yin .coin-yao-slot::before{
+  background:
+    linear-gradient(90deg,transparent 0 8%,rgba(45,34,27,.58) 10% 38%,transparent 40% 60%,rgba(45,34,27,.58) 62% 90%,transparent 92% 100%);
+}
+
+.coin-yao-slot::after{
+  z-index:4;
+  left:50%;
+  top:50%;
+  width:14px;
+  height:14px;
+  border:1px solid rgba(97,44,37,.42);
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 38% 32%,rgba(255,238,176,.98) 0 2px,rgba(190,74,52,.94) 3px 6px,rgba(83,36,33,.98) 7px 100%);
+  box-shadow:
+    inset 1px 1px 2px rgba(255,237,193,.42),
+    0 1px 4px rgba(69,34,28,.25);
+  transform:translate(-50%,-50%);
+}
+
+.coin-yao-slot i{
+  position:absolute;
+  z-index:2;
+  width:28px;
+  height:36px;
+  border:1px solid rgba(139,55,54,.24);
+  border-radius:78% 44% 72% 46%;
+  background:
+    radial-gradient(ellipse at 36% 24%,rgba(255,252,246,.96) 0 14%,rgba(249,215,211,.94) 32%,rgba(207,92,88,.82) 70%,rgba(112,45,43,.90) 100%);
+  box-shadow:
+    inset 4px 5px 8px rgba(255,252,246,.46),
+    inset -5px -7px 9px rgba(112,45,44,.26),
+    0 3px 8px rgba(72,41,35,.16);
+  font-size:0;
+  line-height:0;
+  transform-origin:50% 88%;
+}
+
+.coin-yao-slot i::after{
+  content:'';
+  position:absolute;
+  left:48%;
+  top:18%;
+  width:1px;
+  height:58%;
+  background:linear-gradient(180deg,rgba(138,62,57,.38),rgba(138,62,57,0));
+  transform:rotate(8deg);
+}
+
+.coin-yao-slot i:nth-child(1){top:2px;left:50%;transform:translateX(-50%) rotate(-3deg)}
+.coin-yao-slot i:nth-child(2){right:8px;top:17px;transform:rotate(70deg)}
+.coin-yao-slot i:nth-child(3){right:16px;bottom:5px;transform:rotate(144deg)}
+.coin-yao-slot i:nth-child(4){left:16px;bottom:5px;transform:rotate(216deg)}
+.coin-yao-slot i:nth-child(5){left:8px;top:17px;transform:rotate(290deg)}
+
+.coin-yao-slot b{
+  position:absolute;
+  z-index:5;
+  left:50%;
+  top:50%;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(255,221,150,.95);
+  box-shadow:
+    -5px -1px 0 rgba(164,64,47,.70),
+    5px -1px 0 rgba(164,64,47,.70),
+    0 5px 0 rgba(164,64,47,.64);
+  transform:translate(-50%,-50%);
+}
+
+.coin-yao-row:not(.is-set) .coin-yao-slot i{
+  background:
+    radial-gradient(ellipse at 36% 24%,rgba(255,252,246,.80) 0 18%,rgba(218,207,195,.64) 42%,rgba(128,111,96,.42) 100%);
+  border-color:rgba(76,61,49,.15);
+  box-shadow:
+    inset 3px 4px 7px rgba(255,252,246,.24),
+    0 3px 8px rgba(58,43,32,.08);
+}
+
+.coin-yao-row.is-set .coin-yao-slot i{
+  filter:saturate(1.2) contrast(1.06);
+}
+
+.coin-yao-row.is-yang .coin-yao-slot{
+  background:
+    radial-gradient(circle at 50% 52%,rgba(255,252,246,.28) 0 20px,rgba(239,219,211,.18) 21px 32px,transparent 47px);
+}
+
+.coin-yao-row.is-yin .coin-yao-slot{
+  background:
+    radial-gradient(circle at 50% 52%,rgba(255,252,246,.24) 0 20px,rgba(223,218,206,.16) 21px 32px,transparent 47px);
+}
+
+.coin-yao-row.is-yin .coin-yao-slot i{
+  background:
+    radial-gradient(ellipse at 36% 24%,rgba(255,252,246,.94) 0 14%,rgba(235,213,209,.90) 34%,rgba(185,105,100,.74) 72%,rgba(86,58,54,.88) 100%);
+}
+
+.coin-yao-row.is-set .coin-yao-slot::before{
+  opacity:.48;
+}
+
+.coin-yao-row.is-moving .coin-yao-slot{
+  box-shadow:
+    0 0 0 2px rgba(153,49,48,.22),
+    0 0 0 8px rgba(153,49,48,.06),
+    0 14px 25px rgba(66,38,34,.17);
+}
+
+.coin-yao-row.is-flipping .coin-yao-slot{
+  animation:coinFlip .58s cubic-bezier(.16,.84,.26,1);
+}
+
+@keyframes coinFlip{
+  0%{transform:translateY(-10px) rotateZ(-12deg) rotateX(0);opacity:.72}
+  42%{transform:translateY(8px) rotateZ(18deg) rotateX(58deg);opacity:1}
+  72%{transform:translateY(-3px) rotateZ(-5deg) rotateX(0)}
+  100%{transform:translateY(0) rotateZ(0) rotateX(0)}
+}
+
+@media (max-width:430px){
+  .coin-yao-slot{
+    width:74px;
+    height:74px;
+  }
+  .coin-yao-slot i{
+    width:26px;
+    height:34px;
+  }
+  .coin-yao-slot i:nth-child(1){top:2px;left:50%;transform:translateX(-50%) rotate(-3deg)}
+  .coin-yao-slot i:nth-child(2){right:8px;top:16px;transform:rotate(70deg)}
+  .coin-yao-slot i:nth-child(3){right:15px;bottom:5px;transform:rotate(144deg)}
+  .coin-yao-slot i:nth-child(4){left:15px;bottom:5px;transform:rotate(216deg)}
+  .coin-yao-slot i:nth-child(5){left:8px;top:16px;transform:rotate(290deg)}
+}
+
 /* ===== Stage 6D · taste-skill targeted polish (2026-07-06) ===== */
 #home-screen .home-manuscript#home-today-board{
   padding-top:28px!important;
@@ -16664,19 +16881,19 @@ summary:focus-visible{
   <div class="shake-scene">
       <div class="coin-cast-panel" id="coin-cast-panel" aria-live="polite">
       <div class="coin-cast-head">
-        <span>六枚青铜</span>
+        <span>六瓣梅信</span>
         <strong id="coin-cast-count">初爻起</strong>
       </div>
       <div class="coin-cast-body">
-        <div class="coin-hex-board" id="coin-hex-board" aria-label="依次点击六枚青铜币成卦">
-          <div class="coin-yao-row" data-line="4" role="button" tabindex="0"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="5" role="button" tabindex="0"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="6" role="button" tabindex="0"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="1" role="button" tabindex="0"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>先点</em></div>
-          <div class="coin-yao-row" data-line="2" role="button" tabindex="0"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
-          <div class="coin-yao-row" data-line="3" role="button" tabindex="0"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot"><i>观</i><i>心</i><i>守</i><i>正</i></span><em>未翻</em></div>
+        <div class="coin-hex-board" id="coin-hex-board" aria-label="依次点击六朵梅花落瓣成卦">
+          <div class="coin-yao-row" data-line="4" role="button" tabindex="0"><span class="coin-yao-label">四爻</span><span class="coin-yao-slot" data-motif="plum"><i></i><i></i><i></i><i></i><i></i><b></b></span><em>未落</em></div>
+          <div class="coin-yao-row" data-line="5" role="button" tabindex="0"><span class="coin-yao-label">五爻</span><span class="coin-yao-slot" data-motif="plum"><i></i><i></i><i></i><i></i><i></i><b></b></span><em>未落</em></div>
+          <div class="coin-yao-row" data-line="6" role="button" tabindex="0"><span class="coin-yao-label">上爻</span><span class="coin-yao-slot" data-motif="plum"><i></i><i></i><i></i><i></i><i></i><b></b></span><em>未落</em></div>
+          <div class="coin-yao-row" data-line="1" role="button" tabindex="0"><span class="coin-yao-label">初爻</span><span class="coin-yao-slot" data-motif="plum"><i></i><i></i><i></i><i></i><i></i><b></b></span><em>先点</em></div>
+          <div class="coin-yao-row" data-line="2" role="button" tabindex="0"><span class="coin-yao-label">二爻</span><span class="coin-yao-slot" data-motif="plum"><i></i><i></i><i></i><i></i><i></i><b></b></span><em>未落</em></div>
+          <div class="coin-yao-row" data-line="3" role="button" tabindex="0"><span class="coin-yao-label">三爻</span><span class="coin-yao-slot" data-motif="plum"><i></i><i></i><i></i><i></i><i></i><b></b></span><em>未落</em></div>
         </div>
-        <div class="coin-hex-preview" aria-label="铜币成卦预览">
+        <div class="coin-hex-preview" aria-label="梅花落瓣成卦预览">
           <strong>卦形</strong>
           <div class="coin-hex-lines" id="coin-hex-lines">
             <span class="coin-hex-line" data-line="6"></span>
@@ -16689,24 +16906,24 @@ summary:focus-visible{
         </div>
       </div>
       <div class="coin-stage" aria-hidden="true">
-        <div class="coin-disc" id="coin-disc">泉</div>
+        <div class="coin-disc" id="coin-disc">梅</div>
       </div>
     </div>
     
     <!-- 文字 -->
     <div class="shake-text-area">
-      <p class="shake-main-text" id="bamboo-text">依次点六枚铜币成卦</p>
-      <p class="shake-sub-text" id="bamboo-sub">从下排左侧初爻开始，按提示一枚一枚翻到上排。六枚翻完后再合成本卦、互卦和变卦。</p>
+      <p class="shake-main-text" id="bamboo-text">依次点六朵梅花成卦</p>
+      <p class="shake-sub-text" id="bamboo-sub">从下排左侧初爻开始，让花瓣一层一层落定。六爻落完后再合成本卦、互卦和变卦。</p>
     </div>
     
     <!-- 按钮 -->
     <div class="shake-btn-wrap">
       <button class="shake-btn coin-toss-btn" id="coin-toss-btn" type="button">
-        <span class="btn-icon" aria-hidden="true">币</span>
-        <span>点第一枚</span>
+        <span class="btn-icon" aria-hidden="true">梅</span>
+        <span>点第一朵</span>
       </button>
     </div>
-    <p class="shake-hint" id="shake-hint">同一件事点满六枚即可，不需要反复重来。</p>
+    <p class="shake-hint" id="shake-hint">同一件事点满六爻即可，不需要反复重来。</p>
   </div>
 </div>
 
@@ -18479,7 +18696,7 @@ async function openSevenDayReview(){
   updateHomeReviewCard();
 }
 
-const COIN_FACE_HTML = '<i>观</i><i>心</i><i>守</i><i>正</i>';
+const COIN_FACE_HTML = '<i></i><i></i><i></i><i></i><i></i><b></b>';
 
 function resetBamboo(){
   coinCastThrows = [];
@@ -18490,16 +18707,16 @@ function resetBamboo(){
     btn.style.opacity='1';
     btn.classList.remove('pressing','is-complete');
     var label = btn.querySelector('span:last-child');
-    if(label) label.textContent = '点第一枚';
+    if(label) label.textContent = '点第一朵';
   }
   const hint = document.getElementById('shake-hint');
-  if(hint){ hint.style.display=''; hint.textContent='同一件事点满六枚即可，不需要反复重来。'; }
+  if(hint){ hint.style.display=''; hint.textContent='同一件事点满六爻即可，不需要反复重来。'; }
   const count = document.getElementById('coin-cast-count');
   if(count) count.textContent = '初爻起';
   const disc = document.getElementById('coin-disc');
   if(disc){
     disc.classList.remove('is-flipping','is-yang','is-yin');
-    disc.textContent = '泉';
+    disc.textContent = '梅';
   }
   document.querySelectorAll('.coin-yao-row').forEach(function(row){
     var line = Number(row.dataset.line || 0);
@@ -18509,13 +18726,13 @@ function resetBamboo(){
     var slot = row.querySelector('.coin-yao-slot');
     if(slot) slot.innerHTML = COIN_FACE_HTML;
     var note = row.querySelector('em');
-    if(note) note.textContent = line === 1 ? '先点' : '未翻';
+    if(note) note.textContent = line === 1 ? '先点' : '未落';
   });
   document.querySelectorAll('.coin-hex-line').forEach(function(line){
     line.classList.remove('is-set','is-yang','is-yin','is-moving');
   });
   const sub = document.getElementById('bamboo-sub');
-  if(sub){ sub.textContent='从下排左侧初爻开始，按提示一枚一枚翻到上排。六枚翻完后再合成本卦、互卦和变卦。'; }
+  if(sub){ sub.textContent='从下排左侧初爻开始，让花瓣一层一层落定。六爻落完后再合成本卦、互卦和变卦。'; }
   const pw = document.getElementById('shake-progress-wrap');
   if(pw){ pw.classList.remove('visible'); }
   const pb = document.getElementById('shake-progress-bar');
@@ -18707,7 +18924,7 @@ function tossCoinYao(){
   }
   if(disc){
     disc.classList.remove('is-yang','is-yin');
-    disc.textContent = '泉';
+    disc.textContent = '梅';
     disc.classList.remove('is-flipping');
     void disc.offsetWidth;
     disc.classList.add('is-flipping');
@@ -18747,7 +18964,7 @@ function tossCoinYao(){
       var statusMap = ['初爻起','二爻候','三爻候','四爻候','五爻候','上爻候','成卦'];
       count.textContent = statusMap[coinCastThrows.length] || '成卦';
     }
-    if(text) text.textContent = lineIndex < 6 ? '第'+lineIndex+'枚已翻，继续点下一枚' : '六枚已定，正在合卦';
+    if(text) text.textContent = lineIndex < 6 ? '第'+lineIndex+'爻已落，继续点下一朵' : '六爻已落，正在合卦';
     if(hint) hint.textContent = lineIndex < 6 ? '按初爻到上爻的顺序点，不需要猜结果。' : '先等它合成一卦，再看完整解读。';
 
     if(coinCastThrows.length >= 6){
@@ -18759,10 +18976,10 @@ function tossCoinYao(){
       nextRow.classList.add('is-next');
       nextRow.setAttribute('aria-disabled','false');
       var nextNote = nextRow.querySelector('em');
-      if(nextNote) nextNote.textContent = '点这枚';
+      if(nextNote) nextNote.textContent = '点这朵';
     }
     var nextLabel = btn.querySelector('span:last-child');
-    if(nextLabel) nextLabel.textContent = '点第'+(coinCastThrows.length + 1)+'枚';
+    if(nextLabel) nextLabel.textContent = '点第'+(coinCastThrows.length + 1)+'朵';
     btn.disabled = false;
     btn.classList.remove('pressing');
   }, 260);
@@ -18806,8 +19023,8 @@ function runBambooAnim(callback){
   resetBamboo();
   const text = document.getElementById('bamboo-text');
   const sub = document.getElementById('bamboo-sub');
-  text.textContent = '依次点六枚铜币成卦';
-  sub.textContent = '从下排左侧初爻开始，按提示一枚一枚翻到上排。六枚翻完后再合成本卦、互卦和变卦。';
+  text.textContent = '依次点六朵梅花成卦';
+  sub.textContent = '从下排左侧初爻开始，让花瓣一层一层落定。六爻落完后再合成本卦、互卦和变卦。';
   pendingCallback = callback;
   initCoinCastButton();
 }
@@ -19175,7 +19392,7 @@ function calcCoinHex(cast){
     id:hid, name:HM[hid], up:up, lo:lo, upN:upN, loN:loN, yao:yao,
     info: GUACI[hid]||{c:'',a:''},
     huHex:huHex, bianHex:bianHex,
-    detail:'六次点币成卦\n\n' +
+    detail:'六瓣落爻成卦\n\n' +
       throws + '\n\n' +
       '下三爻成下卦'+lo.name+'（'+lo.nat+'），上三爻成上卦'+up.name+'（'+up.nat+'）。\n' +
       '动爻取第'+yao+'爻，用来观察这件事里最先发生变化的一层。\n\n' +
