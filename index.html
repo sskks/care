@@ -16087,6 +16087,77 @@ summary:focus-visible{
   }
 }
 
+/* ===== Stage 6K · older bronze coin surface (2026-07-08) ===== */
+.coin-yao-slot,
+.coin-disc{
+  background:
+    radial-gradient(circle at 23% 19%,rgba(248,218,157,.42) 0 2px,rgba(92,62,34,.28) 3px 12px,transparent 20px),
+    radial-gradient(circle at 75% 30%,rgba(87,128,96,.22) 0 2px,rgba(45,84,66,.18) 3px 10px,transparent 18px),
+    radial-gradient(circle at 27% 74%,rgba(67,42,26,.30) 0 3px,transparent 15px),
+    radial-gradient(circle at 68% 72%,rgba(225,175,102,.26) 0 4px,rgba(72,48,31,.24) 5px 16px,transparent 25px),
+    radial-gradient(circle at 50% 50%,transparent 0 13px,rgba(26,23,20,.92) 14px 21px,transparent 22px),
+    radial-gradient(circle at 50% 49%,rgba(155,105,58,.96) 0 31px,rgba(83,57,38,.82) 35px,transparent 48px),
+    repeating-radial-gradient(circle at 48% 50%,rgba(247,213,151,.34) 0 1px,rgba(76,48,29,.42) 1px 2px,rgba(167,105,54,.28) 2px 3px,transparent 4px 6px),
+    repeating-conic-gradient(from 11deg,rgba(54,36,25,.36) 0 4deg,rgba(201,142,70,.18) 5deg 8deg,transparent 9deg 15deg),
+    conic-gradient(from -32deg,#7d4827,#a56831,#cd883d,#e0ad5d,#a46a32,#633a25,#ad6f35,#d1994b,#7c512d);
+  border-radius:50% 49% 51% 48%/49% 52% 48% 51%;
+  filter:sepia(.36) saturate(1.58) contrast(1.18) brightness(1.13);
+}
+
+.coin-yao-row.is-yang .coin-yao-slot,
+.coin-yao-row.is-yin .coin-yao-slot,
+.coin-disc.is-yang,
+.coin-disc.is-yin{
+  filter:sepia(.36) saturate(1.58) contrast(1.18) brightness(1.13);
+}
+
+.coin-yao-slot::before,
+.coin-disc::before{
+  opacity:.56;
+  background:
+    radial-gradient(circle at 50% 50%,transparent 0 18px,rgba(244,206,137,.24) 19px,rgba(50,32,22,.60) 20px 23px,rgba(154,103,58,.26) 24px 26px,transparent 27px),
+    radial-gradient(circle at 50% 50%,transparent 0 28px,rgba(238,198,126,.20) 29px,rgba(56,36,24,.56) 30px 32px,rgba(142,92,52,.28) 33px 35px,transparent 36px),
+    radial-gradient(circle at 24% 37%,rgba(76,128,91,.20) 0 3px,transparent 7px),
+    radial-gradient(circle at 72% 62%,rgba(64,117,86,.16) 0 4px,transparent 9px),
+    radial-gradient(circle at 67% 27%,rgba(58,38,25,.58) 0 2px,transparent 5px),
+    repeating-radial-gradient(circle at 48% 47%,rgba(244,211,151,.28) 0 1px,rgba(63,40,25,.48) 1px 2px,rgba(143,91,51,.26) 2px 3px,transparent 3px 5px),
+    repeating-conic-gradient(from 8deg,rgba(49,32,23,.34) 0 4deg,transparent 5deg 12deg);
+}
+
+.coin-yao-slot::after,
+.coin-disc::after{
+  border-color:rgba(51,33,22,.96);
+  background:linear-gradient(135deg,rgba(232,190,112,.92),rgba(83,54,33,.98));
+  box-shadow:
+    inset 4px 4px 6px rgba(35,23,17,.84),
+    inset -2px -2px 3px rgba(230,187,107,.26),
+    0 0 0 2px rgba(71,45,28,.46),
+    0 0 0 7px rgba(55,35,24,.30),
+    0 1px 4px rgba(34,23,18,.52);
+}
+
+.coin-yao-slot i{
+  color:rgba(73,43,24,.98);
+  text-shadow:
+    0 1px 0 rgba(239,191,111,.34),
+    0 -1px 0 rgba(31,20,14,.82),
+    1px 0 0 rgba(142,84,41,.34),
+    -1px 0 0 rgba(42,26,17,.58),
+    0 0 1px rgba(39,25,17,.58);
+}
+
+.coin-yao-row.is-yin .coin-yao-slot{
+  background:
+    radial-gradient(circle at 22% 24%,rgba(240,203,134,.32) 0 3px,rgba(83,54,33,.30) 4px 14px,transparent 23px),
+    radial-gradient(circle at 74% 30%,rgba(78,123,91,.18) 0 3px,rgba(47,86,67,.16) 4px 13px,transparent 23px),
+    radial-gradient(circle at 22% 72%,rgba(61,38,25,.34) 0 4px,transparent 18px),
+    radial-gradient(circle at 50% 50%,transparent 0 13px,rgba(25,22,19,.84) 14px 21px,transparent 22px),
+    radial-gradient(circle at 49% 47%,rgba(138,91,51,.90) 0 33px,transparent 49px),
+    repeating-radial-gradient(circle at 48% 52%,rgba(239,201,135,.26) 0 1px,rgba(66,42,27,.44) 1px 2px,rgba(154,96,52,.22) 2px 3px,transparent 4px 6px),
+    repeating-conic-gradient(from 17deg,rgba(49,32,23,.34) 0 3deg,transparent 4deg 9deg,rgba(218,164,91,.13) 10deg 12deg,transparent 13deg 21deg),
+    conic-gradient(from 12deg,#794726,#9b612f,#c17b38,#d89c4c,#9a6130,#603926,#a66a34,#ca8e43,#7a4f2b);
+}
+
 /* ===== Stage 6D · taste-skill targeted polish (2026-07-06) ===== */
 #home-screen .home-manuscript#home-today-board{
   padding-top:28px!important;
