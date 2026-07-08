@@ -16131,19 +16131,30 @@ summary:focus-visible{
 
 #question-modal-overlay .question-modal{
   padding-bottom:max(18px,env(safe-area-inset-bottom))!important;
+  max-width:calc(100vw - 48px)!important;
+  overflow-x:hidden!important;
 }
 
 #question-modal-overlay .question-modal .qm-sheet-actions{
   position:sticky!important;
   bottom:0!important;
-  margin:0 -20px!important;
+  margin:0!important;
   padding:12px 20px max(14px,env(safe-area-inset-bottom))!important;
   background:linear-gradient(180deg,rgba(246,239,223,.78),rgba(246,239,223,.98) 42%)!important;
   border-top:1px solid rgba(36,28,19,.08)!important;
 }
 
 #question-modal-overlay .question-modal .qm-btns{
+  display:grid!important;
+  grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr)!important;
   margin-top:0!important;
+  max-width:100%!important;
+}
+
+#question-modal-overlay .question-modal .qm-btn{
+  min-width:0!important;
+  padding-inline:10px!important;
+  white-space:normal!important;
 }
 
 #question-modal-overlay .question-modal textarea{
@@ -16155,6 +16166,16 @@ summary:focus-visible{
   outline:2px solid rgba(49,95,104,.22)!important;
   outline-offset:3px!important;
   border-color:rgba(49,95,104,.48)!important;
+}
+
+#question-modal-overlay .qm-example-row{
+  flex-wrap:wrap!important;
+  overflow-x:hidden!important;
+}
+
+#question-modal-overlay .qm-example-chip{
+  flex:0 1 auto!important;
+  white-space:normal!important;
 }
 
 .sc-toast{
@@ -18892,6 +18913,7 @@ async function doQuestionHex(){
   const input = document.getElementById('question-input');
   const concernInput = document.getElementById('question-concern-input');
   const error = document.getElementById('question-error');
+  document.getElementById('sc-toast')?.classList.remove('show');
   input.value = '';
   if(concernInput) concernInput.value = '';
   if(error){
