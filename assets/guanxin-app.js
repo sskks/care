@@ -3086,7 +3086,7 @@ async function loadExternalHexContentSeed(){
     return HEX_CONTENT_SEED_STATE;
   }
   try{
-    var response = await fetch('packages/content/hex-content-v2.seed.json', {cache:'no-store'});
+    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6q1', {cache:'no-store'});
     if(!response.ok) throw new Error('HTTP ' + response.status);
     var seed = await response.json();
     var count = mergeHexContentSeed(seed);
