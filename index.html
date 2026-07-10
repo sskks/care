@@ -6,7 +6,7 @@
 <meta name="guanxin-version" content="2026-06-24-bagua-wuxing-split">
 <title>观心 · 周易卦象</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F8F3E6'/%3E%3Cpath d='M32 2a30 30 0 0 1 0 60 15 15 0 0 1 0-30 15 15 0 0 0 0-30Z' fill='%232C2418'/%3E%3Ccircle cx='32' cy='17' r='5.5' fill='%232C2418'/%3E%3Ccircle cx='32' cy='47' r='5.5' fill='%23F8F3E6'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/guanxin-app.css?v=6v1">
+<link rel="stylesheet" href="assets/guanxin-app.css?v=6w1">
 </head>
 <body>
 <svg width="0" height="0" class="coin-relic-filter" aria-hidden="true" focusable="false">
@@ -416,7 +416,7 @@
   </div>
 </div>
 
-<!-- ===== 摇签页 ===== -->
+<!-- ===== 点币起卦页 ===== -->
 <div id="bamboo-screen" class="screen">
   <button class="bamboo-back-btn" onclick="goBack()">返回</button>
   <div class="shake-scene">
@@ -450,13 +450,13 @@
         <div class="coin-disc" id="coin-disc">泉</div>
       </div>
     </div>
-    
+
     <!-- 文字 -->
     <div class="shake-text-area">
       <p class="shake-main-text" id="bamboo-text">依次点六枚铜币成卦</p>
       <p class="shake-sub-text" id="bamboo-sub">从下排左侧初爻开始，按提示一枚一枚翻到上排。六枚翻完后再合成本卦、互卦和变卦。</p>
     </div>
-    
+
     <!-- 按钮 -->
     <div class="shake-btn-wrap">
       <button class="shake-btn coin-toss-btn" id="coin-toss-btn" type="button">
@@ -711,7 +711,7 @@
   </div>
 </div>
 
-<script src="assets/guanxin-app.js?v=6v1"></script>
+<script src="assets/guanxin-app.js?v=6w1"></script>
 
 <!-- 问卦输入弹窗 -->
 <div class="question-modal-overlay" id="question-modal-overlay" onclick="if(event.target===this)closeQuestionModal()">
@@ -741,7 +741,7 @@
     <div class="qm-sheet-actions">
       <div class="qm-btns">
         <button class="qm-btn qm-btn-skip" id="question-skip-btn" onclick="submitQuestion('')">先不写，直接起卦</button>
-        <button class="qm-btn qm-btn-submit" id="question-submit-btn" onclick="submitQuestion(document.getElementById('question-input').value)">写好，开始摇签</button>
+        <button class="qm-btn qm-btn-submit" id="question-submit-btn" onclick="submitQuestion(document.getElementById('question-input').value)">写好，开始起卦</button>
       </div>
     </div>
   </div>
