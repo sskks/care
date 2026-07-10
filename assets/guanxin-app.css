@@ -1525,6 +1525,49 @@ body::after{
   gap:8px;
   margin:var(--space-sm) 0 0;
 }
+.home-review-verdict{
+  display:grid;
+  gap:8px;
+  margin-top:var(--space-md);
+  padding-top:var(--space-sm);
+  border-top:1px solid var(--ink-ghost);
+}
+.home-review-verdict > strong{
+  font-family:var(--font-serif);
+  color:var(--ink);
+  font-size:var(--text-sm);
+  font-weight:500;
+}
+.home-review-verdict-buttons{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border:1px solid var(--ink-ghost);
+  background:var(--paper-light);
+}
+.home-review-verdict-buttons button{
+  min-width:0;
+  min-height:40px;
+  padding:7px 6px;
+  border:0;
+  border-right:1px solid var(--ink-ghost);
+  background:transparent;
+  color:var(--ink-light);
+  font-family:var(--font-sans);
+  font-size:var(--text-xs);
+  cursor:pointer;
+}
+.home-review-verdict-buttons button:last-child{border-right:0}
+.home-review-verdict-buttons button:hover,
+.home-review-verdict-buttons button:focus-visible{
+  background:var(--silk);
+  color:var(--ink-deep);
+  outline:2px solid var(--jade);
+  outline-offset:-2px;
+}
+.home-review-verdict-buttons button:active{
+  background:var(--ink-deep);
+  color:var(--paper-light);
+}
 .home-review-checkitem{
   display:grid;
   grid-template-columns:auto 1fr;

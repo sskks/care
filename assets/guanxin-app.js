@@ -1299,18 +1299,18 @@ function buildSevenDayReviewQuestions(record){
   var result = record && record.result ? record.result : null;
   var content = result ? getHexContentForQuestion(result, buildQuestionContext(record.question || '', record.worry || '')) : null;
   var action = firstSentence((content && content.action) || '', 34, '那一步有没有真的落到现实里？');
-  var boundary = firstSentence((content && content.boundary) || '', 34, '把下一步再缩小一点');
+  var mainKey = result ? getHexKeywordText(result, 1) : theme;
   return [
-    {label:'当时', text:'当时我把它看成“' + theme + '”，现在还成立吗？'},
-    {label:'后来', text:'这几天有没有真的做过一小步？' + action},
-    {label:'现在', text:'下一步是继续、收住，还是调小？先记住：' + boundary}
+    {label:'卦里', text:'当时提醒的“' + mainKey + '”，七天里有没有真实出现？'},
+    {label:'证据', text:'各写一条支持和不支持这次解读的事实，不用事后套词。'},
+    {label:'行动', text:'这七天有没有做过约定的小步？' + action}
   ];
 }
 
 function generateReviewInsight(record){
   var theme = getThemeInfo(record).label;
   var hexName = record && record.result ? ('第'+record.result.id+'卦 '+record.result.name) : '这次卦象';
-  return '不看“准不准”，只看行动有没有让局面更清楚。'+hexName+'当时提醒的是“'+theme+'”，现在用三问把它接回现实。';
+  return '这次可以判断是否贴合，但不能只挑说中的部分。'+hexName+'当时落在“'+theme+'”，请同时找一条支持证据和一条不支持的事实，再给出贴合程度。';
 }
 
 function summarizeArchivePreview(records){
@@ -1396,10 +1396,11 @@ async function updateHomeArchiveCard(){
   card.style.display = 'block';
 }
 
-async function markRecordReviewed(dateKey){
+async function markRecordReviewed(dateKey, verdict){
   var record = await loadDivRecordByKey(dateKey);
   if(!record) return;
   record.reviewedAt = Date.now();
+  if(verdict) record.reviewVerdict = verdict;
   await saveDivRecord(record);
   for(var i=0;i<_allHistoryRecords.length;i++){
     var item = _allHistoryRecords[i];
@@ -1414,6 +1415,13 @@ async function markRecordReviewed(dateKey){
   renderHistoryList();
   updateHomeArchiveCard();
   updateHomeReviewCard();
+}
+
+async function saveSevenDayVerdict(verdict){
+  var allowed = {matched:'贴合', partial:'部分贴合', missed:'不贴合'};
+  if(!allowed[verdict] || !_homeReviewDateKey) return;
+  await markRecordReviewed(_homeReviewDateKey, verdict);
+  showToast('已记下：这次解读' + allowed[verdict]);
 }
 
 async function updateHomeReviewCard(){
@@ -1434,7 +1442,7 @@ async function updateHomeReviewCard(){
     return;
   }
   _homeReviewDateKey = candidate.id || candidate.date;
-  document.getElementById('home-review-title').textContent = '七日后，回看行动有没有落地';
+  document.getElementById('home-review-title').textContent = '七日后，核对这次卦是否贴合';
   document.getElementById('home-review-meta').textContent = formatRecordDate(candidate)+' · '+getThemeInfo(candidate).label;
   document.getElementById('home-review-question').textContent = candidate.question ? ('“'+candidate.question+'”') : ('第'+candidate.result.id+'卦 '+candidate.result.name);
   document.getElementById('home-review-insight').textContent = generateReviewInsight(candidate);
@@ -1515,7 +1523,6 @@ async function openSevenDayReview(){
   }
   var record = await loadDivRecordByKey(_homeReviewDateKey);
   if(!record) return;
-  await markRecordReviewed(record.id || record.date);
   lastDivResult = record.result;
   lastDivQuestion = record.question;
   lastDivWorry = record.worry || null;
@@ -3054,7 +3061,6 @@ function normalizeHexContentSeedEntry(entry, key){
   if(Array.isArray(entry.sources)) normalized.sources = entry.sources;
   if(typeof entry.reviewStatus === 'string') normalized.reviewStatus = entry.reviewStatus;
   if(entry.safety && typeof entry.safety === 'object') normalized.safety = entry.safety;
-  if(entry.scenes && typeof entry.scenes === 'object') normalized.scenes = entry.scenes;
   return normalized;
 }
 
@@ -3089,7 +3095,7 @@ async function loadExternalHexContentSeed(){
     return HEX_CONTENT_SEED_STATE;
   }
   try{
-    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6u1', {cache:'no-store'});
+    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6v1', {cache:'no-store'});
     if(!response.ok) throw new Error('HTTP ' + response.status);
     var seed = await response.json();
     var count = mergeHexContentSeed(seed);
@@ -3179,62 +3185,49 @@ const QUESTION_THEME_TRANSLATORS = {
 function applyQuestionConcern(content, questionContext){
   var parts = splitQuestionContext(questionContext);
   var worry = parts.worry;
-  if(!content || !worry) return content;
+  if(!content) return content;
   var themeKey = content.themeKey || 'other';
-  var concernLine = '你最担心的是“' + worry + '”，这不是附带信息，而是这次解读要先照见的卡点。';
-  var workText = ((parts.question || '') + ' ' + worry).toLowerCase();
-  var isWorkProgress = /推进|节点|项目|交付|优先|先抓|很乱|责任人|进展/.test(workText);
-  var workPatch = isWorkProgress ? {
-    emotion: concernLine + ' 这次不是先判断这份工作值不值得，而是先看推进顺序：关键节点、责任边界、下一步交付有没有被焦虑搅在一起。',
-    action:'今天只抓一个节点：写清这件事的下一步交付、对应责任人和最晚确认时间。其余事项先放进待核对清单。',
-    boundary:'不要用忙碌感证明进展，也不要同时打开三条线；如果关键节点关系到重大取舍，要回到排期、资源和真实反馈。'
-  } : {
-    emotion: concernLine + ' 先把“适不适合”拆成三项：有没有学到东西、时间有没有被消耗、钱有没有基本回报。',
-    action:'今天只核对三件事：这份工作最近一个月学到什么、换来多少收入、还需要忍受什么成本。三项写清后，再谈适不适合。',
-    boundary:'不要只凭一天的厌倦或一次反馈判断去留；如果长期学不到东西且钱也支撑不了生活，就要拿真实数据规划下一步。'
-  };
-  var map = {
-    work:workPatch,
-    relationship:{
-      emotion: concernLine + ' 这里真正拉扯的不是“选谁”或“要不要”，而是心意、分寸和不甘心混在了一起。',
-      action:'今天只做一个选择前动作：写下你真正想靠近的是什么、害怕失去的是什么、可能贪多的是什么，各一句。',
-      boundary:'不要用卦象替你决定关系归属，也不要把不甘心当成心意；先看对方长期回应和你的真实需要是否对得上。'
-    },
-    emotion:{
-      emotion: concernLine + ' 混乱里最该先护住的，是你原来为什么出发，而不是马上整理出一个漂亮答案。',
-      action:'今天先写两列：我原本想守住什么，我现在被什么声音带乱。每列只写三条，先不做大决定。',
-      boundary:'不要在念头最乱的时候重写人生方向；先睡一觉、少承诺一件事，再回来看初心还剩哪一条。'
-    },
-    finance:{
-      emotion: concernLine + ' 这说明问题不只是“能不能独立”，而是现金流已经在提醒你：收入、支出和能力增长要分开处理。',
-      action:'今天先算一个最小独立线：每月必要支出是多少，稳定收入差多少，哪一项支出本周能先停掉。',
-      boundary:'不要把经济独立想成一次翻身；先让支出不继续失控，再谈增加收入或换赛道。'
-    },
-    family:{
-      emotion: concernLine + ' 你担心家人，也担心这份担心会把自己的判断带偏，所以这卦先帮你把事实和牵挂分开。',
-      action:'今天只确认一个事实来源：直接问家人近况，或问清楚具体需要你判断的事是什么，不用先替所有结果负责。',
-      boundary:'不要用卦象判断家人会不会好；家人的健康、安全和现实处境，要优先靠沟通、检查、求助和专业支持。'
-    }
-  };
-  var patch = map[themeKey];
-  if(themeKey === 'work' && !/(适不适合|学不到|收入|浪费时间|推进|节点|项目|交付|优先|先抓|很乱|责任人|进展)/.test(workText)) patch = null;
-  if(themeKey === 'relationship' && !/(选择|抉择|错失|贪心|心意|不甘心)/.test(workText)) patch = null;
-  if(themeKey === 'emotion' && !/(初心|混乱|想法.*乱)/.test(workText)) patch = null;
-  if(themeKey === 'finance' && !/(经济独立|收入.*支出|支出.*收入)/.test(workText)) patch = null;
-  if(themeKey === 'family' && !/(会好吗|影响.*判断)/.test(workText)) patch = null;
-  if(!patch){
-    var translator = QUESTION_THEME_TRANSLATORS[themeKey] || QUESTION_THEME_TRANSLATORS.other;
-    patch = {
-      emotion:concernLine + ' ' + translator.emotion,
-      action:translator.action,
-      boundary:translator.boundary
-    };
-  }
-  content.emotion = patch.emotion;
-  content.action = patch.action;
-  content.boundary = patch.boundary;
-  content.review = '今晚回看：我有没有正面看见“' + worry + '”，而不是让它在背后推着我走？';
+  var translator = QUESTION_THEME_TRANSLATORS[themeKey] || QUESTION_THEME_TRANSLATORS.other;
+  content.emotion = worry
+    ? '你最担心的是“' + worry + '”。把这份担心当作要核对的线索，不让它替事实下结论。'
+    : translator.emotion;
   return content;
+}
+
+function getYaoObservationTarget(yao){
+  var map = {
+    1:'起点和基础条件',
+    2:'日常承接与实际配合',
+    3:'内外衔接和进退节奏',
+    4:'外部行动的落脚条件',
+    5:'责任、主导与关键决定',
+    6:'已经过量或需要收束的部分'
+  };
+  return map[Number(yao)] || '最先发生变化的那一层';
+}
+
+function buildSevenDayGuidance(content, hex, themeKey, parts){
+  var themePlans = {
+    work:'选一项正在推进的任务，记录投入、得到的反馈和实际产出',
+    relationship:'只围绕一次清楚表达和对方的实际回应，不用猜测补全关系',
+    finance:'记下确定收入、必要支出和一项可调整支出',
+    emotion:'写下一条事实、一条猜测和一个当下感受',
+    family:'只确认一条家人的真实信息和一件自己能做的照看',
+    growth:'只练一个微小改变，并记录触发时自己有没有换一种反应',
+    other:'只选一个可观察的小变化，每天记下一条真实发生的事实'
+  };
+  var key = getHexKeywordText(hex, 1);
+  var target = getYaoObservationTarget(hex && hex.yao);
+  var worry = parts && parts.worry ? parts.worry : '';
+  var plan = themePlans[themeKey] || themePlans.other;
+  var worryLine = worry ? '，同时核对“'+worry+'”有哪条事实支持、哪条事实不支持' : '';
+  var translator = QUESTION_THEME_TRANSLATORS[themeKey] || QUESTION_THEME_TRANSLATORS.other;
+  return {
+    days:7,
+    action:'从今天开始，用 7 天只验证一件事：'+plan+'。每天只记一条，到第 7 天看“'+key+'”是否真的落在'+target+'上'+worryLine+'。',
+    boundary:translator.boundary+' 这 7 天只做低风险观察和小步调整，不用一次卦替代重大决定。',
+    review:'第 7 天回看：卦里提醒的“'+key+'”是否真的出现在'+target+'？写下一条支持证据、一条反证，再选择贴合程度。'
+  };
 }
 
 function getHexContentForQuestion(hex, question){
@@ -3247,40 +3240,17 @@ function getHexContentForQuestion(hex, question){
   var explicitText = (contextParts.question + ' ' + contextParts.worry).trim();
   var explicitThemeKey = explicitText ? inferThemeKey(explicitText, null) : '';
   if((explicitThemeKey && explicitThemeKey !== 'other') || themeKey !== inferThemeKey('', hex)){
-    content.reality = translator.reality;
+    content.reality = (base.reality || base.spine || '') + ' ' + translator.reality;
     content.emotion = translator.emotion;
-    content.action = translator.action;
-    content.boundary = translator.boundary;
-    content.review = translator.review;
   }
   content = applyQuestionConcern(content, question || '');
-  var scene = findCuratedScene(content, hex, themeKey, contextParts);
-  if(scene){
-    content.scene = scene;
-    content.headline = scene.headline || content.headline;
-    content.reality = scene.overall || content.reality;
-    content.emotion = '';
-    content.action = scene.action || content.action;
-    content.boundary = scene.boundary || content.boundary;
-  }
+  var guidance = buildSevenDayGuidance(content, hex, themeKey, contextParts);
+  content.headline = hex.name + '：先看“' + getHexKeywordText(hex, 1) + '”怎样发生';
+  content.action = guidance.action;
+  content.boundary = guidance.boundary;
+  content.review = guidance.review;
+  content.observationWindowDays = guidance.days;
   return content;
-}
-
-function findCuratedScene(content, hex, themeKey, parts){
-  if(!content || !content.scenes || !hex) return null;
-  var text = ((parts && parts.question) || '') + ' ' + ((parts && parts.worry) || '');
-  var scenes = Object.keys(content.scenes).map(function(key){ return content.scenes[key]; });
-  for(var i=0;i<scenes.length;i++){
-    var scene = scenes[i];
-    if(!scene || scene.theme !== themeKey) continue;
-    if(Number(scene.movingYao || 0) && Number(scene.movingYao) !== Number(hex.yao)) continue;
-    if(Number(scene.huId || 0) && (!hex.huHex || Number(scene.huId) !== Number(hex.huHex.id))) continue;
-    if(Number(scene.bianId || 0) && (!hex.bianHex || Number(scene.bianId) !== Number(hex.bianHex.id))) continue;
-    var triggers = Array.isArray(scene.triggers) ? scene.triggers : [];
-    if(triggers.length && !triggers.some(function(word){ return text.indexOf(word) !== -1; })) continue;
-    return scene;
-  }
-  return null;
 }
 
 function buildFallbackHexContent(hex){
@@ -4285,14 +4255,9 @@ function getHexRoleText(hex, questionContext){
   var lo = hex.lo || {};
   var themeKey = content && content.themeKey ? content.themeKey : inferThemeKey(questionContext || '', hex);
   var mainKeys = getHexKeywordText(hex, 2);
-  if(content && content.scene && Array.isArray(content.scene.chain)){
-    return content.scene.chain.map(function(row){
-      return {name:String(row.name || ''), text:String(row.text || '')};
-    });
-  }
   var mainLine = content ? (content.spine || getHexSceneRuleLine(hex, themeKey, 'main')) : getHexSceneRuleLine(hex, themeKey, 'main');
-  var huLine = hex.huHex ? getHexSceneRuleLine(hex.huHex, themeKey, 'hu') : '中间结构没有形成可用信息，先回到本卦和动爻。';
-  var bianLine = hex.bianHex ? getHexSceneRuleLine(hex.bianHex, themeKey, 'bian') : '这次没有可用的变化趋势，先看眼前能核对的事实。';
+  var huLine = hex.huHex ? '「'+hex.name+'」的“'+mainKeys+'”进入中段后，互见「'+hex.huHex.name+'」的“'+getHexKeywordText(hex.huHex, 2)+'”。'+getHexSceneRuleLine(hex.huHex, themeKey, 'hu') : '中间结构没有形成可用信息，先回到本卦和动爻。';
+  var bianLine = hex.bianHex ? '第'+hex.yao+'爻变化后，由「'+hex.name+'」走向「'+hex.bianHex.name+'」。'+getHexSceneRuleLine(hex.bianHex, themeKey, 'bian') : '这次没有可用的变化趋势，先看眼前能核对的事实。';
   var huKeys = hex.huHex ? getHexKeywordText(hex.huHex, 2) : '中间结构';
   var bianKeys = hex.bianHex ? getHexKeywordText(hex.bianHex, 2) : '后续倾向';
   var qName = parts.question ? '你问的“'+parts.question+'”' : '这件事';
@@ -4305,7 +4270,7 @@ function getHexRoleText(hex, questionContext){
   var yaoData = hex && YAO_CI[hex.id];
   var yaoText = yaoData && yaoData[hex.yao-1] ? yaoData[hex.yao-1].t : '这一爻';
   return [
-    {name:'这卦怎么走到结论', text:qName+'先由「'+hex.name+'」指出“'+mainKeys+'”，第'+hex.yao+'爻把变化落到“'+yaoText+'”，'+huName+'解释为什么迟迟未定，'+bianName+'提示继续当前做法会走向哪里。眼下最容易漏掉的是：'+blindSpot},
+    {name:'这次怎么读', text:qName+'落在「'+hex.name+'」的“'+mainKeys+'”上；第'+hex.yao+'爻说明变化集中在'+getYaoObservationTarget(hex.yao)+'，爻辞是“'+yaoText+'”。'+huName+'呈现事情发展到中段时的内部牵动，'+bianName+'呈现这一爻变化后可能形成的后续形态。眼下最容易漏掉的是：'+blindSpot},
     {name:'本卦 · '+hex.name, text:mainLine+' 上「'+(up.name || '上')+'」是外部处境：'+getTrigramImageLine(up, 'outer')+'；下「'+(lo.name || '下')+'」是你的内在用力：'+getTrigramImageLine(lo, 'inner')+'。'},
     {name:'体用 · 你和这件事', text:tiYongLine+' '+xiangLine},
     {name:'第'+hex.yao+'爻 · '+yaoText, text:getYaoProductizedHint(hex)+' 对应'+qName+'，先落实这一件事：'+actionLine},
@@ -6340,10 +6305,14 @@ async function requestAIInterpret(){
   var themeKey = content.themeKey || inferThemeKey(questionContext || question, hex);
   var readingRows = getHexRoleText(hex, questionContext || question);
   var evidenceBlock = readingRows.map(function(row){ return row.name+'：'+row.text; }).join('\n');
+  var savedRecord = lastDivDate ? await loadDivRecordByKey(lastDivDate) : null;
+  var castTimestamp = savedRecord && savedRecord.timestamp ? savedRecord.timestamp : Date.now();
+  var castTimeText = new Date(castTimestamp).toLocaleString('zh-CN', {hour12:false});
 
   var prompt = '你是观心的周易场景解读助手。请直接回答用户的问题，不讲解系统规则，也不要把输入材料换词重复。每段必须同时包含一条卦象证据和一条现实中可观察、可核对的条件。\n\n' +
     '用户的问题：' + question + '\n' +
     (worry ? '用户最担心的是：' + worry + '\n' : '') +
+    '此次起卦时间：' + castTimeText + '（只作为这次提问的时间语境，不据此编造精确应期）\n' +
     '用户现在追问：' + askLine + '\n' +
     '卦名：第' + hex.id + '卦 ' + hex.name + '\n' +
     '上卦：' + hex.up.name + '（' + hex.up.sym + '）\n' +
@@ -6353,7 +6322,7 @@ async function requestAIInterpret(){
     (hex.huHex ? '互卦：第' + hex.huHex.id + '卦 ' + hex.huHex.name + '\n' : '') +
     (hex.bianHex ? '变卦：第' + hex.bianHex.id + '卦 ' + hex.bianHex.name + '\n' : '') +
     '已经审核的证据链：\n' + evidenceBlock + '\n' +
-    '\n回答边界：只使用上面的卦、爻和证据链。不能替用户决定辞职、分手、投资或医疗事项；不能下绝对结论。不要出现“本卦看主局”“互卦看暗线”“变卦看趋势”“不判成败”“不把无关类象搬进来”等内部规则句。\n' +
+    '\n回答边界：只使用上面的卦、爻和证据链。不能替用户决定辞职、分手、投资或医疗事项；不能下绝对结论。不能把某个问题与某组卦做固定一对一映射。行动观察期最多 7 天，并要求第 7 天核对支持证据和反证。不要出现“本卦看主局”“互卦看暗线”“变卦看趋势”“不判成败”“不把无关类象搬进来”等内部规则句。\n' +
     '\n请严格按以下格式输出，不要使用 markdown 标题或代码块，每项 1-2 句：\n' +
     '卦里怎么看：...\n' +
     '放到这个主题里：...\n' +
@@ -6674,7 +6643,8 @@ function renderHistoryList(){
       var isFav = r.fav ? ' active' : '';
       var favIcon = r.fav ? '&#9733;' : '&#9734;';
       var timeText = r.timestamp ? new Date(r.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) : formatRecordDate(r);
-      var reviewedChip = r.reviewedAt ? '<span class="history-mini-chip">已回看</span>' : '';
+      var verdictLabels = {matched:'贴合', partial:'部分贴合', missed:'不贴合'};
+      var reviewedChip = r.reviewedAt ? '<span class="history-mini-chip">七日回看 · '+(verdictLabels[r.reviewVerdict] || '已记录')+'</span>' : '';
       var hasAiFollowup = !!(r.aiResult || r.aiFollowupParsed || r.aiAction);
       var aiChip = hasAiFollowup ? '<span class="history-mini-chip">有 AI 追问</span>' : '';
       html += '<div class="history-item" onclick="viewHistoryRecord(_historyIdxMap[\''+recordKey+'\'])">'
