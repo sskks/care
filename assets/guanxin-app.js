@@ -250,9 +250,9 @@ const THEME_KEYWORDS={
   finance:['经济','独立','收入','支出','钱','财','赚钱','薪资','工资','存款','预算','花销','负债','成本','开销'],
   family:['家里人','家人','家里','父母','妈妈','母亲','爸爸','父亲','孩子','亲人'],
   work:['工作','事业','职业','项目','老板','同事','客户','offer','晋升','跳槽','副业','赚钱','财运','合作','方向'],
-  relationship:['感情','爱情','关系','伴侣','对象','婚','分手','前任','朋友','相处','沟通'],
-  growth:['成长','学习','修身','改变','选择','坚持','自律','行动','目标','习惯','提升','反思'],
-  emotion:['焦虑','压力','情绪','内耗','失眠','害怕','难过','痛苦','迷茫','不安','担心','纠结','混乱','初心','想法']
+  relationship:['感情','爱情','关系','伴侣','对象','婚','分手','前任','朋友','相处','沟通','冷淡','联系','回应','被放弃'],
+  growth:['成长','学习','修身','改变','选择','坚持','自律','行动','目标','习惯','提升','反思','拖延'],
+  emotion:['焦虑','压力','情绪','内耗','失眠','害怕','难过','痛苦','迷茫','不安','担心','纠结','混乱','初心','想法','不够好','自我怀疑','没有用']
 };
 const HEX_THEME_FALLBACK={
   感情:'relationship',
@@ -785,6 +785,8 @@ function showYaoPopup(yaoIndex){
   const yaoData = YAO_CI[currentHexId];
   if(!yaoData || !yaoData[yaoIndex]) return;
   const yao = yaoData[yaoIndex];
+  const hex = hexagramById(currentHexId);
+  hex.yao = yaoIndex + 1;
   const posNames = ['初','二','三','四','五','上'];
   const posName = posNames[yaoIndex] + '爻';
   /* 移除旧的 active-yao */
@@ -807,8 +809,8 @@ function showYaoPopup(yaoIndex){
     '<div class="yao-popup">'+
       '<button class="yao-popup-close" onclick="this.closest(\'.yao-popup-overlay\').remove()">&times;</button>'+
       '<h4>第'+(yaoIndex+1)+'爻 · '+posName+'</h4>'+
-      '<div class="yao-classical">'+yao.t+'</div>'+
-      '<div class="yao-interpret">'+yao.a+'</div>'+
+      '<div class="yao-classical">'+escapeHtml(yao.t)+'</div>'+
+      '<div class="yao-interpret">'+escapeHtml(getYaoProductizedHint(hex))+'</div>'+
     '</div>';
   document.body.appendChild(overlay);
 }
@@ -892,7 +894,7 @@ function buildDailyDeepReadData(hex){
         + '<span class="insight-reading-chip is-gold">最后落回今天</span>'
       + '</div>'
       + '<div class="insight-story">'
-        + '<div class="insight-story-card is-core"><strong>这卦先抓哪一层</strong><p>'+escapeHtml(hex.info.a || plain.core || '静心体悟')+'</p></div>'
+        + '<div class="insight-story-card is-core"><strong>这卦先抓哪一层</strong><p>'+escapeHtml(plain.core || '静心体悟')+'</p></div>'
         + '<div class="insight-story-card is-split"><strong>先看上下卦在说什么</strong><div class="insight-story-grid"><div class="insight-story-stat"><span>上卦</span><em>'+(escapeHtml(hex.up.sym || '')+' '+escapeHtml(hex.up.name || '')+' · '+escapeHtml(upper.nat || '')+(upper.element ? ' · '+escapeHtml(upper.element) : ''))+'</em></div><div class="insight-story-stat"><span>下卦</span><em>'+(escapeHtml(hex.lo.sym || '')+' '+escapeHtml(hex.lo.name || '')+' · '+escapeHtml(lower.nat || '')+(lower.element ? ' · '+escapeHtml(lower.element) : ''))+'</em></div></div><p>'+escapeHtml(plain.yao)+' '+escapeHtml(plain.hu)+' '+escapeHtml(plain.bian)+'</p></div>'
         + structureNote
         + '<div class="insight-story-card is-classic"><strong>卦辞原文</strong><p>'+escapeHtml(hex.info.c || '卦辞暂无')+'</p></div>'
@@ -2458,7 +2460,7 @@ function showDivResult(hex, question, title, worry){
   var plain = getHexPlainInsight(hex, questionContext);
   var plainCoreEl = document.getElementById('div-plain-core');
   if(plainCoreEl){
-    plainCoreEl.innerHTML = '<strong>卦在说什么：</strong>' + plain.core;
+    plainCoreEl.innerHTML = '<strong>卦在说什么：</strong>' + escapeHtml(plain.core);
   }
   var termRows = getHexRoleText(hex, questionContext);
   if(content){
@@ -2473,10 +2475,10 @@ function showDivResult(hex, question, title, worry){
   const yaoText = (yaoData && yaoData[hex.yao-1]) ? yaoData[hex.yao-1] : null;
   let guaciText = hex.info.c||'卦辞暂无。';
   if(yaoText){
-    guaciText += '\n\n【动爻 · 第'+hex.yao+'爻】\n'+yaoText.t+'\n'+yaoText.a;
+    guaciText += '\n\n【动爻 · 第'+hex.yao+'爻】\n'+yaoText.t+'\n'+getYaoProductizedHint(hex);
   }
   document.getElementById('div-guaci').textContent = guaciText;
-  document.getElementById('div-advice-text').textContent = hex.info.a||'静心体悟卦象之意。';
+  document.getElementById('div-advice-text').textContent = content.learning || content.spine || '先看卦象结构，再把提醒带回现实。';
 
   /* 互卦详情 */
   const huSection = document.getElementById('div-hu-section');
@@ -2484,7 +2486,7 @@ function showDivResult(hex, question, title, worry){
     huSection.style.display = '';
     document.getElementById('div-hu-title').textContent = '第'+hex.huHex.id+'卦 '+hex.huHex.name;
     const huCi = hex.huHex.info.c||'卦辞暂无';
-    const huAdvice = hex.huHex.info.a||'';
+    const huAdvice = getHexSceneRuleLine(hex.huHex, content.themeKey, 'hu');
     document.getElementById('div-hu-text').textContent = huCi + (huAdvice ? '\n\n'+huAdvice : '');
   } else if(huSection){ huSection.style.display='none'; }
 
@@ -2494,7 +2496,7 @@ function showDivResult(hex, question, title, worry){
     bianSection.style.display = '';
     document.getElementById('div-bian-title').textContent = '第'+hex.bianHex.id+'卦 '+hex.bianHex.name;
     const bianCi = hex.bianHex.info.c||'卦辞暂无';
-    const bianAdvice = hex.bianHex.info.a||'';
+    const bianAdvice = getHexSceneRuleLine(hex.bianHex, content.themeKey, 'bian');
     document.getElementById('div-bian-text').textContent = bianCi + (bianAdvice ? '\n\n'+bianAdvice : '');
   } else if(bianSection){ bianSection.style.display='none'; }
 
@@ -3086,7 +3088,7 @@ async function loadExternalHexContentSeed(){
     return HEX_CONTENT_SEED_STATE;
   }
   try{
-    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6q1', {cache:'no-store'});
+    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6r1', {cache:'no-store'});
     if(!response.ok) throw new Error('HTTP ' + response.status);
     var seed = await response.json();
     var count = mergeHexContentSeed(seed);
@@ -3214,7 +3216,19 @@ function applyQuestionConcern(content, questionContext){
     }
   };
   var patch = map[themeKey];
-  if(!patch) return content;
+  if(themeKey === 'work' && !/(适不适合|学不到|收入|浪费时间|推进|节点|项目|交付|优先|先抓|很乱|责任人|进展)/.test(workText)) patch = null;
+  if(themeKey === 'relationship' && !/(选择|抉择|错失|贪心|心意|不甘心)/.test(workText)) patch = null;
+  if(themeKey === 'emotion' && !/(初心|混乱|想法.*乱)/.test(workText)) patch = null;
+  if(themeKey === 'finance' && !/(经济独立|收入.*支出|支出.*收入)/.test(workText)) patch = null;
+  if(themeKey === 'family' && !/(会好吗|影响.*判断)/.test(workText)) patch = null;
+  if(!patch){
+    var translator = QUESTION_THEME_TRANSLATORS[themeKey] || QUESTION_THEME_TRANSLATORS.other;
+    patch = {
+      emotion:concernLine + ' ' + translator.emotion,
+      action:translator.action,
+      boundary:translator.boundary
+    };
+  }
   content.emotion = patch.emotion;
   content.action = patch.action;
   content.boundary = patch.boundary;
@@ -5687,7 +5701,7 @@ function renderTermGrid(containerId, rows){
   var el = document.getElementById(containerId);
   if(!el) return;
   el.innerHTML = rows.map(function(row){
-    return '<div class="term-row"><strong>'+row.name+'</strong><span>'+row.text+'</span></div>';
+    return '<div class="term-row"><strong>'+escapeHtml(row.name)+'</strong><span>'+escapeHtml(row.text)+'</span></div>';
   }).join('');
 }
 
@@ -6274,7 +6288,7 @@ async function requestAIInterpret(){
     '下卦：' + hex.lo.name + '（' + hex.lo.sym + '）\n' +
     '动爻：第' + hex.yao + '爻\n' +
     '卦辞：' + hex.info.c + '\n' +
-    '解读：' + hex.info.a + '\n' +
+    '解读：' + (content.spine || content.reality || '') + '\n' +
     (yaoText ? '动爻产品化提示：' + getYaoProductizedHint(hex) + '\n' : '') +
     (hex.huHex ? '互卦：第' + hex.huHex.id + '卦 ' + hex.huHex.name + '\n' : '') +
     (hex.bianHex ? '变卦：第' + hex.bianHex.id + '卦 ' + hex.bianHex.name + '\n' : '') +
@@ -6610,8 +6624,8 @@ function renderHistoryList(){
         + '<div class="history-date">'+timeText+'</div>'
         + '<div class="history-hex-name">'+hexName+'</div>'
         + '<div class="history-theme-badge">'+theme.label+'</div>'
-        + (q ? '<div class="history-question">'+q+'</div>' : '')
-        + (worry ? '<div class="history-question">担心：'+worry+'</div>' : '')
+        + (q ? '<div class="history-question">'+escapeHtml(q)+'</div>' : '')
+        + (worry ? '<div class="history-question">担心：'+escapeHtml(worry)+'</div>' : '')
         + '<div class="history-mini-row">'+reviewedChip+aiChip+'</div>'
         + '</div>'
         + '<button class="history-detail-btn">查看</button>'
@@ -7076,10 +7090,10 @@ function openEncDetail(id){
   html+='<div class="enc-detail-text">'+gc.c+'</div>';
   html+='</div>';
 
-  /* 白话解读 */
+  /* 原典阅读提示 */
   html+='<div class="enc-detail-section">';
-  html+='<div class="enc-detail-label">传统解读</div>';
-  html+='<div class="enc-detail-text">'+gc.a+'</div>';
+  html+='<div class="enc-detail-label">原典阅读提示</div>';
+  html+='<div class="enc-detail-text">'+escapeHtml(content.learning || content.spine || '先保留原文，再结合卦象结构理解，不按吉凶断语照搬。')+'</div>';
   html+='</div>';
 
   html+='<div class="enc-detail-section">';
