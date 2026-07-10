@@ -2248,7 +2248,7 @@ function updateResultLanding(hex, actionData, contextContent){
   overallEl.textContent = (actionData && actionData.overall) || (content && (content.reality + ' ' + content.emotion)) || summary.s1;
   avoidEl.textContent = (actionData && actionData.avoid) || (content && content.boundary) || summary.s3;
   if(headlineEl){
-    headlineEl.textContent = (hex && hex.name ? hex.name + '：' : '') + '先分三件事';
+    headlineEl.textContent = (content && content.headline) || ((hex && hex.name ? hex.name + '：' : '') + '先分三件事');
   }
   copyEl.textContent = actionData
     ? '这层回答只补充你刚才选择的主题，仍然回到观察、行动和边界。'
@@ -2460,12 +2460,12 @@ function showDivResult(hex, question, title, worry){
   var plain = getHexPlainInsight(hex, questionContext);
   var plainCoreEl = document.getElementById('div-plain-core');
   if(plainCoreEl){
-    plainCoreEl.innerHTML = '<strong>卦在说什么：</strong>' + escapeHtml(plain.core);
+    plainCoreEl.textContent = '';
+    plainCoreEl.style.display = 'none';
   }
   var termRows = getHexRoleText(hex, questionContext);
   if(content){
     termRows.push({name:'这卦怎么学', text:content.learning});
-    termRows.push({name:'不要误解', text:content.boundary});
     termRows.push({name:'回看问题', text:content.review});
   }
   renderTermGrid('div-term-grid', termRows);
@@ -3054,6 +3054,7 @@ function normalizeHexContentSeedEntry(entry, key){
   if(Array.isArray(entry.sources)) normalized.sources = entry.sources;
   if(typeof entry.reviewStatus === 'string') normalized.reviewStatus = entry.reviewStatus;
   if(entry.safety && typeof entry.safety === 'object') normalized.safety = entry.safety;
+  if(entry.scenes && typeof entry.scenes === 'object') normalized.scenes = entry.scenes;
   return normalized;
 }
 
@@ -3088,7 +3089,7 @@ async function loadExternalHexContentSeed(){
     return HEX_CONTENT_SEED_STATE;
   }
   try{
-    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6r1', {cache:'no-store'});
+    var response = await fetch('packages/content/hex-content-v2.seed.json?v=6u1', {cache:'no-store'});
     if(!response.ok) throw new Error('HTTP ' + response.status);
     var seed = await response.json();
     var count = mergeHexContentSeed(seed);
@@ -3252,7 +3253,34 @@ function getHexContentForQuestion(hex, question){
     content.boundary = translator.boundary;
     content.review = translator.review;
   }
-  return applyQuestionConcern(content, question || '');
+  content = applyQuestionConcern(content, question || '');
+  var scene = findCuratedScene(content, hex, themeKey, contextParts);
+  if(scene){
+    content.scene = scene;
+    content.headline = scene.headline || content.headline;
+    content.reality = scene.overall || content.reality;
+    content.emotion = '';
+    content.action = scene.action || content.action;
+    content.boundary = scene.boundary || content.boundary;
+  }
+  return content;
+}
+
+function findCuratedScene(content, hex, themeKey, parts){
+  if(!content || !content.scenes || !hex) return null;
+  var text = ((parts && parts.question) || '') + ' ' + ((parts && parts.worry) || '');
+  var scenes = Object.keys(content.scenes).map(function(key){ return content.scenes[key]; });
+  for(var i=0;i<scenes.length;i++){
+    var scene = scenes[i];
+    if(!scene || scene.theme !== themeKey) continue;
+    if(Number(scene.movingYao || 0) && Number(scene.movingYao) !== Number(hex.yao)) continue;
+    if(Number(scene.huId || 0) && (!hex.huHex || Number(scene.huId) !== Number(hex.huHex.id))) continue;
+    if(Number(scene.bianId || 0) && (!hex.bianHex || Number(scene.bianId) !== Number(hex.bianHex.id))) continue;
+    var triggers = Array.isArray(scene.triggers) ? scene.triggers : [];
+    if(triggers.length && !triggers.some(function(word){ return text.indexOf(word) !== -1; })) continue;
+    return scene;
+  }
+  return null;
 }
 
 function buildFallbackHexContent(hex){
@@ -4068,7 +4096,7 @@ function buildHexStructuralLine(hex){
   var keys = getHexKeywordText(hex, 3);
   var outer = getTrigramReadingPhrase(hex.up, 'outer');
   var inner = getTrigramReadingPhrase(hex.lo, 'inner');
-  return '「'+hex.name+'」先看「'+keys+'」：上卦提示'+outer+'；下卦提示'+inner+'。这不是判结果，而是提醒你把显出来的压力和内在用力分开看。';
+  return '「'+hex.name+'」呈现“'+keys+'”：上卦是'+outer+'；下卦是'+inner+'。两边的力量能不能接上，是眼下最该核对的地方。';
 }
 
 function buildHexRealityLine(hex){
@@ -4124,8 +4152,14 @@ function getYaoPositionFocus(yao){
 }
 
 function getYaoProductizedHint(hex){
+  var yaoData = hex && YAO_CI[hex.id];
+  var yaoText = yaoData && yaoData[Number(hex.yao || 0) - 1];
+  if(hex && hex.id === 53 && Number(hex.yao) === 4){
+    return '四爻“鸿渐于木，或得其桷，无咎”。鸿雁到了树上，要先找到能停稳的横枝；放到现实里，就是先确认有没有一个能立足、能继续积累的位置。';
+  }
   var keys = getHexKeywordText(hex, 2);
-  return '传统爻辞在这里不按吉凶照字面断，只取“这一层为什么会动”的提示。放在「'+(hex && hex.name ? hex.name : '本卦')+'」里，它提醒你围绕「'+keys+'」先做现实核对：'+getYaoPositionFocus(hex && hex.yao);
+  var original = yaoText && yaoText.t ? '爻辞“'+yaoText.t+'”。' : '';
+  return original+'放在「'+(hex && hex.name ? hex.name : '本卦')+'」的“'+keys+'”里，'+getYaoPositionFocus(hex && hex.yao);
 }
 
 function getThemeBlindSpot(themeKey, parts){
@@ -4216,7 +4250,7 @@ function getThemeXiangLine(themeKey, hex){
   var tiXiang = getTrigramThemeXiang(theme, model.ti);
   var yongXiang = getTrigramThemeXiang(theme, model.yong);
   var label = THEME_LABELS[theme] || '当前问题';
-  return '取象只取和「'+label+'」有关的两点：体卦「'+model.ti.name+'」看'+tiXiang+'；用卦「'+model.yong.name+'」看'+yongXiang+'。其他方位、动物、身体类象先不展开，避免越讲越散。';
+  return '放到「'+label+'」里，体卦「'+model.ti.name+'」对应'+tiXiang+'；用卦「'+model.yong.name+'」对应'+yongXiang+'。';
 }
 
 function getTrigramThemeXiang(themeKey, trigram){
@@ -4230,9 +4264,10 @@ function getHexSceneRuleLine(hex, themeKey, role){
   if(!hex) return '';
   var label = THEME_LABELS[themeKey] || THEME_LABELS.other;
   var keys = getHexKeywordText(hex, 2);
-  var roleText = role === 'hu' ? '互卦只看中间暗线'
-    : (role === 'bian' ? '变卦只看后续倾向' : '本卦先看主局');
-  return roleText+'：放到「'+label+'」里，先用「'+keys+'」定边界，再看上卦「'+hex.up.name+'」的'+getTrigramThemeXiang(themeKey, hex.up)+'，和下卦「'+hex.lo.name+'」的'+getTrigramThemeXiang(themeKey, hex.lo)+'；不把无关类象搬进来。';
+  var image = '上「'+hex.up.name+'」对应'+getTrigramThemeXiang(themeKey, hex.up)+'，下「'+hex.lo.name+'」对应'+getTrigramThemeXiang(themeKey, hex.lo);
+  if(role === 'hu') return '中间四爻形成「'+hex.name+'」，说明卡点里还夹着“'+keys+'”：'+image+'。';
+  if(role === 'bian') return '动爻变化后成为「'+hex.name+'」，继续当前做法时，局面容易往“'+keys+'”偏：'+image+'。';
+  return '「'+hex.name+'」放到「'+label+'」里，先看“'+keys+'”怎样落地：'+image+'。';
 }
 
 function getYaoReadingDetail(hex){
@@ -4250,29 +4285,32 @@ function getHexRoleText(hex, questionContext){
   var lo = hex.lo || {};
   var themeKey = content && content.themeKey ? content.themeKey : inferThemeKey(questionContext || '', hex);
   var mainKeys = getHexKeywordText(hex, 2);
-  var mainLine = content ? (content.spine || content.reality || getHexSceneRuleLine(hex, themeKey, 'main')) : getHexSceneRuleLine(hex, themeKey, 'main');
-  var huLine = hex.huHex ? getHexSceneRuleLine(hex.huHex, themeKey, 'hu') : '互卦看中间隐藏结构，不替你另下一个结论。';
-  var bianLine = hex.bianHex ? getHexSceneRuleLine(hex.bianHex, themeKey, 'bian') : '变卦看后续倾向，不当成最终结果。';
+  if(content && content.scene && Array.isArray(content.scene.chain)){
+    return content.scene.chain.map(function(row){
+      return {name:String(row.name || ''), text:String(row.text || '')};
+    });
+  }
+  var mainLine = content ? (content.spine || getHexSceneRuleLine(hex, themeKey, 'main')) : getHexSceneRuleLine(hex, themeKey, 'main');
+  var huLine = hex.huHex ? getHexSceneRuleLine(hex.huHex, themeKey, 'hu') : '中间结构没有形成可用信息，先回到本卦和动爻。';
+  var bianLine = hex.bianHex ? getHexSceneRuleLine(hex.bianHex, themeKey, 'bian') : '这次没有可用的变化趋势，先看眼前能核对的事实。';
   var huKeys = hex.huHex ? getHexKeywordText(hex.huHex, 2) : '中间结构';
   var bianKeys = hex.bianHex ? getHexKeywordText(hex.bianHex, 2) : '后续倾向';
   var qName = parts.question ? '你问的“'+parts.question+'”' : '这件事';
-  var worryLine = parts.worry ? '你担心“'+parts.worry+'”，所以读到动爻和变卦时，要特别看自己会不会被这份担心推着走。' : '';
   var huName = hex.huHex ? '「'+hex.huHex.name+'」' : '互卦';
   var bianName = hex.bianHex ? '「'+hex.bianHex.name+'」' : '变卦';
   var blindSpot = getThemeBlindSpot(themeKey, parts);
   var tiYongLine = getTiYongRealityLine(hex);
   var xiangLine = getThemeXiangLine(themeKey, hex);
-  var mainReality = content ? ((content.reality || '') + ' ' + (content.emotion || '')).trim() : mainLine;
-  var huReality = huLine;
-  var bianReality = bianLine;
   var actionLine = content && content.action ? content.action : getActionAdvice(hex);
+  var yaoData = hex && YAO_CI[hex.id];
+  var yaoText = yaoData && yaoData[hex.yao-1] ? yaoData[hex.yao-1].t : '这一爻';
   return [
-    {name:'读卦链路', text:'这条链路不是先背术语，而是先把'+qName+'压回一个现实切口：本卦「'+hex.name+'」看主局，体用看你和这件事怎么相互牵动，动爻看最先动的一层，互卦'+huName+'看暗线，变卦'+bianName+'看继续这样走会偏向哪里。你可能忽略的是：'+blindSpot+' '+worryLine},
-    {name:'本卦', text:'「'+hex.name+'」是这件事的主矛盾，先抓「'+mainKeys+'」，不是直接判成败。落到这件事，它不是在问最后会怎样，而是在问现在是哪股力量最占上风：'+mainReality},
-    {name:'上卦 / 下卦', text:'象上看，本卦是上「'+(up.name || '上')+'」下「'+(lo.name || '下')+'」。上卦看外面：'+getTrigramImageLine(up, 'outer')+'；下卦看里面：'+getTrigramImageLine(lo, 'inner')+'。'+tiYongLine+' '+xiangLine},
-    {name:'动爻', text:'第'+hex.yao+'爻是今天先看的转折点。'+getYaoReadingDetail(hex)+' 放回'+qName+'，今天先做的不是把整件事判完，而是处理这一爻指出的那一小层：'+actionLine},
-    {name:'互卦', text:hex.huHex ? huName+'不是另起一卦，而是从本卦「'+hex.name+'」中间抽出来看暗线。表面在看「'+mainKeys+'」，中间真正牵动你的可能是「'+huKeys+'」。所以它解释的是为什么你会卡住：'+huReality : '互卦看中间隐藏结构，不替你另下一个结论。'},
-    {name:'变卦', text:hex.bianHex ? bianName+'来自动爻变化，读的是“如果继续按当前反应走，局面容易往哪里偏”。它把本卦的「'+mainKeys+'」带向「'+bianKeys+'」。所以这里只看趋势和提醒，不当成命运结论：'+bianReality : '变卦看后续倾向，不当成最终结果。'}
+    {name:'这卦怎么走到结论', text:qName+'先由「'+hex.name+'」指出“'+mainKeys+'”，第'+hex.yao+'爻把变化落到“'+yaoText+'”，'+huName+'解释为什么迟迟未定，'+bianName+'提示继续当前做法会走向哪里。眼下最容易漏掉的是：'+blindSpot},
+    {name:'本卦 · '+hex.name, text:mainLine+' 上「'+(up.name || '上')+'」是外部处境：'+getTrigramImageLine(up, 'outer')+'；下「'+(lo.name || '下')+'」是你的内在用力：'+getTrigramImageLine(lo, 'inner')+'。'},
+    {name:'体用 · 你和这件事', text:tiYongLine+' '+xiangLine},
+    {name:'第'+hex.yao+'爻 · '+yaoText, text:getYaoProductizedHint(hex)+' 对应'+qName+'，先落实这一件事：'+actionLine},
+    {name:'互卦 · '+(hex.huHex ? hex.huHex.name : '未成'), text:huLine},
+    {name:'变卦 · '+(hex.bianHex ? hex.bianHex.name : '未成'), text:bianLine}
   ];
 }
 
@@ -5990,21 +6028,50 @@ function openSettings(){
   if(input){
     input.value = localStorage.getItem('guanxin_apikey') || '';
   }
+  setApiKeyStatus(input && input.value ? '已保存一个 Key；再次保存会先验证是否可用。' : '', '');
   overlay.classList.add('active');
 }
 function closeSettings(){ document.getElementById('settings-overlay').classList.remove('active'); }
-function saveApiKey(){
+function setApiKeyStatus(message, state){
+  var status = document.getElementById('api-key-status');
+  if(!status) return;
+  status.textContent = message || '';
+  status.classList.toggle('is-success', state === 'success');
+  status.classList.toggle('is-error', state === 'error');
+}
+async function saveApiKey(){
   var input = document.getElementById('api-key-input');
   var key = input ? input.value.trim() : '';
-  if(key){
-    localStorage.setItem('guanxin_apikey', key);
-    closeSettings();
-    showToast('已保存本地 Qwen Key，将优先用于当前浏览器');
+  var button = document.getElementById('api-key-save-btn');
+  if(!key){
+    localStorage.removeItem('guanxin_apikey');
+    localStorage.removeItem('guanxin_apikey_verified_at');
+    setApiKeyStatus('已清空本地 Key。', 'success');
+    showToast('已清空本地 Key');
     return;
   }
-  closeSettings();
-  localStorage.removeItem('guanxin_apikey');
-  showToast('已清空本地 Key，将尝试服务端代理');
+  if(!/^sk-[A-Za-z0-9_-]{12,}$/.test(key)){
+    setApiKeyStatus('这不像 DashScope Key。请确认它以 sk- 开头，且没有多余空格。', 'error');
+    return;
+  }
+  if(button){ button.disabled = true; button.textContent = '正在验证'; }
+  setApiKeyStatus('正在连接 DashScope 验证...', '');
+  try{
+    await requestAIByBrowserKey(key, {
+      model:'qwen-plus',
+      prompt:'仅回复“可用”。',
+      max_tokens:4,
+      temperature:0
+    });
+    localStorage.setItem('guanxin_apikey', key);
+    localStorage.setItem('guanxin_apikey_verified_at', String(Date.now()));
+    setApiKeyStatus('验证成功。这个浏览器现在可以直接生成 AI 解读。', 'success');
+    showToast('Qwen Key 验证成功');
+  }catch(error){
+    setApiKeyStatus(getFriendlyAIError(error && error.message ? error.message : String(error || '')), 'error');
+  }finally{
+    if(button){ button.disabled = false; button.textContent = '验证并保存'; }
+  }
 }
 
 function parseAIActionCard(text, hex){
@@ -6090,8 +6157,11 @@ function getFriendlyAIError(rawMessage){
   if(msg.indexOf('DASHSCOPE_API_KEY')!==-1){
     return 'AI 解读暂未启用。请先在右上角设置里填写可用的 Qwen Key，或在服务端配置 DASHSCOPE_API_KEY。';
   }
-  if(msg.indexOf('401')!==-1 || msg.indexOf('Unauthorized')!==-1){
+  if(msg.indexOf('401')!==-1 || msg.indexOf('Unauthorized')!==-1 || msg.indexOf('InvalidApiKey')!==-1 || msg.indexOf('invalid_api_key')!==-1){
     return 'AI 解读认证失败，请检查你填写的 Qwen Key 是否有效。';
+  }
+  if(msg.indexOf('429')!==-1 || /quota|Arrearage|余额|限流/i.test(msg)){
+    return '这个 Key 暂时没有可用额度，或请求过于频繁。请检查 DashScope 账户额度后再试。';
   }
   if(msg.indexOf('404')!==-1){
     return '没有找到 AI 解读接口。请确认当前页面是通过 python server.py 启动，而不是直接打开 index.html。';
@@ -6206,13 +6276,22 @@ async function requestAIByBrowserKey(localKey, payload){
       temperature: payload.temperature
     })
   });
-  var data = await resp.json();
+  var raw = await resp.text();
+  var data = {};
+  try{ data = raw ? JSON.parse(raw) : {}; }
+  catch(e){ throw new Error('DashScope 返回了无法识别的内容（HTTP '+resp.status+'）'); }
   if(!resp.ok){
-    throw new Error((data && data.error && data.error.message) || ('API error: '+resp.status));
+    throw new Error((data && data.error && (data.error.message || data.error.code)) || ('API error: '+resp.status));
   }
+  var text = (data.choices && data.choices[0] && data.choices[0].message) ? data.choices[0].message.content : '';
+  if(!text) throw new Error('DashScope 没有返回可读内容');
   return {
-    text: (data.choices && data.choices[0] && data.choices[0].message) ? data.choices[0].message.content : ''
+    text:text
   };
+}
+
+function isStaticAIHost(){
+  return /(^|\.)github\.io$|(^|\.)pages\.dev$/i.test(location.hostname || '');
 }
 
 async function requestAIByProxy(localKey, payload){
@@ -6256,30 +6335,13 @@ async function requestAIInterpret(){
   var questionContext = buildQuestionContext(lastDivQuestion || '', worry);
   var yaoData = YAO_CI[hex.id];
   var yaoText = (yaoData && yaoData[hex.yao-1]) ? yaoData[hex.yao-1] : null;
-  var askLine = freeQuestion || topicPrompt || '请围绕用户当前问题和担心，生成一版贴身五观解读：本卦看主局，上下卦看外部处境与内在用力，动爻看最先松动处，互卦看中间暗线，变卦看后续倾向。';
+  var askLine = freeQuestion || topicPrompt || '请直接回答：这件事眼下最值得核对的现实条件是什么，我今天能先做哪一步？';
   var content = getHexContentForQuestion(hex, questionContext || question) || {};
   var themeKey = content.themeKey || inferThemeKey(questionContext || question, hex);
-  var tiYongLine = getTiYongRealityLine(hex);
-  var xiangLine = getThemeXiangLine(themeKey, hex);
-  var sceneRuleLine = [
-    getHexSceneRuleLine(hex, themeKey, 'main'),
-    hex.huHex ? getHexSceneRuleLine(hex.huHex, themeKey, 'hu') : '',
-    hex.bianHex ? getHexSceneRuleLine(hex.bianHex, themeKey, 'bian') : ''
-  ].filter(Boolean).join('\n');
-  var localContentBlock =
-    '观心本地卦意结构：\n' +
-    '卦意骨架：' + (content.spine || '') + '\n' +
-    '体用关系：' + tiYongLine + '\n' +
-    '取象限制：' + xiangLine + '\n' +
-    '场景映射：\n' + sceneRuleLine + '\n' +
-    '现实翻译：' + (content.reality || '') + '\n' +
-    '情绪承接：' + (content.emotion || '') + '\n' +
-    '行动切口：' + (content.action || '') + '\n' +
-    '边界提醒：' + (content.boundary || '') + '\n' +
-    '学习提示：' + (content.learning || '') + '\n' +
-    '复盘问题：' + (content.review || '') + '\n';
+  var readingRows = getHexRoleText(hex, questionContext || question);
+  var evidenceBlock = readingRows.map(function(row){ return row.name+'：'+row.text; }).join('\n');
 
-  var prompt = '你是观心里的传统文化追问助手。你的任务不是重新把整卦讲一遍，而是严格锚定当前这卦，围绕用户当前问题生成贴身五观解读。五观不是五个结论，而是把范围逐步缩小的读法：本卦看主局，体用看用户这一方和所问之事怎么相互牵动，上下卦看外部处境与内在用力，动爻看最先松动处，互卦看中间暗线，变卦看后续倾向。不要替用户做决定，不要制造恐慌，不要说“你应该分手/辞职/投资”。只能做卦象翻译和现实提醒。\n\n' +
+  var prompt = '你是观心的周易场景解读助手。请直接回答用户的问题，不讲解系统规则，也不要把输入材料换词重复。每段必须同时包含一条卦象证据和一条现实中可观察、可核对的条件。\n\n' +
     '用户的问题：' + question + '\n' +
     (worry ? '用户最担心的是：' + worry + '\n' : '') +
     '用户现在追问：' + askLine + '\n' +
@@ -6288,20 +6350,17 @@ async function requestAIInterpret(){
     '下卦：' + hex.lo.name + '（' + hex.lo.sym + '）\n' +
     '动爻：第' + hex.yao + '爻\n' +
     '卦辞：' + hex.info.c + '\n' +
-    '解读：' + (content.spine || content.reality || '') + '\n' +
-    (yaoText ? '动爻产品化提示：' + getYaoProductizedHint(hex) + '\n' : '') +
     (hex.huHex ? '互卦：第' + hex.huHex.id + '卦 ' + hex.huHex.name + '\n' : '') +
     (hex.bianHex ? '变卦：第' + hex.bianHex.id + '卦 ' + hex.bianHex.name + '\n' : '') +
-    localContentBlock +
-    '\n回答边界：必须优先锚定“观心本地卦意结构”，不要脱离本卦另起一套解释；不要完整复述本地内容，要把本卦、体用关系、上卦、下卦、动爻、互卦、变卦各自怎么服务这次问题说清楚；取象只能采用“取象限制”里与问题主题相关的1-2点，不要展开方位、动物、身体等无关类象；如果用户追问感情、事业、钱财或身心，只能给观察角度和低风险行动，不做关系断言、职业断言、投资建议或医疗判断；依据只能来自本卦、动爻、互卦、变卦、卦辞爻辞、体用生克和上方本地卦意结构，不能凭空引用没有给出的书句或新增术数体系。\n' +
-    '\n请严格按以下格式输出，不要使用 markdown 标题，不要使用代码块。每项 1-2 句，合计尽量简短：\n' +
+    '已经审核的证据链：\n' + evidenceBlock + '\n' +
+    '\n回答边界：只使用上面的卦、爻和证据链。不能替用户决定辞职、分手、投资或医疗事项；不能下绝对结论。不要出现“本卦看主局”“互卦看暗线”“变卦看趋势”“不判成败”“不把无关类象搬进来”等内部规则句。\n' +
+    '\n请严格按以下格式输出，不要使用 markdown 标题或代码块，每项 1-2 句：\n' +
     '卦里怎么看：...\n' +
     '放到这个主题里：...\n' +
     '今天先怎么做：...\n' +
     '边界提醒：...\n' +
     '依据从哪里来：...\n' +
-    '最后再补一段“追问全文：...”作为完整解释，控制在180字内。\n' +
-    '要求：必须围绕当前这卦、本卦动爻、互卦、变卦来答；放到这个主题里时要贴近用户原问题和担心，不要大范围套话；不要脱离卦象发挥，不要下绝对结论，不要代替用户做现实决定。';
+    '最后补“追问全文：...”，控制在 220 字内。第一句必须直接回应用户当前问题，行动必须带期限、数量或可观察结果。';
 
   try{
     var localKey = (localStorage.getItem('guanxin_apikey') || '').trim();
@@ -6316,6 +6375,7 @@ async function requestAIInterpret(){
       try{
         data = await requestAIByBrowserKey(localKey, payload);
       }catch(browserErr){
+        if(isStaticAIHost()) throw browserErr;
         data = await requestAIByProxy(localKey, payload);
       }
     } else {
