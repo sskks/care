@@ -813,6 +813,7 @@ function showYaoPopup(yaoIndex){
       '<div class="yao-interpret">'+escapeHtml(getYaoProductizedHint(hex))+'</div>'+
     '</div>';
   document.body.appendChild(overlay);
+  syncOverlayAccessibility();
 }
 
 function renderDailyHex(){
@@ -2112,6 +2113,22 @@ function updateResultActionTip(text){
   tipEl.textContent = text || '先把最在意的问题写清楚，再决定下一步。';
 }
 
+function getConciseResultText(text, limit, fallback){
+  var raw = String(text || fallback || '').replace(/\s+/g,' ').trim();
+  if(!raw) return fallback || '';
+  var sentence = raw.split(/[。！？!?；;]/)[0].trim();
+  if(sentence.length <= limit) return sentence + '。';
+  var clauses = sentence.split(/[，,：:]/);
+  var picked = '';
+  for(var i=0;i<clauses.length;i++){
+    var next = (picked ? picked + '，' : '') + clauses[i].trim();
+    if(next.length > limit) break;
+    picked = next;
+  }
+  if(!picked) picked = sentence.slice(0, limit).replace(/[，,：:\s]+$/,'');
+  return picked + '。';
+}
+
 function updateResultLanding(hex, actionData, contextContent){
   var overallEl = document.getElementById('result-landing-overall');
   var avoidEl = document.getElementById('result-landing-avoid');
@@ -2120,15 +2137,43 @@ function updateResultLanding(hex, actionData, contextContent){
   if(!overallEl || !avoidEl || !copyEl) return;
   var summary = generateSummary(hex);
   var content = contextContent || null;
-  overallEl.textContent = (actionData && actionData.overall) || (content && (content.reality + ' ' + content.emotion)) || summary.s1;
-  avoidEl.textContent = (actionData && actionData.avoid) || (content && content.boundary) || summary.s3;
+  var overall = (actionData && actionData.overall) || (content && content.reality) || summary.s1;
+  var action = (actionData && actionData.action) || (content && content.action) || summary.s2;
+  var avoid = (actionData && actionData.avoid) || (content && content.boundary) || summary.s3;
+  overallEl.textContent = getConciseResultText(overall, 54, summary.s1);
+  avoidEl.textContent = getConciseResultText(avoid, 52, summary.s3);
   if(headlineEl){
     headlineEl.textContent = (content && content.headline) || ((hex && hex.name ? hex.name + '：' : '') + '先分三件事');
   }
   copyEl.textContent = actionData
     ? '这层回答只补充你刚才选择的主题，仍然回到观察、行动和边界。'
     : '不下定论，只看局面、行动和边界。';
-  updateResultActionTip((actionData && actionData.action) || (content && content.action) || summary.s2);
+  updateResultActionTip(getConciseResultText(action, 60, summary.s2));
+}
+
+function setResultReadingMode(mode){
+  var screen = document.getElementById('divination-screen');
+  if(!screen) return;
+  var nextMode = mode === 'detail' ? 'detail' : 'concise';
+  screen.setAttribute('data-reading-mode', nextMode);
+  document.querySelectorAll('button[data-reading-mode]').forEach(function(button){
+    var active = button.getAttribute('data-reading-mode') === nextMode;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  if(nextMode === 'detail'){
+    var detail = document.getElementById('div-plain-card');
+    if(detail) detail.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function setAIQuickStatus(message, state){
+  var status = document.getElementById('ai-quick-status');
+  if(!status) return;
+  status.textContent = message || '';
+  status.classList.toggle('is-loading', state === 'loading');
+  status.classList.toggle('is-success', state === 'success');
+  status.classList.toggle('is-error', state === 'error');
 }
 
 function setAIFollowupReady(ready){
@@ -2140,7 +2185,11 @@ function setAIFollowupReady(ready){
   if(panel) panel.classList.toggle('is-ready', !!ready);
   if(entry) entry.style.display = ready ? 'none' : '';
   if(body) body.style.display = '';
-  if(aiBtn) aiBtn.style.display = 'none';
+  if(aiBtn){
+    aiBtn.style.display = '';
+    var label = aiBtn.querySelector('strong');
+    if(label) label.textContent = ready ? '重新生成 AI 简析' : '让 AI 再说短一点';
+  }
   if(submitBtn) submitBtn.disabled = false;
 }
 
@@ -2192,14 +2241,45 @@ function resetAIFollowup(){
 }
 
 function parseAIFollowupAnswer(text, fallbackAction, fallbackBoundary){
+  var normalized = String(text || '')
+    .replace(/```(?:json)?/gi,'')
+    .replace(/\*\*/g,'')
+    .replace(/^\s*[-*•]\s*/gm,'')
+    .trim();
+  try{
+    var json = JSON.parse(normalized);
+    if(json && typeof json === 'object'){
+      return {
+        core:String(json.core || json.situation || json.overall || '').trim(),
+        themed:String(json.themed || json.relevance || json.current || '').trim(),
+        action:String(json.action || fallbackAction || '').trim(),
+        boundary:String(json.boundary || json.avoid || fallbackBoundary || '这层回答只用于传统文化体验与自我观察，不直接替你做现实决策。').trim(),
+        basis:String(json.basis || json.evidence || '依据来自当前卦象与用户问题场景，不作为命运断语。').trim()
+      };
+    }
+  }catch(e){}
+  var aliases = {
+    '局面':'卦里怎么看',
+    '核心判断':'卦里怎么看',
+    '对应你这件事':'放到这个主题里',
+    '和你的问题有什么关系':'放到这个主题里',
+    '今天先做':'今天先怎么做',
+    '行动':'今天先怎么做',
+    '别急着做的决定':'边界提醒',
+    '先别做什么决定':'边界提醒',
+    '依据':'依据从哪里来'
+  };
+  Object.keys(aliases).forEach(function(label){
+    normalized = normalized.replace(new RegExp('(^|\\n)\\s*'+label+'\\s*[：:]','g'), '$1'+aliases[label]+'：');
+  });
   var labels = ['卦里怎么看','放到这个主题里','今天先怎么做','边界提醒','先别拿它做什么决定','依据从哪里来'];
   var sections = {};
   var matches = [];
   labels.forEach(function(label){
     var chineseToken = label + '：';
     var asciiToken = label + ':';
-    var chineseStart = text.indexOf(chineseToken);
-    var asciiStart = text.indexOf(asciiToken);
+    var chineseStart = normalized.indexOf(chineseToken);
+    var asciiStart = normalized.indexOf(asciiToken);
     var start = chineseStart === -1 ? asciiStart : (asciiStart === -1 ? chineseStart : Math.min(chineseStart, asciiStart));
     if(start !== -1){
       var token = start === chineseStart ? chineseToken : asciiToken;
@@ -2209,8 +2289,8 @@ function parseAIFollowupAnswer(text, fallbackAction, fallbackBoundary){
   matches.sort(function(a,b){ return a.start - b.start; });
   for(var i=0;i<matches.length;i++){
     var item = matches[i];
-    var end = matches[i+1] ? matches[i+1].start : text.length;
-    sections[item.label] = text.slice(item.bodyStart, end).trim();
+    var end = matches[i+1] ? matches[i+1].start : normalized.length;
+    sections[item.label] = normalized.slice(item.bodyStart, end).trim();
   }
   function cleanAIFollowupSection(value){
     return String(value || '')
@@ -2295,7 +2375,9 @@ function showDivResult(hex, question, title, worry){
   if(moreFold) moreFold.open = false;
   resetAIFollowup();
   clearAIContent();
+  setAIQuickStatus('', '');
   setAIFollowupReady(false);
+  setResultReadingMode('concise');
   const qEl = document.getElementById('div-question');
   if(question){qEl.style.display='block';qEl.textContent='\u201C'+question+'\u201D';}
   else{qEl.style.display='none';}
@@ -2419,7 +2501,7 @@ let navStack = [];
 const PAGE_MAP = {splash:'splash-screen',birthday:'birthday-screen',loading:'loading-screen',
   result:'result-screen',home:'home-screen',divination:'divination-screen',
   daily:'daily-screen',bamboo:'bamboo-screen',history:'history-screen',
-  bazhai:'bazhai-screen',
+  profile:'profile-screen',bazhai:'bazhai-screen',
   encyclopedia:'encyclopedia-screen'};
 const SWIPE_BACK_PAGES = new Set(['daily','bamboo','divination','result','history','bazhai','encyclopedia']);
 
@@ -2442,7 +2524,33 @@ function goTo(page, options){
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     el.scrollTop = 0;
+    syncAppBottomNav();
   }
+}
+
+function syncAppBottomNav(){
+  var nav = document.getElementById('app-bottom-nav');
+  if(!nav) return;
+  var blockingPage = currentPage === 'splash' || currentPage === 'loading' || currentPage === 'bamboo';
+  var blockingOverlay = document.body.classList.contains('modal-open');
+  nav.hidden = blockingPage || blockingOverlay;
+  var sectionMap = {
+    home:'question', divination:'question',
+    daily:'daily',
+    history:'history',
+    profile:'profile', birthday:'profile', result:'profile', bazhai:'profile', encyclopedia:'profile'
+  };
+  var activeSection = sectionMap[currentPage] || '';
+  nav.querySelectorAll('[data-nav]').forEach(function(button){
+    var active = button.getAttribute('data-nav') === activeSection;
+    button.classList.toggle('is-active', active);
+    if(active) button.setAttribute('aria-current','page');
+    else button.removeAttribute('aria-current');
+  });
+}
+
+function showProfileHub(){
+  goTo('profile');
 }
 
 function goBack(fallback){
@@ -2522,9 +2630,11 @@ function bindFastTapButton(id, handler){
 }
 
 function syncOverlayAccessibility(){
+  var hasBlockingOverlay = !!document.getElementById('insight-sheet');
   document.querySelectorAll('.question-modal-overlay,.confirm-overlay,.share-card-overlay,.ai-modal-overlay').forEach(function(overlay){
     var active = overlay.classList.contains('active');
     if(active){
+      hasBlockingOverlay = true;
       overlay.removeAttribute('aria-hidden');
       overlay.inert = false;
     } else {
@@ -2532,6 +2642,8 @@ function syncOverlayAccessibility(){
       overlay.inert = true;
     }
   });
+  document.body.classList.toggle('modal-open', hasBlockingOverlay);
+  syncAppBottomNav();
 }
 
 function initOverlayAccessibility(){
@@ -2543,10 +2655,29 @@ function initOverlayAccessibility(){
   });
 }
 
+function relocateRetentionModules(){
+  var retention = document.querySelector('#home-screen .home-support-accordion');
+  var historyInner = document.querySelector('#history-screen .history-inner');
+  var historyNote = document.querySelector('#history-screen .history-top-note');
+  if(!retention || !historyInner) return;
+  retention.removeAttribute('hidden');
+  retention.classList.add('history-retention-accordion');
+  var summaryTitle = retention.querySelector('.home-support-summary span');
+  var summaryHint = retention.querySelector('.home-support-summary em');
+  if(summaryTitle) summaryTitle.textContent = '七日回看与今日练习';
+  if(summaryHint) summaryHint.textContent = '有记录时再打开';
+  if(historyNote && historyNote.nextSibling){
+    historyInner.insertBefore(retention, historyNote.nextSibling);
+  } else {
+    historyInner.appendChild(retention);
+  }
+}
+
 /* ===== 性别选择 ===== */
 document.addEventListener('DOMContentLoaded',()=>{
   initSwipeBack();
   initOverlayAccessibility();
+  relocateRetentionModules();
   const gr=document.getElementById('gender-row');
   if(gr){
     gr.querySelectorAll('.gender-card').forEach(opt=>{
@@ -2571,6 +2702,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   checkFriendLink();
   bindFastTapButton('splash-start-btn', startPrimaryJourney);
   bindFastTapButton('onboard-start-btn', closeOnboard);
+  syncAppBottomNav();
 });
 
 /* ===== 生日表单初始化 ===== */
@@ -3122,15 +3254,8 @@ var AI_OUTPUT_FORBIDDEN_PATTERNS = [
 
 function validateAIFollowupOutput(text, parsed){
   var raw = String(text || '').trim();
-  if(raw.length < 80 || raw.length > 1400){
+  if(raw.length < 50 || raw.length > 1400){
     return {ok:false, reason:'length'};
-  }
-  var requiredLabels = ['卦里怎么看','放到这个主题里','今天先怎么做','边界提醒','依据从哪里来'];
-  var missing = requiredLabels.filter(function(label){
-    return raw.indexOf(label+'：') === -1 && raw.indexOf(label+':') === -1;
-  });
-  if(missing.length){
-    return {ok:false, reason:'missing:'+missing.join(',')};
   }
   var values = [parsed && parsed.core, parsed && parsed.themed, parsed && parsed.action, parsed && parsed.boundary, parsed && parsed.basis]
     .map(function(value){ return String(value || '').replace(/\s+/g,' ').trim(); });
@@ -5400,6 +5525,7 @@ function closeInsightSheet(){
     document.removeEventListener('keydown', window._insightEscHandler);
     window._insightEscHandler = null;
   }
+  syncOverlayAccessibility();
 }
 
 function buildProfileInsightData(bmg, mg, ln, wxr){
@@ -5871,8 +5997,12 @@ function openSettings(){
   }
   setApiKeyStatus(input && input.value ? '已保存一个 Key；再次保存会先验证是否可用。' : '', '');
   overlay.classList.add('active');
+  syncOverlayAccessibility();
 }
-function closeSettings(){ document.getElementById('settings-overlay').classList.remove('active'); }
+function closeSettings(){
+  document.getElementById('settings-overlay').classList.remove('active');
+  syncOverlayAccessibility();
+}
 function setApiKeyStatus(message, state){
   var status = document.getElementById('api-key-status');
   if(!status) return;
@@ -5996,24 +6126,24 @@ function restoreAIContent(record){
 function getFriendlyAIError(rawMessage){
   var msg = rawMessage || '';
   if(msg.indexOf('DASHSCOPE_API_KEY')!==-1){
-    return 'AI 解读暂未启用。请先在右上角设置里填写可用的 Qwen Key，或在服务端配置 DASHSCOPE_API_KEY。';
+    return '还没有可用的 AI Key。设置后再试，本页的精简解读仍可继续看。';
   }
   if(msg.indexOf('401')!==-1 || msg.indexOf('Unauthorized')!==-1 || msg.indexOf('InvalidApiKey')!==-1 || msg.indexOf('invalid_api_key')!==-1){
-    return 'AI 解读认证失败，请检查你填写的 Qwen Key 是否有效。';
+    return '这个 AI Key 没有通过认证，请检查后重试。';
   }
   if(msg.indexOf('429')!==-1 || /quota|Arrearage|余额|限流/i.test(msg)){
-    return '这个 Key 暂时没有可用额度，或请求过于频繁。请检查 DashScope 账户额度后再试。';
+    return 'AI 请求太频繁或额度不足，请稍后再试。';
   }
   if(msg.indexOf('404')!==-1){
-    return '没有找到 AI 解读接口。请确认当前页面是通过 python server.py 启动，而不是直接打开 index.html。';
+    return '当前环境没有连接到 AI 服务，请检查 Key 或本地服务。';
   }
-  if(msg.indexOf('Failed to fetch')!==-1 || msg.indexOf('NetworkError')!==-1){
-    return 'AI 解读连接失败。若你已填写本地 Qwen Key，可能是网络或跨域异常；若未填写，请确认本地代理服务正在运行。';
+  if(msg.indexOf('Failed to fetch')!==-1 || msg.indexOf('NetworkError')!==-1 || msg.indexOf('AI_REQUEST_TIMEOUT')!==-1){
+    return '这次没有连上 AI 服务，请检查网络后重试。';
   }
   if(msg.indexOf('AI_OUTPUT_INVALID')!==-1){
-    return 'AI 返回的内容不完整、重复或越过了解读边界，本次没有保存。请重新生成一次。';
+    return '这次内容没有整理清楚，所以没有保存。可以再试一次。';
   }
-  return 'AI 解读暂时没有成功返回内容，你可以稍后再试，或者先查看卦辞、启示和七日回看。';
+  return 'AI 这次没有生成成功。你可以重试，或先看本页的精简解读。';
 }
 
 function openAIModal(state, data){
@@ -6025,12 +6155,18 @@ function openAIModal(state, data){
   var statusText = document.getElementById('ai-modal-status-text');
   var spinner = document.getElementById('ai-modal-spinner');
   var grid = document.getElementById('ai-modal-grid');
+  var primaryAction = document.getElementById('ai-modal-primary-action');
   var secondaryAction = document.getElementById('ai-modal-secondary-action');
   var blocks = ['ai-modal-core','ai-modal-theme','ai-modal-action','ai-modal-boundary'];
   overlay.classList.add('active');
   syncOverlayAccessibility();
   document.body.classList.add('modal-open');
   if(status) status.classList.remove('ai-modal-error');
+  if(primaryAction){
+    primaryAction.disabled = false;
+    primaryAction.textContent = '留在当前页继续看';
+    primaryAction.onclick = closeAIModal;
+  }
   if(secondaryAction){
     secondaryAction.textContent = '继续追问此卦';
     secondaryAction.onclick = focusAIFollowupInput;
@@ -6056,15 +6192,21 @@ function openAIModal(state, data){
     if(spinner) spinner.style.display = 'none';
     if(status) status.classList.add('ai-modal-error');
     if(grid) grid.style.display = 'none';
+    if(primaryAction){
+      primaryAction.textContent = data && data.canRetry === false ? '先看本地解读' : '再试一次';
+      primaryAction.onclick = data && data.canRetry === false
+        ? closeAIModal
+        : function(){ closeAIModal(); requestAIInterpret(window._lastAIRequestMode || 'concise'); };
+    }
     if(secondaryAction){
-      secondaryAction.textContent = '设置 AI Key';
+      secondaryAction.textContent = '检查 AI Key';
       secondaryAction.onclick = openAIKeySettingsFromError;
     }
     return;
   }
 
   if(kicker) kicker.textContent = 'AI 解读已完成';
-  if(title) title.textContent = '这次卦象先这样看';
+  if(title) title.textContent = '先看和你这件事最相关的部分';
   if(statusText){
     statusText.textContent = data && data.persisted === false
       ? '本次内容已经显示，但浏览器没有成功保存，离开后可能无法回看。'
@@ -6094,7 +6236,6 @@ function closeAIModal(){
   var overlay = document.getElementById('ai-modal-overlay');
   if(overlay) overlay.classList.remove('active');
   syncOverlayAccessibility();
-  document.body.classList.remove('modal-open');
 }
 
 function focusAIFollowupInput(){
@@ -6111,19 +6252,30 @@ function focusAIFollowupInput(){
 }
 
 async function requestAIByBrowserKey(localKey, payload){
-  var resp = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer ' + localKey
-    },
-    body: JSON.stringify({
-      model: payload.model,
-      messages:[{role:'user',content:payload.prompt}],
-      max_tokens: payload.max_tokens,
-      temperature: payload.temperature
-    })
-  });
+  var controller = typeof AbortController === 'function' ? new AbortController() : null;
+  var timer = controller ? setTimeout(function(){ controller.abort(); }, 45000) : null;
+  var resp;
+  try{
+    resp = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer ' + localKey
+      },
+      body: JSON.stringify({
+        model: payload.model,
+        messages:[{role:'user',content:payload.prompt}],
+        max_tokens: payload.max_tokens,
+        temperature: payload.temperature
+      }),
+      signal: controller ? controller.signal : undefined
+    });
+  }catch(error){
+    if(error && error.name === 'AbortError') throw new Error('AI_REQUEST_TIMEOUT');
+    throw error;
+  }finally{
+    if(timer) clearTimeout(timer);
+  }
   var raw = await resp.text();
   var data = {};
   try{ data = raw ? JSON.parse(raw) : {}; }
@@ -6151,15 +6303,20 @@ async function requestAIByProxy(localKey, payload){
     ),
     body: JSON.stringify(payload)
   });
-  var data = await resp.json();
+  var raw = await resp.text();
+  var data = {};
+  try{ data = raw ? JSON.parse(raw) : {}; }
+  catch(e){ throw new Error('AI 服务返回了无法识别的内容（HTTP '+resp.status+'）'); }
   if(!resp.ok) throw new Error((data && (data.error || data.details)) || ('API error: '+resp.status));
   return data;
 }
 
 /* ===== AI白话解读（DashScope/Qwen） ===== */
-async function requestAIInterpret(){
+async function requestAIInterpret(mode){
   var hex = lastDivResult;
   if(!hex){ showToast('暂无卦象'); return; }
+  mode = mode === 'detail' ? 'detail' : 'concise';
+  window._lastAIRequestMode = mode;
 
   var btn = document.getElementById('ai-btn');
   var submitBtn = document.getElementById('ai-followup-submit-btn');
@@ -6167,7 +6324,16 @@ async function requestAIInterpret(){
   var followupInput = document.getElementById('ai-followup-input');
   var freeQuestion = followupInput ? followupInput.value.trim() : '';
   var topicPrompt = _aiFollowupState.topic ? (AI_FOLLOWUP_TOPICS[_aiFollowupState.topic] || '') : '';
+  var localKey = (localStorage.getItem('guanxin_apikey') || '').trim();
   clearAIContent();
+  if(!localKey && isStaticAIHost()){
+    var missingKeyMessage = '线上版需要先填写你的 Qwen Key，Key 只保存在当前浏览器。';
+    setAIQuickStatus('AI 未启用，设置 Key 后可以生成。', 'error');
+    renderAIError(missingKeyMessage);
+    openAIModal('error', {message:missingKeyMessage, canRetry:false});
+    return;
+  }
+  setAIQuickStatus('AI 正在整理，请稍等。', 'loading');
   openAIModal('loading');
 
   if(btn) btn.disabled = true;
@@ -6217,7 +6383,6 @@ async function requestAIInterpret(){
     '合计控制在 220 字内。第一句必须直接回应用户当前问题，行动必须带期限、数量或可观察结果。';
 
   try{
-    var localKey = (localStorage.getItem('guanxin_apikey') || '').trim();
     var payload = {
       model:'qwen-plus',
       prompt: prompt,
@@ -6263,19 +6428,21 @@ async function requestAIInterpret(){
       }
     }catch(saveErr){ console.warn('保存AI解读失败:', saveErr); }
     openAIModal('success', Object.assign({persisted:persisted}, parsed));
+    setAIQuickStatus('AI 解读已生成，可以点开弹窗继续看。', 'success');
     if(!persisted) showToast('AI 解读已生成，但没有保存到历史记录');
 
   } catch(e){
-    showToast('AI解读暂时不可用');
+    showToast('AI 这次没有生成成功');
     var friendlyMessage = getFriendlyAIError(e && e.message ? e.message : '');
     renderAIError(friendlyMessage);
     openAIModal('error', {message:friendlyMessage});
+    setAIQuickStatus('AI 没有生成成功，可重试或检查 Key。', 'error');
   } finally {
     if(btn) btn.disabled = false;
     if(submitBtn){
       submitBtn.disabled = false;
       submitBtn.removeAttribute('aria-busy');
-      submitBtn.textContent = '生成贴身五观解读';
+      submitBtn.textContent = '生成详细解读';
     }
     if(loading) loading.style.display = 'none';
   }

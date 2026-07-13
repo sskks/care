@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="guanxin-version" content="2026-06-24-bagua-wuxing-split">
+<meta name="guanxin-version" content="2026-07-13-stage-6x">
 <title>观心 · 周易卦象</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F8F3E6'/%3E%3Cpath d='M32 2a30 30 0 0 1 0 60 15 15 0 0 1 0-30 15 15 0 0 0 0-30Z' fill='%232C2418'/%3E%3Ccircle cx='32' cy='17' r='5.5' fill='%232C2418'/%3E%3Ccircle cx='32' cy='47' r='5.5' fill='%23F8F3E6'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/guanxin-app.css?v=6w1">
+<link rel="stylesheet" href="assets/guanxin-app.css?v=6x1">
 </head>
 <body>
 <svg width="0" height="0" class="coin-relic-filter" aria-hidden="true" focusable="false">
@@ -228,7 +228,7 @@
         </div>
       </section>
 
-      <section class="home-v2-directory" aria-label="次级入口目录">
+      <section class="home-v2-directory" aria-label="次级入口目录" hidden>
         <div class="home-directory-head">
           <span>目录</span>
           <p>不想问事时，从这里轻轻进入。</p>
@@ -262,7 +262,7 @@
       </section>
     </main>
 
-    <details class="home-support-accordion home-v2-retain">
+    <details class="home-support-accordion home-v2-retain" hidden>
       <summary class="home-support-summary">
         <span>练习、回看与节律</span>
         <em>想继续时再看</em>
@@ -348,19 +348,13 @@
       </div>
     </details>
   </div>
-  <nav class="home-bottom-nav" aria-label="首页主导航">
-    <button type="button" class="is-active" onclick="goTo('home')">首页</button>
-    <button type="button" onclick="showDailyHex()">今日</button>
-    <button type="button" onclick="doQuestionHex()">问事</button>
-    <button type="button" onclick="showBaZhai()">自己</button>
-  </nav>
 </div>
 
 <!-- ===== 每日一卦·科普浏览 ===== -->
 <div id="daily-screen" class="screen scrollable">
   <div class="daily-inner">
     <div class="daily-nav">
-      <button class="daily-nav-btn" onclick="goBack()">&larr; 返回</button>
+      <button class="daily-nav-btn" onclick="goBack()">返回</button>
       <span class="daily-nav-label" id="daily-nav-label"></span>
     </div>
     <p class="daily-date-hint" id="daily-date-hint"></p>
@@ -393,24 +387,10 @@
     <section class="daily-deep-card daily-deep-layer" aria-label="想学深一点">
       <div class="daily-deep-head">
         <span class="daily-deep-kicker">想学深一点</span>
-        <div class="daily-deep-title">先懂今天怎么用，再看卦从哪里来</div>
-      </div>
-      <div class="daily-deep-body">
-      <p class="daily-deep-copy">这里保留卦辞、象曰、上下卦结构和白话抓手。想学周易象法时再进入，不想深读也不影响今天使用。</p>
-      <div class="daily-deep-points">
-        <div class="daily-deep-point">
-          <strong>适合什么时候看</strong>
-          <span>当你想知道这卦为什么这样提醒，或想顺手学一点卦义和象法。</span>
-        </div>
-        <div class="daily-deep-point">
-          <strong>里面有什么</strong>
-          <span>卦象图解、卦辞、象曰、白话抓手，以及它落到现实里的提醒。</span>
-        </div>
+        <div class="daily-deep-title">卦辞、上下卦与象法依据</div>
       </div>
       <div class="daily-deep-actions">
-        <button class="btn btn-primary" type="button" onclick="openDailyDeepRead()">进入卦义深读</button>
-        <button class="btn btn-outline" type="button" onclick="openDailyHexInEncyclopedia()">去图鉴看此卦</button>
-      </div>
+        <button class="btn btn-primary" type="button" onclick="openDailyDeepRead()">打开详细说明</button>
       </div>
     </section>
   </div>
@@ -479,6 +459,10 @@
     <h2 class="result-title" id="div-title">占卦结果</h2>
     <div class="div-question" id="div-question" style="display:none"></div>
     <div class="result-concern" id="div-concern" style="display:none"></div>
+    <div class="result-reading-mode" role="group" aria-label="解读版本">
+      <button type="button" class="is-active" data-reading-mode="concise" aria-pressed="true" onclick="setResultReadingMode('concise')">精简版</button>
+      <button type="button" data-reading-mode="detail" aria-pressed="false" onclick="setResultReadingMode('detail')">详细版</button>
+    </div>
       <div class="result-landing-board result-case-board">
         <span class="result-landing-kicker">这次卦象</span>
       <div class="result-landing-headline">先看三件事</div>
@@ -503,7 +487,14 @@
       <h3 class="hexagram-name" id="div-hex-name"></h3>
       <div class="tags-row" id="div-tags"></div>
     </div>
-    <div class="hex-derived" id="div-derived" style="display:none">
+    <div class="result-concise-actions">
+      <button class="result-concise-ai" id="ai-btn" type="button" onclick="requestAIInterpret('concise')">
+        <strong>让 AI 再说短一点</strong>
+        <span>结合你写的问题，补一句更贴近现实的提醒</span>
+      </button>
+      <p class="ai-quick-status" id="ai-quick-status" role="status" aria-live="polite"></p>
+    </div>
+    <div class="hex-derived result-detail-only" id="div-derived" style="display:none">
       <div class="hex-derived-item derived-hu">
         <div class="derived-label">互卦</div>
         <div id="div-hu-svg"></div>
@@ -517,7 +508,7 @@
         <div class="derived-sub" id="div-bian-sub"></div>
       </div>
     </div>
-    <details class="div-fold div-fold-terms" id="div-plain-card">
+    <details class="div-fold div-fold-terms result-detail-only" id="div-plain-card">
       <summary>传统依据，想学再看</summary>
       <div class="plain-insight-card">
         <h4>这卦为什么这样判断</h4>
@@ -525,7 +516,7 @@
         <div class="term-grid" id="div-term-grid"></div>
       </div>
     </details>
-    <details class="div-fold" id="div-more-fold">
+    <details class="div-fold result-detail-only" id="div-more-fold">
       <summary>卦辞、互卦与变卦</summary>
       <div class="div-fold-body">
         <div class="div-interpret" id="div-interpret">
@@ -547,13 +538,13 @@
       </div>
     </details>
     <!-- AI主题追问 -->
-    <div class="ai-followup-panel" id="ai-followup-panel">
+    <div class="ai-followup-panel result-detail-only" id="ai-followup-panel">
       <div class="ai-followup-head">
-        <h4>贴身五观解读</h4>
-        <p>看完三层后，可以让 AI 按本卦、上下卦、动爻、互卦、变卦，把这次问题再收细一点。</p>
+        <h4>AI 详细解读</h4>
+        <p>需要时，再让 AI 结合卦象变化和你的现实问题继续说明。</p>
       </div>
       <div class="ai-followup-entry" id="ai-followup-entry">
-        <p>不必先选主题；直接生成会围绕你的问题和担心做一版贴身五观解读。</p>
+        <p>可直接生成，也可以先点一个更想看的方向。</p>
       </div>
       <div class="ai-followup-body" id="ai-followup-body">
         <div class="ai-followup-grid">
@@ -565,22 +556,22 @@
           <button type="button" class="ai-followup-chip" data-followup-topic="timing" onclick="setAIFollowupTopic('timing', this)">现在是推进还是缓一缓</button>
         </div>
         <div class="ai-followup-form">
-          <div class="ai-followup-mode-note">默认按五观细读；上面的主题只是帮它更聚焦。</div>
+          <div class="ai-followup-mode-note">主题只用于聚焦，不会替你下结论。</div>
           <label class="ai-followup-label" for="ai-followup-input">补一句现实场景（可不填）</label>
           <textarea id="ai-followup-input" class="ai-followup-input" placeholder="例如：我更想知道这件事里最该先核对哪一个事实。"></textarea>
           <div class="ai-followup-actions">
-            <button class="btn btn-primary" id="ai-followup-submit-btn" type="button" onclick="requestAIInterpret()">生成贴身五观解读</button>
+            <button class="btn btn-primary" id="ai-followup-submit-btn" type="button" onclick="requestAIInterpret('detail')">生成详细解读</button>
             <button class="btn btn-outline" type="button" onclick="resetAIFollowup()">清空追问</button>
           </div>
-          <div id="ai-loading" class="ai-loading">AI 正在围绕当前问题整理五观解读...</div>
+          <div id="ai-loading" class="ai-loading">AI 正在结合当前问题整理...</div>
         </div>
         <div id="ai-followup-result" class="ai-followup-result">
         <div class="ai-followup-structure">
-          <div class="ai-followup-block"><strong>卦里怎么看</strong><span id="ai-followup-core"></span></div>
-          <div class="ai-followup-block"><strong>放到这个主题里</strong><span id="ai-followup-theme"></span></div>
-          <div class="ai-followup-block"><strong>今天先怎么做</strong><span id="ai-followup-action"></span></div>
-          <div class="ai-followup-block"><strong>先别拿它做什么决定</strong><span id="ai-followup-boundary"></span></div>
-          <div class="ai-followup-block"><strong>依据从哪里来</strong><span id="ai-followup-basis"></span></div>
+          <div class="ai-followup-block"><strong>核心判断</strong><span id="ai-followup-core"></span></div>
+          <div class="ai-followup-block"><strong>对应你这件事</strong><span id="ai-followup-theme"></span></div>
+          <div class="ai-followup-block"><strong>今天先做</strong><span id="ai-followup-action"></span></div>
+          <div class="ai-followup-block"><strong>别急着做的决定</strong><span id="ai-followup-boundary"></span></div>
+          <div class="ai-followup-block"><strong>为什么这样说</strong><span id="ai-followup-basis"></span></div>
         </div>
         <div class="ai-feedback-row" aria-label="AI 回答反馈">
           <button type="button" class="ai-feedback-btn" onclick="queueAIFeedback('useful')">这条有帮助</button>
@@ -640,11 +631,11 @@
 <div id="history-screen" class="screen scrollable">
   <div class="history-inner">
     <div class="daily-nav">
-      <button class="daily-nav-btn" onclick="goBack()">&larr; 返回</button>
+      <button class="daily-nav-btn" onclick="goBack()">返回</button>
       <span style="font-family:var(--font-serif);color:var(--ink-deep);letter-spacing:0.1em;font-size:var(--text-lg)">占卦历史</span>
       <span></span>
     </div>
-      <p class="history-top-note">回看不是验证命运，而是看自己反复在意什么、当时留下的动作有没有让状态更清楚。</p>
+      <p class="history-top-note">回看当时的问题、行动，以及七天后的真实变化。</p>
     <div class="history-filter-bar" id="history-filter-bar" style="display:none">
       <button class="history-filter-btn active" onclick="filterHistory('all')" id="hf-all">全部</button>
       <button class="history-filter-btn" onclick="filterHistory('fav')" id="hf-fav">&#9733; 收藏</button>
@@ -654,6 +645,34 @@
     <div id="history-insight-panel"></div>
     <div class="history-list" id="history-list">
       <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== 我的 ===== -->
+<div id="profile-screen" class="screen scrollable">
+  <div class="profile-hub">
+    <header class="profile-hub-head">
+      <span>我的</span>
+      <h2>把个人资料、学习与设置放在一处</h2>
+    </header>
+    <div class="profile-hub-list">
+      <button type="button" class="profile-hub-item is-primary" onclick="showBaZhai()">
+        <span class="profile-hub-mark">命</span>
+        <span><strong>看我的现实方向</strong><em>事业、关系、身心与钱财的观察入口</em></span>
+      </button>
+      <button type="button" class="profile-hub-item" onclick="goTo('birthday')">
+        <span class="profile-hub-mark">档</span>
+        <span><strong>更新生辰档案</strong><em>重新填写资料并生成个人档案</em></span>
+      </button>
+      <button type="button" class="profile-hub-item" onclick="showEncyclopedia()">
+        <span class="profile-hub-mark">卦</span>
+        <span><strong>卦象图鉴</strong><em>需要学习时再查卦辞和结构</em></span>
+      </button>
+      <button type="button" class="profile-hub-item" onclick="openSettings()">
+        <span class="profile-hub-mark">设</span>
+        <span><strong>AI 与本机设置</strong><em>检查 Qwen Key 和当前浏览器设置</em></span>
+      </button>
     </div>
   </div>
 </div>
@@ -669,12 +688,12 @@
 <div id="encyclopedia-screen" class="screen scrollable">
   <div class="enc-header">
     <div class="enc-header-top">
-      <button class="enc-back-btn" onclick="goBack()">&larr; 返回</button>
+      <button class="enc-back-btn" onclick="goBack()">返回</button>
     </div>
     <div class="enc-header-title">
       <h2>周易六十四卦</h2>
     </div>
-    <p>观卦象以知天命 · 察爻辞以通人事</p>
+    <p>查卦名、看结构，需要时再深入。</p>
   </div>
   <div class="enc-search">
     <svg class="enc-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -694,6 +713,13 @@
   <div class="enc-grid" id="enc-grid"></div>
 </div>
 
+<nav class="app-bottom-nav" id="app-bottom-nav" aria-label="主导航">
+  <button type="button" data-nav="daily" onclick="showDailyHex()"><span>今</span><em>今日</em></button>
+  <button type="button" data-nav="question" onclick="goTo('home')"><span>问</span><em>问事</em></button>
+  <button type="button" data-nav="history" onclick="showHistory()"><span>回</span><em>回看</em></button>
+  <button type="button" data-nav="profile" onclick="showProfileHub()"><span>我</span><em>我的</em></button>
+</nav>
+
 <!-- 图鉴详情浮层 -->
 <div class="enc-detail-overlay" id="enc-detail-overlay" onclick="if(event.target===this)closeEncDetail()">
   <div class="enc-detail" id="enc-detail"></div>
@@ -711,7 +737,7 @@
   </div>
 </div>
 
-<script src="assets/guanxin-app.js?v=6w1"></script>
+<script src="assets/guanxin-app.js?v=6x1"></script>
 
 <!-- 问卦输入弹窗 -->
 <div class="question-modal-overlay" id="question-modal-overlay" onclick="if(event.target===this)closeQuestionModal()">
@@ -832,13 +858,13 @@
         <span id="ai-modal-status-text">请稍等，生成完成后会停留在这里，不会让你错过内容。</span>
       </div>
       <div class="ai-modal-grid" id="ai-modal-grid" style="display:none">
-        <div class="ai-modal-block"><strong>卦里怎么看</strong><span id="ai-modal-core"></span></div>
-        <div class="ai-modal-block"><strong>放到这个主题里</strong><span id="ai-modal-theme"></span></div>
-        <div class="ai-modal-block"><strong>今天先怎么做</strong><span id="ai-modal-action"></span></div>
-        <div class="ai-modal-block"><strong>边界提醒</strong><span id="ai-modal-boundary"></span></div>
+        <div class="ai-modal-block"><strong>核心判断</strong><span id="ai-modal-core"></span></div>
+        <div class="ai-modal-block"><strong>对应你这件事</strong><span id="ai-modal-theme"></span></div>
+        <div class="ai-modal-block"><strong>今天先做</strong><span id="ai-modal-action"></span></div>
+        <div class="ai-modal-block"><strong>别急着做的决定</strong><span id="ai-modal-boundary"></span></div>
       </div>
       <div class="ai-modal-actions">
-        <button class="btn btn-primary" type="button" onclick="closeAIModal()">留在当前页继续看</button>
+        <button class="btn btn-primary" id="ai-modal-primary-action" type="button" onclick="closeAIModal()">留在当前页继续看</button>
         <button class="btn btn-outline" id="ai-modal-secondary-action" type="button" onclick="focusAIFollowupInput()">继续追问此卦</button>
       </div>
     </div>
