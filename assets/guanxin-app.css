@@ -16510,6 +16510,249 @@ body:not(.modal-open) .sc-toast{
   }
 }
 
+/* ===== Stage 6Y · locked visual language and compact life dimensions (2026-07-13) ===== */
+:root{
+  --brand-paper:var(--gx-paper-plain,#fbf7ec);
+  --brand-ink:var(--gx-ink-strong,#241c13);
+  --brand-primary:var(--gx-stone,#315f68);
+  --brand-accent:var(--gx-red,#9f3d33);
+  --brand-muted:var(--gx-ink-muted,#6f634f);
+  --brand-line:var(--gx-line,rgba(80,67,48,.18));
+}
+
+.app-bottom-nav button.is-active,
+#divination-screen .result-reading-mode button.is-active,
+.profile-hub-item.is-primary .profile-hub-mark{
+  border-color:var(--brand-primary);
+  background:var(--brand-primary);
+  color:var(--brand-paper);
+}
+
+#bazhai-screen .bz-flow-tabs{
+  border:1px solid color-mix(in srgb,var(--brand-primary) 16%,transparent)!important;
+  border-radius:8px!important;
+  padding:6px!important;
+  background:color-mix(in srgb,var(--brand-paper) 86%,transparent)!important;
+}
+
+#bazhai-screen .bz-flow-tab{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  min-height:72px!important;
+  padding:10px 11px!important;
+  border:1px solid var(--brand-line)!important;
+  border-radius:6px!important;
+  background:color-mix(in srgb,var(--brand-paper) 72%,transparent)!important;
+  color:var(--brand-muted)!important;
+  box-shadow:none!important;
+}
+
+#bazhai-screen .bz-flow-tab strong{
+  display:block!important;
+  width:100%!important;
+  color:var(--brand-ink)!important;
+  font-size:14px!important;
+  letter-spacing:0!important;
+}
+
+#bazhai-screen .bz-flow-tab span{
+  display:block!important;
+  width:100%!important;
+  color:var(--brand-muted)!important;
+  overflow-wrap:normal!important;
+  word-break:keep-all!important;
+  white-space:nowrap!important;
+}
+
+#bazhai-screen .bz-flow-tab em{
+  display:block!important;
+  width:100%!important;
+  color:color-mix(in srgb,var(--brand-muted) 72%,transparent)!important;
+  overflow-wrap:normal!important;
+  word-break:keep-all!important;
+  white-space:nowrap!important;
+}
+
+#bazhai-screen .bz-flow-tab:hover,
+#bazhai-screen .bz-flow-tab:focus-visible{
+  border-color:color-mix(in srgb,var(--brand-primary) 42%,transparent)!important;
+  background:color-mix(in srgb,var(--brand-primary) 7%,var(--brand-paper))!important;
+  outline:2px solid color-mix(in srgb,var(--brand-primary) 18%,transparent)!important;
+  outline-offset:2px;
+}
+
+#bazhai-screen .bz-flow-tab.is-active{
+  border-color:var(--brand-primary)!important;
+  background:var(--brand-primary)!important;
+  color:var(--brand-paper)!important;
+  transform:none!important;
+}
+
+#bazhai-screen .bz-flow-tab.is-active strong,
+#bazhai-screen .bz-flow-tab.is-active span,
+#bazhai-screen .bz-flow-tab.is-active em{
+  color:var(--brand-paper)!important;
+}
+
+#bazhai-screen .bz-flow-panel[data-flow-panel="scene"] .bz-section-shell{
+  padding:20px 0 0!important;
+  border:0!important;
+  border-top:1px solid var(--brand-line)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+#bazhai-screen[data-bz-flow="scene"] .bz-next-panel,
+#bazhai-screen[data-bz-flow="magnet"] .bz-next-panel,
+#bazhai-screen[data-bz-flow="deep"] .bz-next-panel{
+  display:none!important;
+}
+
+#bazhai-screen .bz-life-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-top:16px!important;
+}
+
+#bazhai-screen .bz-life-entry{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  min-height:76px;
+  padding:12px;
+  border:1px solid var(--brand-line);
+  border-radius:6px;
+  background:color-mix(in srgb,var(--brand-paper) 76%,transparent);
+  color:var(--brand-ink);
+  text-align:left;
+  cursor:pointer;
+  transition:border-color .18s ease,background .18s ease,transform .18s ease;
+}
+
+#bazhai-screen .bz-life-entry:hover,
+#bazhai-screen .bz-life-entry:focus-visible{
+  border-color:color-mix(in srgb,var(--brand-primary) 46%,transparent);
+  background:color-mix(in srgb,var(--brand-primary) 7%,var(--brand-paper));
+  outline:2px solid color-mix(in srgb,var(--brand-primary) 18%,transparent);
+  outline-offset:2px;
+  transform:translateY(-1px);
+}
+
+#bazhai-screen .bz-life-entry:active{
+  transform:scale(.98);
+}
+
+#bazhai-screen .bz-life-mark{
+  display:grid;
+  place-items:center;
+  width:36px;
+  height:36px;
+  border:1px solid color-mix(in srgb,var(--brand-primary) 36%,transparent);
+  border-radius:50%;
+  background:color-mix(in srgb,var(--brand-primary) 8%,transparent);
+  color:var(--brand-primary);
+  font-family:var(--font-serif);
+  font-size:14px;
+}
+
+#bazhai-screen .bz-life-entry-copy{
+  display:grid;
+  gap:3px;
+  min-width:0;
+}
+
+#bazhai-screen .bz-life-entry-copy strong{
+  color:var(--brand-ink);
+  font-family:var(--font-serif);
+  font-size:15px;
+  line-height:1.35;
+  letter-spacing:0;
+}
+
+#bazhai-screen .bz-life-entry-copy em{
+  color:var(--brand-muted);
+  font-family:var(--font-sans);
+  font-size:12px;
+  font-style:normal;
+  line-height:1.4;
+}
+
+#bazhai-screen .bz-life-entry-action{
+  color:var(--brand-primary);
+  font-family:var(--font-serif);
+  font-size:12px;
+  white-space:nowrap;
+}
+
+#question-modal-overlay .question-modal,
+.ai-modal,
+.confirm-modal{
+  border-radius:8px!important;
+}
+
+.insight-sheet-panel{
+  border-radius:8px 8px 0 0!important;
+  background:var(--brand-paper)!important;
+}
+
+.insight-sheet{
+  animation:none!important;
+}
+
+.insight-sheet-top,
+.insight-sheet-body,
+.insight-sheet-footer{
+  background-color:var(--brand-paper)!important;
+}
+
+.insight-sheet-footer-btn{
+  border-radius:6px!important;
+}
+
+body.modal-open .sc-toast{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+
+#question-modal-overlay .question-modal::before,
+.ai-modal::before,
+.confirm-modal::before,
+.insight-sheet-panel::before{
+  border-radius:inherit!important;
+}
+
+@media (max-width:720px){
+  #bazhai-screen .bz-life-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  #bazhai-screen .bz-life-entry{
+    grid-template-columns:34px minmax(0,1fr);
+    min-height:72px;
+    padding:10px;
+  }
+
+  #bazhai-screen .bz-life-entry-action{
+    display:none;
+  }
+}
+
+@media (max-width:390px){
+  #bazhai-screen .bz-flow-tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  #bazhai-screen .bz-life-entry-copy strong{
+    font-size:14px;
+  }
+}
+
 /* ===== Stage 6L · dark relic coin surface (2026-07-09) ===== */
 .coin-yao-slot,
 .coin-disc{

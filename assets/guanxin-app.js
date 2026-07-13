@@ -2642,6 +2642,10 @@ function syncOverlayAccessibility(){
       overlay.inert = true;
     }
   });
+  if(hasBlockingOverlay){
+    var toast = document.getElementById('sc-toast');
+    if(toast) toast.classList.remove('show');
+  }
   document.body.classList.toggle('modal-open', hasBlockingOverlay);
   syncAppBottomNav();
 }
@@ -5176,8 +5180,8 @@ function buildLifeDimensionInsights(dimensions, mg, bmg, ln, wxr){
   dimensions.forEach(function(item){
     var row = item.data || {};
     data['life_'+item.key] = {
-      title:'四维生活解析 · '+item.title,
-      subtitle:'命宫 '+mg.name+'宫 · 生日本命卦 '+benguaName+' · 流年 '+ln.name+'宫',
+      title:'现实方向 · '+item.title,
+      subtitle:'命宫 '+mg.name+'宫 · 本命卦 '+benguaName+' · 流年 '+ln.name+'宫',
       summary:row.summary || '',
       chips:[
         {title:'先从这里看', text:item.badge ? item.badge.replace('看','先看看') : '先看看你现在最费力的那一层'},
@@ -5512,6 +5516,7 @@ function openInsightSheet(data){
       + '<div class="insight-sheet-footer"><button type="button" class="insight-sheet-footer-btn" onclick="closeInsightSheet()">看完了，返回上一层</button></div>'
     + '</div>';
   document.body.appendChild(overlay);
+  syncOverlayAccessibility();
   window._insightEscHandler = function(e){
     if(e.key==='Escape') closeInsightSheet();
   };
@@ -5675,6 +5680,8 @@ function openBaZhaiInsight(key){
 
 function switchBzFlow(tabKey){
   window._currentBzFlow = tabKey;
+  var screen = document.getElementById('bazhai-screen');
+  if(screen) screen.setAttribute('data-bz-flow', tabKey);
   document.querySelectorAll('.bz-flow-tab').forEach(function(btn){
     btn.classList.toggle('is-active', btn.getAttribute('data-flow')===tabKey);
   });
@@ -6999,19 +7006,18 @@ function showBaZhai(options){
 
   html+='<div class="bz-flow-panel" data-flow-panel="scene">';
   html+='<div class="bz-section-shell">';
-  html+='<div class="bz-section-kicker">放进生活里看</div>';
-  html+='<div class="bz-section-heading">从现实问题切进去</div>';
-  html+='<p class="bz-section-copy">这一层不重复命宫底色，只把它放到事业、关系、身体状态和钱财习惯里看。</p>';
-  html+='<div class="bz-section-shell bz-section-nested">';
   html+='<div class="bz-section-kicker">四个现实方向</div>';
-  html+='<div class="bz-section-heading">先选现在最牵动你的一项</div>';
-  html+='<p class="bz-section-copy">每项只留一句提醒、一个容易耗力的地方和一个小动作；需要更细时再点开。</p>';
+  html+='<div class="bz-section-heading">现在最牵动你的是哪一项</div>';
+  html+='<p class="bz-section-copy">点一个方向查看，不在页面里一次铺开全部内容。</p>';
   html+='<div class="bz-life-grid">';
+  var lifeMarks={career:'业',relationship:'情',wellbeing:'身',wealth:'财'};
   lifeDimensions.forEach(function(item){
-    html+='<button type="button" class="bz-life-card" onclick="openBaZhaiInsight(\'life_'+item.key+'\')"><strong>'+item.title+'<em>'+item.badge+'</em></strong><span>'+item.data.summary+'</span><i>先做：'+compactLifeAction(item.data.action)+'</i></button>';
+    html+='<button type="button" class="bz-life-entry" onclick="openBaZhaiInsight(\'life_'+item.key+'\')" aria-label="查看'+item.title+'方向">';
+    html+='<span class="bz-life-mark" aria-hidden="true">'+(lifeMarks[item.key]||'看')+'</span>';
+    html+='<span class="bz-life-entry-copy"><strong>'+item.title+'</strong><em>'+item.badge+'</em></span>';
+    html+='<span class="bz-life-entry-action">查看</span>';
+    html+='</button>';
   });
-  html+='</div>';
-  html+='<div class="bz-life-hint">这一层先帮你把问题收成四个现实方向，不再重复命宫底色。想继续学术语和原文，再去后面的“术语与原文”。</div>';
   html+='</div>';
   html+='</div>';
   html+='</div>';
