@@ -17189,3 +17189,48 @@ body.modal-open .sc-toast{
 #bazhai-screen .bz-flow-nav{
   margin-bottom:18px!important;
 }
+
+/* ===== Stage 7B · direct-answer result layer ===== */
+#divination-screen .result-landing-brief span,
+#divination-screen .result-landing-item span{
+  display:block!important;
+  overflow:visible!important;
+  -webkit-line-clamp:unset!important;
+}
+
+#divination-screen .result-landing-evidence{
+  background:rgba(49,95,104,.055)!important;
+}
+
+#divination-screen .result-landing-grid{
+  grid-template-columns:1fr!important;
+}
+
+#divination-screen .result-landing-brief,
+#divination-screen .result-landing-item{
+  display:grid!important;
+  grid-template-columns:112px minmax(0,1fr)!important;
+  align-items:start!important;
+  column-gap:14px!important;
+}
+
+#divination-screen .result-landing-brief strong,
+#divination-screen .result-landing-item strong{
+  width:auto!important;
+  min-width:0!important;
+  text-align:left!important;
+  white-space:normal!important;
+}
+
+#divination-screen .result-landing-brief span,
+#divination-screen .result-landing-item span{
+  text-align:left!important;
+}
+
+@media (max-width:560px){
+  #divination-screen .result-landing-brief,
+  #divination-screen .result-landing-item{
+    grid-template-columns:82px minmax(0,1fr)!important;
+    column-gap:8px!important;
+  }
+}

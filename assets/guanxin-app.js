@@ -1,6 +1,7 @@
 /* ===== 核心数据表 ===== */
 const TG=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const DZ=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const DASHSCOPE_MODEL='qwen3.7-plus';
 
 const NA_JIA={'甲':6,'壬':6,'乙':2,'癸':2,'庚':3,'辛':4,'丙':8,'己':9,'戊':1,'丁':7};
 
@@ -2197,26 +2198,78 @@ function getConciseResultText(text, limit, fallback){
   return picked + '。';
 }
 
-function updateResultLanding(hex, actionData, contextContent){
+function buildDirectResultLayer(hex, questionContext, contextContent){
+  var parts = splitQuestionContext(questionContext || '');
+  var content = contextContent || getHexContentForQuestion(hex, questionContext || '');
+  var themeKey = content && content.themeKey ? content.themeKey : inferThemeKey(questionContext || '', hex);
+  var questionText = parts.question || '';
+  var relationModel = getTiYongModel(hex);
+  var relation = relationModel ? getWuxingRelation(relationModel.ti.element, relationModel.yong.element) : null;
+  var relationCode = relation ? relation.code : 'unknown';
+  var isDecisionQuestion = /适不适合|要不要|该不该|能不能|是否|去留|辞职|离职|分手|复合|继续|放弃/.test(questionText);
+  var directByTheme = {
+    work:isDecisionQuestion
+      ? ((relationCode === 'yongKeTi' || relationCode === 'tiShengYong')
+        ? '这份工作眼下对你的消耗大于确定回报，先别靠继续加码来证明它适合你；但也不必只凭一时疲惫马上决定去留。'
+        : '这份工作并非没有继续空间，但“适不适合”不能只看感觉，要看学习、收入和实际反馈能不能持续接住你的投入。')
+      : '眼下最要紧的不是把所有工作一起推进，而是先找出一个能产生明确反馈的关键节点。',
+    relationship:isDecisionQuestion
+      ? '这段关系现在还不足以只凭心意下结论。先看对方有没有稳定回应、你们能不能把关键问题说清，再决定靠近还是退一步。'
+      : '眼下关系里的重点不是猜对方怎么想，而是看一次清楚表达之后，对方有没有真实、持续的回应。',
+    finance:'现在不适合只问“能不能经济独立”，先看收入、必要支出和可调整支出之间是否已经出现可持续的余量。',
+    emotion:'你现在不是没有初心，而是焦虑和杂念暂时盖住了它。先把事实、担心和真正想守住的东西分开。',
+    family:'你对家人的担心是真的，但当前最需要的是确认事实和自己能承担的部分，不要先把所有后果压到自己身上。',
+    growth:'你并不是做得不够，而是把改变想得太大。先验证一个微小的新反应能不能稳定发生。',
+    other:isDecisionQuestion
+      ? '这件事现在还不适合直接定成“行”或“不行”。先把最关键的现实条件核对清楚，再决定下一步。'
+      : '这件事真正卡住的不是答案本身，而是事实、担心和可行动部分还混在一起。'
+  };
+  var actionByTheme = {
+    work:'连续 7 天，每天记录一项任务的投入、得到的反馈和实际产出；第 7 天再判断它是否值得继续。',
+    relationship:'未来 7 天只观察一次清楚表达后的真实回应，不用猜测补全关系；第 7 天同时记一条支持和一条反证。',
+    finance:'连续 7 天记下确定收入、必要支出和一项可调整支出，第 7 天看现金流是否真的有余量。',
+    emotion:'连续 7 天每天写下一条事实、一条担心和一个仍想守住的选择，第 7 天再看初心有没有变清楚。',
+    family:'未来 7 天只确认一条家人的真实信息，并做一件自己承担得起的照看，不替未知结果提前负责。',
+    growth:'连续 7 天只练一个微小改变，每天记下是否做到以及当时的触发点。',
+    other:'未来 7 天只观察一个最关键的小变化，每天记一条事实，第 7 天同时核对支持和反证。'
+  };
+  var key = getHexKeywordText(hex, 1);
+  var target = getYaoObservationTarget(hex && hex.yao);
+  var evidence = '这卦把重点放在“'+key+'”，而第'+hex.yao+'爻把变化落在'+target+'。'+(relation ? relation.reality : '先看现实条件有没有真正变化。');
+  var worryBoundary = parts.worry
+    ? '先别让“'+parts.worry+'”替事实下结论，也不要用一次卦替代重大决定。'
+    : '先别急着用一次卦替自己做重大决定，七天后再拿事实核对。';
+  return {
+    headline:directByTheme[themeKey] || directByTheme.other,
+    evidence:evidence,
+    action:actionByTheme[themeKey] || actionByTheme.other,
+    boundary:worryBoundary
+  };
+}
+
+function updateResultLanding(hex, actionData, contextContent, questionContext){
   var overallEl = document.getElementById('result-landing-overall');
+  var evidenceEl = document.getElementById('result-landing-evidence');
   var avoidEl = document.getElementById('result-landing-avoid');
   var copyEl = document.getElementById('result-landing-copy');
   var headlineEl = document.querySelector('#divination-screen .result-landing-headline');
   if(!overallEl || !avoidEl || !copyEl) return;
   var summary = generateSummary(hex);
   var content = contextContent || null;
-  var overall = (actionData && actionData.overall) || (content && content.reality) || summary.s1;
-  var action = (actionData && actionData.action) || (content && content.action) || summary.s2;
-  var avoid = (actionData && actionData.avoid) || (content && content.boundary) || summary.s3;
-  overallEl.textContent = getConciseResultText(overall, 54, summary.s1);
-  avoidEl.textContent = getConciseResultText(avoid, 52, summary.s3);
+  var direct = buildDirectResultLayer(hex, questionContext || buildQuestionContext(lastDivQuestion || '', lastDivWorry || ''), content);
+  var overall = (actionData && actionData.overall) || direct.headline || summary.s1;
+  var action = (actionData && actionData.action) || direct.action || summary.s2;
+  var avoid = (actionData && actionData.avoid) || direct.boundary || summary.s3;
+  overallEl.textContent = overall;
+  if(evidenceEl) evidenceEl.textContent = direct.evidence || '';
+  avoidEl.textContent = avoid;
   if(headlineEl){
-    headlineEl.textContent = (content && content.headline) || ((hex && hex.name ? hex.name + '：' : '') + '先分三件事');
+    headlineEl.textContent = '先直接回答你';
   }
   copyEl.textContent = actionData
     ? '这层回答只补充你刚才选择的主题，仍然回到观察、行动和边界。'
-    : '不下定论，只看局面、行动和边界。';
-  updateResultActionTip(getConciseResultText(action, 60, summary.s2));
+    : '先看结论，再看依据；术语放在详细版。';
+  updateResultActionTip(action);
 }
 
 function setResultReadingMode(mode){
@@ -2486,7 +2539,7 @@ function showDivResult(hex, question, title, worry){
   if(summaryEl) summaryEl.style.display = 'none';
   var questionContext = buildQuestionContext(question, lastDivWorry);
   var content = getHexContentForQuestion(hex, questionContext);
-  updateResultLanding(hex, null, content);
+  updateResultLanding(hex, null, content, questionContext);
 
   var plain = getHexPlainInsight(hex, questionContext);
   var plainCoreEl = document.getElementById('div-plain-core');
@@ -6174,7 +6227,7 @@ async function saveApiKey(){
   setApiKeyStatus('正在连接 DashScope 验证...', '');
   try{
     await requestAIByBrowserKey(key, {
-      model:'qwen-plus',
+      model:DASHSCOPE_MODEL,
       prompt:'仅回复“可用”。',
       max_tokens:4,
       temperature:0
@@ -6529,7 +6582,7 @@ async function requestAIInterpret(mode){
 
   try{
     var payload = {
-      model:'qwen-plus',
+      model:DASHSCOPE_MODEL,
       prompt: prompt,
       max_tokens:650,
       temperature:0.6

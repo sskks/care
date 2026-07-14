@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="guanxin-version" content="2026-07-14-stage-7a">
+<meta name="guanxin-version" content="2026-07-14-stage-7b">
 <title>观心 · 周易卦象</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F8F3E6'/%3E%3Cpath d='M32 2a30 30 0 0 1 0 60 15 15 0 0 1 0-30 15 15 0 0 0 0-30Z' fill='%232C2418'/%3E%3Ccircle cx='32' cy='17' r='5.5' fill='%232C2418'/%3E%3Ccircle cx='32' cy='47' r='5.5' fill='%23F8F3E6'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/guanxin-app.css?v=7a1">
+<link rel="stylesheet" href="assets/guanxin-app.css?v=7b1">
 </head>
 <body>
 <svg width="0" height="0" class="coin-relic-filter" aria-hidden="true" focusable="false">
@@ -464,20 +464,24 @@
       <button type="button" data-reading-mode="detail" aria-pressed="false" onclick="setResultReadingMode('detail')">详细版</button>
     </div>
       <div class="result-landing-board result-case-board">
-        <span class="result-landing-kicker">这次卦象</span>
-      <div class="result-landing-headline">先看三件事</div>
-      <p class="result-landing-copy" id="result-landing-copy">不下定论，只看局面、行动和边界。</p>
+        <span class="result-landing-kicker">这次解读</span>
+      <div class="result-landing-headline">先直接回答你</div>
+      <p class="result-landing-copy" id="result-landing-copy">先看结论，再看依据；术语放在详细版。</p>
       <div class="result-landing-brief">
-        <strong>局面</strong>
+        <strong>直接回答</strong>
         <span id="result-landing-overall"></span>
       </div>
       <div class="result-landing-grid">
+        <div class="result-landing-item result-landing-evidence">
+          <strong>为什么这样说</strong>
+          <span id="result-landing-evidence"></span>
+        </div>
         <div class="result-landing-item">
-          <strong>行动</strong>
+          <strong>未来七天先做</strong>
           <span id="result-action-tip">先把今天最在意的问题写成一句话，等情绪稳定后再决定下一步。</span>
         </div>
         <div class="result-landing-item">
-          <strong>边界</strong>
+          <strong>先别急着</strong>
           <span id="result-landing-avoid"></span>
         </div>
       </div>
@@ -737,7 +741,7 @@
   </div>
 </div>
 
-<script src="assets/guanxin-app.js?v=7a1"></script>
+<script src="assets/guanxin-app.js?v=7b1"></script>
 
 <!-- 问卦输入弹窗 -->
 <div class="question-modal-overlay" id="question-modal-overlay" onclick="if(event.target===this)closeQuestionModal()">
