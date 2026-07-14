@@ -236,6 +236,74 @@ const GUA_TAGS={
 63:{k:['既成','守成','防衰'],t:'完成'},64:{k:['未成','希望','慎终'],t:'开始'}
 };
 
+/* 每日一卦短层：只说今天怎么理解和行动，传统依据继续留在深读层。 */
+const DAILY_PLAIN_GUIDE={
+  1:{headline:'今天适合主动定方向',focus:'如果一件事已经想清楚，今天别再等别人替你开头。先由你定目标，再迈出第一步。',doNow:'选一件最重要的事，在今天完成第一个可交付结果。',avoidNow:'别同时开太多战线，也别把强硬当成果断。',review:'今晚回看：我今天真的推动了关键一步，还是只把目标说得很大？'},
+  2:{headline:'今天先把事情接稳',focus:'如果任务和情绪一下都压过来，先分清什么必须由你承担，什么可以晚一点或交给别人。',doNow:'列出今天必须完成的三件事，只先接住第一件。',avoidNow:'不要因为怕别人失望，就把所有责任都揽到自己身上。',review:'今晚回看：我今天是在稳稳承接，还是又把自己放到了最后？'},
+  3:{headline:'刚开始卡住，不代表方向错了',focus:'如果新任务、新关系或新计划一开头就不顺，先别硬顶。困难通常来自信息不全、资源没到位或第一步太大。',doNow:'把第一步缩小一半，再找一个能提供信息或资源的人确认后继续。',avoidNow:'不要因为开头难，就立刻放弃，也不要一个人闷头硬撑。',review:'今晚回看：我今天补到了哪条信息或哪份支持，让事情更容易开始？'},
+  4:{headline:'今天先把不懂的问清楚',focus:'如果你对规则、方法或对方意思还很模糊，继续猜只会更乱。先承认不知道，再去找可信答案。',doNow:'写下最影响下一步的一个问题，向懂行的人或可靠资料求证。',avoidNow:'不要装懂，也不要同时收集太多互相冲突的说法。',review:'今晚回看：我今天真正弄懂了哪一件事？'},
+  5:{headline:'条件没齐时，先准备',focus:'如果回复、机会或结果还没来，今天更适合补材料、养精力、准备备选方案，而不是反复催问。',doNow:'完成一项不依赖别人回应的准备工作。',avoidNow:'不要用连续追问和频繁刷新来换取安全感。',review:'今晚回看：等待期间，我增加了什么真实准备？'},
+  6:{headline:'有分歧时，先把事实摆平',focus:'如果今天容易争论，先把事实、责任和诉求分开。赢下一句话，不等于解决了问题。',doNow:'把争议写成三行：已确认事实、我的诉求、可以接受的底线。',avoidNow:'不要在气头上翻旧账，也不要急着证明谁对谁错。',review:'今晚回看：我今天让问题更清楚了，还是只让情绪更响了？'},
+  7:{headline:'事情多时，先排队再行动',focus:'如果多人协作或任务混乱，今天最需要的不是更用力，而是明确谁负责、先做什么、何时交付。',doNow:'为当前任务写清负责人、截止时间和第一项交付。',avoidNow:'不要在分工不明时靠临时救火维持进度。',review:'今晚回看：今天的秩序有没有比早上更清楚？'},
+  8:{headline:'今天适合找对的人一起做',focus:'如果一件事单靠自己推进很慢，先看谁和你目标一致、愿意互相支持，再决定怎样合作。',doNow:'联系一个真正相关的人，提出一个具体、容易回答的协作请求。',avoidNow:'不要为了合群随便承诺，也别把热情当成可靠合作。',review:'今晚回看：我今天找到的是同行者，还是只找了一个安慰我的人？'},
+  9:{headline:'今天先积累一个小成果',focus:'如果大目标暂时推不动，先把资料、能力、关系或资金中的一小块补起来。小积累也能改变后面的空间。',doNow:'完成一个三十分钟内能收尾的小任务，并留下结果。',avoidNow:'不要嫌成果小，也不要因为还不够大就重新开新坑。',review:'今晚回看：我今天具体多积累了什么？'},
+  10:{headline:'今天每一步都要看边界',focus:'如果正在进入陌生规则、敏感关系或重要场合，先确认分寸和后果，再往前走。',doNow:'行动前先核对一条规则、一个权限或一句容易引起误会的话。',avoidNow:'不要因为自信或着急，就跳过必要确认。',review:'今晚回看：哪一次谨慎让我少走了弯路？'},
+  11:{headline:'顺的时候，先把好状态固定下来',focus:'如果今天沟通顺、进展快，不要只顾着兴奋。把有效的方法和合作方式留下来，顺势才会持续。',doNow:'记录今天最有效的一种做法，并安排下一次继续使用。',avoidNow:'不要因为暂时顺利，就过度承诺或同时扩张太多。',review:'今晚回看：我把哪种有效做法沉淀下来了？'},
+  12:{headline:'推不动时，先停止无效消耗',focus:'如果对方不回应、流程不通或努力没有反馈，今天先保护精力，确认卡点，而不是继续重复同一动作。',doNow:'暂停一项无反馈的投入，找出真正阻塞它的条件。',avoidNow:'不要把暂时闭塞理解成自己没有价值。',review:'今晚回看：我停止了哪一种无效消耗？'},
+  13:{headline:'今天先把共同目标说清楚',focus:'如果需要合作，别只谈关系好不好。先确认大家究竟要完成什么，以及判断成功的标准。',doNow:'用一句话写出共同目标，并让相关的人确认。',avoidNow:'不要用表面和气掩盖目标不一致。',review:'今晚回看：我们今天真的更同心了吗？'},
+  14:{headline:'资源多时，先决定用在哪里',focus:'如果手上机会、能力或选择很多，今天要做的是分配，不是全部抓住。',doNow:'选一项最值得投入的资源，把时间或预算明确给到它。',avoidNow:'不要因为拥有得多，就高估自己的承载能力。',review:'今晚回看：我把最好的资源放到了最重要的地方吗？'},
+  15:{headline:'今天用事实说话，不必抢着证明',focus:'如果你做得不错，保持清楚和稳定比自我夸大更有力量；如果做得不足，也可以直接承认并修正。',doNow:'主动请一个可信的人指出一处可改进的地方。',avoidNow:'不要把谦逊变成自我否定，也不要用客气逃避责任。',review:'今晚回看：我今天听进去了一条什么反馈？'},
+  16:{headline:'有热情时，先落到计划',focus:'如果今天很想马上开始，先确认时间、资源和下一步。热情能启动事情，但不能替代执行。',doNow:'把最兴奋的想法写成一个具体时间和一个完成标准。',avoidNow:'不要只凭气氛做长期承诺。',review:'今晚回看：我的热情今天留下了什么实际结果？'},
+  17:{headline:'今天可以顺势调整，但别丢掉目标',focus:'如果环境变化或别人提出新方案，可以配合，但先确认这是否仍然服务你的核心目标。',doNow:'接受一项合理调整，同时写下自己不能放弃的一条原则。',avoidNow:'不要为了省事一味跟随，也不要为反对而反对。',review:'今晚回看：我今天的调整是灵活，还是失去了方向？'},
+  18:{headline:'今天适合修一个拖久了的问题',focus:'如果同一个故障、误会或坏习惯反复出现，不要再补表面。先找它为什么总会回来。',doNow:'挑一个老问题，写下根因和今天能修的第一处。',avoidNow:'不要只责怪过去的人，也不要一次翻修所有问题。',review:'今晚回看：我今天修到根上了吗？'},
+  19:{headline:'靠近机会时，也要看自己能否接住',focus:'如果有人来找你、机会正在靠近，先确认责任和后续投入，不要只看眼前的好感和新鲜感。',doNow:'对一个新机会补问清楚职责、期限和下一步。',avoidNow:'不要因为被需要，就立刻答应全部要求。',review:'今晚回看：我今天靠近的是机会，还是新的负担？'},
+  20:{headline:'今天先观察，不急着表态',focus:'如果信息复杂或情绪很强，先看真实发生了什么，再区分自己的解释和猜测。',doNow:'写下三条事实和一条还需要验证的问题。',avoidNow:'不要把第一印象直接当成全貌。',review:'今晚回看：我今天新看见了什么事实？'},
+  21:{headline:'今天要处理那个最碍事的点',focus:'如果事情一直卡住，可能不是你不够努力，而是有一个具体障碍一直没有被正面处理。',doNow:'指出当前最大的一个障碍，并安排一个直接处理动作。',avoidNow:'不要绕开关键问题去做很多看似忙碌的事。',review:'今晚回看：那个障碍今天有没有变小？'},
+  22:{headline:'今天让表达更清楚，但别只顾好看',focus:'如果要汇报、沟通或展示成果，可以整理形式，但核心内容必须经得起追问。',doNow:'优化一份表达，同时补上一条事实、数据或实例。',avoidNow:'不要用漂亮措辞掩盖内容空缺。',review:'今晚回看：别人今天更容易理解我的重点了吗？'},
+  23:{headline:'正在失去支撑时，先保住基础',focus:'如果资源减少、关系松动或计划不断被削弱，今天先保住最重要的底线，不适合继续扩张。',doNow:'删掉一个非必要投入，把时间或资源留给核心部分。',avoidNow:'不要为了维持表面完整，继续透支根基。',review:'今晚回看：我今天保住了什么最重要的东西？'},
+  24:{headline:'走偏了，就从最小一步回来',focus:'如果最近节奏乱了、目标忘了或习惯中断，不需要一次补完。今天重新做一次正确的小动作就够了。',doNow:'恢复一个最基础的习惯，并把它完成一次。',avoidNow:'不要因为中断过，就认定自己无法坚持。',review:'今晚回看：我今天回到了哪条正确轨道？'},
+  25:{headline:'今天只处理真实发生的事',focus:'如果意外打乱计划，先分清事实、自己的责任和无法控制的部分，不要急着寻找命运解释。',doNow:'列出一项自己能补救的责任，今天把它补上。',avoidNow:'不要为不可控的事情过度自责，也不要胡乱行动。',review:'今晚回看：我今天更接近事实了吗？'},
+  26:{headline:'今天适合储备，不急着亮相',focus:'如果能力、作品或资源还需要打磨，先积累厚度。准备充分后再公开，比仓促推出更稳。',doNow:'补一项关键知识、材料或测试，让成果更可靠。',avoidNow:'不要为了尽快被看见，提前交付半成品。',review:'今晚回看：我今天增加了哪一层底气？'},
+  27:{headline:'今天先检查自己在吸收什么',focus:'如果心里越来越乱，先看今天接收的信息、说的话和吃下的东西，是否正在继续放大焦虑。',doNow:'暂停一个让你更乱的输入源，换成一次安静整理或正常吃饭。',avoidNow:'不要用刷信息、消费或过量进食压住真正的问题。',review:'今晚回看：我今天喂养的是清醒还是焦虑？'},
+  28:{headline:'承担过重时，先给结构减压',focus:'如果一件事已经压得人喘不过气，问题可能在承载方式，而不是再多坚持一下。',doNow:'撤掉、延期或转交一项非核心负担。',avoidNow:'不要把硬撑当成负责，也不要在超载时追加承诺。',review:'今晚回看：我今天让哪一处压力真正下降了？'},
+  29:{headline:'今天只过眼前这一道坎',focus:'如果风险和担心很多，先处理最靠近、最具体的一项，不要试图一次解决所有最坏可能。',doNow:'把最担心的事分成事实、猜测、下一步，只执行下一步。',avoidNow:'不要在恐惧最强时做重大决定。',review:'今晚回看：我今天实际跨过了哪一道小坎？'},
+  30:{headline:'今天先把关键事实照清楚',focus:'如果想法很多、情绪很热，先确认什么有证据、什么只是期待。清楚之后再投入。',doNow:'为一个重要判断补一条可核对的事实。',avoidNow:'不要只凭热情或他人的注意力判断价值。',review:'今晚回看：我今天真正看清了什么？'},
+  31:{headline:'关系里先看真实回应',focus:'如果今天很在意某个人，先表达一个真实感受，再观察对方实际怎么回应，不要只在心里猜。',doNow:'用一句不试探、不逼问的话说清一个真实感受。',avoidNow:'不要把短暂心动或一次回应当成长久承诺。',review:'今晚回看：我今天是在真实交流，还是只在放大期待？'},
+  32:{headline:'今天继续做那件值得长期做的事',focus:'如果目标需要时间，今天不必追求新鲜感。重复一次正确动作，比频繁换方法更有效。',doNow:'按原计划完成一次最重要的固定动作。',avoidNow:'不要因为短期没反馈就随意换方向。',review:'今晚回看：我今天守住了哪一个长期动作？'},
+  33:{headline:'今天退一步，是为了保住主动',focus:'如果局面不适合正面硬碰，先拉开距离、减少暴露、保留资源，再等待更合适的时机。',doNow:'暂停一次无效争辩或非必要回应，把精力收回来。',avoidNow:'不要把暂时后退理解成失败，也不要赌气消失。',review:'今晚回看：我的退让有没有换回更清楚的位置？'},
+  34:{headline:'力量足时，更要控制力度',focus:'如果今天状态强、资源够或话语权高，真正重要的是把力用在关键处，而不是证明自己能压过去。',doNow:'推进一件关键任务，同时给自己设一个不过度的上限。',avoidNow:'不要越权、逞强或用强势换服从。',review:'今晚回看：我的力量今天解决了问题，还是制造了压力？'},
+  35:{headline:'今天让真实进展被看见',focus:'如果已经做出成果，不必一直埋头。把过程、数据和下一步讲清楚，机会才更容易接住你。',doNow:'整理并展示一个已经完成的具体成果。',avoidNow:'不要只做表面曝光，也不要夸大尚未完成的部分。',review:'今晚回看：别人今天看见了我的什么真实价值？'},
+  36:{headline:'环境不友好时，先保护自己',focus:'如果今天容易被误解、打压或消耗，先少暴露未成熟的计划，把重要判断和精力留住。',doNow:'减少一次无必要解释，私下完善真正重要的准备。',avoidNow:'不要为了证明自己，把底牌和情绪一次说尽。',review:'今晚回看：我今天保护住了什么重要东西？'},
+  37:{headline:'今天先把角色和责任说清楚',focus:'如果家庭或团队里反复因为谁该做什么而累，先明确分工和需求，不要靠默契猜。',doNow:'和相关的人确认一项具体责任及完成时间。',avoidNow:'不要用指责代替分工，也不要长期替别人兜底。',review:'今晚回看：今天的关系是否因为责任更清楚而轻松了一点？'},
+  38:{headline:'有分歧时，先找还能合作的一点',focus:'如果彼此看法不同，不必立刻统一全部。先找一个共同事实或共同目标，把对话继续下去。',doNow:'明确一处不同意见，再写下一处双方仍然一致的地方。',avoidNow:'不要把观点不同直接升级成关系破裂。',review:'今晚回看：我今天在差异里保住了什么连接？'},
+  39:{headline:'路不通时，换方法并寻求帮助',focus:'如果同一条路越走越难，今天先停下来换角度。困难可能需要外部经验，而不是更多蛮力。',doNow:'向一个有经验的人说明卡点，并请求一个具体建议。',avoidNow:'不要在明显走不通时继续单打独斗。',review:'今晚回看：我今天找到新的路线了吗？'},
+  40:{headline:'今天先解开最关键的一个结',focus:'如果事情开始松动，不必一次解决全部。先解除最影响进展的误会、承诺或拖延点。',doNow:'撤掉一个多余承诺，或完成一个拖延任务的第一步。',avoidNow:'不要把松一口气变成逃避后续责任。',review:'今晚回看：我今天真正解开了哪个结？'},
+  41:{headline:'今天少一点，反而更有余地',focus:'如果时间、钱或精力吃紧，先减少一项不重要的消耗，把资源留给核心需要。',doNow:'取消一项非必要支出、任务或社交安排。',avoidNow:'不要把节省变成自我惩罚，也不要削掉真正重要的支持。',review:'今晚回看：今天减少的东西有没有换回空间？'},
+  42:{headline:'今天把资源投到真正会增长的地方',focus:'如果有余力，优先支持能长期产生价值的人、能力或关系，而不是只追求立刻回报。',doNow:'为一项长期有益的学习、合作或习惯投入一次具体行动。',avoidNow:'不要把帮助做成包办，也不要只看短期收益。',review:'今晚回看：我今天增加了什么长期价值？'},
+  43:{headline:'该决定的事，今天说清楚',focus:'如果一个问题已经拖到影响其他事情，先把事实和底线讲明，再做清楚决定。',doNow:'完成一个小而明确的决定，并通知相关的人。',avoidNow:'不要在情绪最高点公开对抗，也不要把决定说成威胁。',review:'今晚回看：我今天的决定是否清楚又可承担？'},
+  44:{headline:'突然出现的人或机会，先观察',focus:'如果今天遇到强烈吸引、临时邀约或意外机会，先看它会带来什么长期影响，不必立刻投入。',doNow:'为这个新机会补问一个风险问题，并留出考虑时间。',avoidNow:'不要因第一印象强烈就快速承诺。',review:'今晚回看：我今天看见了诱惑背后的什么条件？'},
+  45:{headline:'人和资源聚在一起时，先定中心',focus:'如果今天要开会、组织活动或协调多人，先明确大家为何聚在这里，以及谁负责收口。',doNow:'用一句话确定共同目标，并指定一个收口人。',avoidNow:'不要只追求人多热闹，却没有清楚方向。',review:'今晚回看：今天聚起来的力量有没有落到同一件事上？'},
+  46:{headline:'今天稳稳向上走一步',focus:'如果事情正在变好，不必跳级。把当前层级做好，下一层机会才接得住。',doNow:'完成一项能证明进步的小成果，并记录下来。',avoidNow:'不要因进展慢就频繁换路，也不要提前承担下一层责任。',review:'今晚回看：我今天比昨天具体长进在哪里？'},
+  47:{headline:'今天先止耗，不急着翻盘',focus:'如果外面还在撑、里面已经很累，先承认资源不足，把问题缩小到最关键的一层。',doNow:'停掉一个持续耗力却没有结果的动作，只处理最要紧的事。',avoidNow:'不要在疲惫时争输赢、争解释或逼自己马上振作。',review:'今晚回看：我今天止住了哪一种消耗？'},
+  48:{headline:'今天先补源头，不急着换地方',focus:'如果效率下降或关系变干，先看精力、知识、流程和支持是否长期没有补充。',doNow:'修复一个供给源，例如补休息、整理资料或接上关键沟通。',avoidNow:'不要在源头没补住时继续加码承诺。',review:'今晚回看：我今天照顾好了哪一口“井”？'},
+  49:{headline:'今天只改一个已经失效的做法',focus:'如果旧方法明显不再适用，先换关键一处，不必因为烦躁把所有计划一起推倒。',doNow:'选一个最影响结果的旧做法，今天用新方法试一次。',avoidNow:'不要为了痛快同时推翻关系、承诺和全部计划。',review:'今晚回看：我今天改到了关键处吗？'},
+  50:{headline:'新方法要变成稳定系统',focus:'如果已经开始改变，今天要把新的流程、分工或习惯固定下来，不让它只停在一次尝试。',doNow:'为一个有效的新做法写下固定步骤和下次执行时间。',avoidNow:'不要只追求新鲜感，也不要边改边继续沿用旧规则。',review:'今晚回看：我今天建立了什么可以重复的做法？'},
+  51:{headline:'突然有变化时，先稳住再排序',focus:'如果消息、冲突或意外让你一下慌了，先处理安全和最紧急的一项，其余稍后再判断。',doNow:'停三分钟，写下现在最急、最重要、可以等待的三件事。',avoidNow:'不要在惊慌时群发消息、做重大决定或放大最坏结果。',review:'今晚回看：我今天有没有从慌乱回到次序？'},
+  52:{headline:'今天该停的地方就先停',focus:'如果继续说、继续做只会增加消耗，先停下来守住边界。停止也是一种有效行动。',doNow:'暂停一件已经明显过量的事，给自己一个明确结束时间。',avoidNow:'不要把暂停拖成长期逃避，也不要为了面子继续硬撑。',review:'今晚回看：我今天停对了哪一件事？'},
+  53:{headline:'今天只把当前一步做稳',focus:'如果事情需要时间成长，先站稳这一层。真正的进展是下一步能够接得上，而不是动作看起来很多。',doNow:'完成当前阶段最关键的一步，不额外增加新任务。',avoidNow:'不要因为怕慢就跳步骤、抢结果或提前承诺。',review:'今晚回看：我今天有没有留下能接住下一步的成果？'},
+  54:{headline:'关系和选择里，先看自己的位置',focus:'如果很想被确认、被接纳或马上定下来，先问自己能负责什么，以及现在是否到了合适时机。',doNow:'把能负责的部分和希望别人给答案的部分分开，只处理前者。',avoidNow:'不要为获得确定感而越位承诺、逼问或强行定名。',review:'今晚回看：我今天是在清醒选择，还是急着获得归属？'},
+  55:{headline:'事情很多时，先抓最重要的一件',focus:'如果今天机会多、信息多、任务也多，先排序。丰盛不等于全部都要拿下。',doNow:'选出今天最有价值的一项，在其他事情前完成它。',avoidNow:'不要被忙碌感带着走，也不要在高峰时过度扩张。',review:'今晚回看：我今天把最好的精力给了什么？'},
+  56:{headline:'处在临时环境里，先守住基本盘',focus:'如果今天到了陌生团队、地点或关系阶段，先观察规则，保持轻装，不急着把临时状态当成长久归属。',doNow:'确认一个当地规则或关键联系人，把最必要的事安排好。',avoidNow:'不要在陌生环境中过度暴露、争强或做长期承诺。',review:'今晚回看：我今天守住了哪些基本分寸？'},
+  57:{headline:'今天用小而持续的方式推进',focus:'如果硬推容易引起抵触，就把目标说清楚，再通过细节、重复和关系慢慢进入。',doNow:'用一句更清楚、更柔和的话推进一次关键沟通。',avoidNow:'不要为了和气失去方向，也不要期待一次沟通解决全部。',review:'今晚回看：我今天在哪个细节上真正推进了？'},
+  58:{headline:'今天把真实感受说出来',focus:'如果关系需要改善，轻松交流有用，但真正重要的话不能一直绕开。',doNow:'说一句真实、具体、没有指责的话，并听完对方回应。',avoidNow:'不要用玩笑掩盖不舒服，也不要只求气氛好看。',review:'今晚回看：我今天的交流更真实了吗？'},
+  59:{headline:'注意力散了，今天先重新聚拢',focus:'如果人心、任务或情绪四处分散，先找到一个共同中心，再把资源慢慢拉回来。',doNow:'关掉一个干扰源，集中四十分钟完成一件核心任务。',avoidNow:'不要在分散时继续开新任务或拉更多人进来。',review:'今晚回看：我今天把什么重新聚到了一处？'},
+  60:{headline:'今天给时间、钱或精力设上限',focus:'如果投入开始失控，清楚的边界会保护长期行动。好的限制是让你能继续，而不是惩罚自己。',doNow:'为一件事设一个明确上限，例如时间、预算或回复次数。',avoidNow:'不要完全没有边界，也不要把限制定得无法坚持。',review:'今晚回看：今天的边界让我更清楚还是更紧绷？'},
+  61:{headline:'今天先确认彼此是否说的是真话',focus:'如果合作或关系需要信任，先让事实、承诺和真实感受对得上，不要只靠口头保证。',doNow:'确认一项重要承诺的具体内容、时间和责任人。',avoidNow:'不要用猜测测试别人，也不要轻易许下做不到的承诺。',review:'今晚回看：我今天增加了哪一份真实信任？'},
+  62:{headline:'今天把一个小地方做好',focus:'如果局面不适合大动作，先修细节、补收尾、降低风险。小事做稳也是真进展。',doNow:'完成一个一直被忽略的细节或收尾任务。',avoidNow:'不要为了证明能力去做超出承载的大动作。',review:'今晚回看：我今天把哪个小处做扎实了？'},
+  63:{headline:'事情做成后，更要检查收尾',focus:'如果阶段目标已经完成，今天先查遗漏、交接和后续维护，别因放松让成果重新变乱。',doNow:'做一次收尾检查，并明确下一次维护时间。',avoidNow:'不要把一次完成当成永久稳定，也不要马上另开太多新任务。',review:'今晚回看：我今天补住了哪个可能反复的问题？'},
+  64:{headline:'还差最后几步时，别急着宣布完成',focus:'如果事情已经接近结果，最容易因为心急忽略细节。先确认关键条件都已到位，再做最后推进。',doNow:'列出完成前还缺的三项条件，今天只补最关键的一项。',avoidNow:'不要在信息未齐时抢跑，也不要因为暂未完成就否定全部进展。',review:'今晚回看：我今天补上了哪一个真正影响完成的条件？'}
+};
+
 const THEME_LABELS={
   all:'全部主题',
   finance:'钱财与独立',
@@ -3383,6 +3451,22 @@ function buildDailyBoundaryText(content){
 }
 
 function getHexDailyNarrative(hex){
+  var dailyPlain = hex && DAILY_PLAIN_GUIDE[hex.id];
+  if(dailyPlain){
+    return {
+      homeLead:dailyPlain.focus,
+      homeGuide:dailyPlain.focus,
+      homeCardText:dailyPlain.headline,
+      homePracticeHint:dailyPlain.doNow,
+      headline:dailyPlain.headline,
+      focus:dailyPlain.focus,
+      doNow:dailyPlain.doNow,
+      avoidNow:dailyPlain.avoidNow,
+      review:dailyPlain.review,
+      resultAction:dailyPlain.doNow,
+      source:'daily-plain-guide'
+    };
+  }
   var content = getHexContentV2(hex);
   if(content){
     return {
@@ -5202,6 +5286,53 @@ function buildLifeDimensionInsights(dimensions, mg, bmg, ln, wxr){
   return data;
 }
 
+function buildBaZhaiFlowInsights(experienceModel, lifeDimensions, stars, insightData, mg, bmg, ln){
+  var focus = insightData.minggong || {};
+  var benguaName = bmg && bmg.name ? bmg.name : '生日本命卦';
+  return {
+    flow_focus:Object.assign({}, focus, {
+      title:'个人底色 · '+mg.name+'宫',
+      subtitle:'先看默认反应，再决定今天怎么调整'
+    }),
+    flow_scene:{
+      title:'现实四个方向',
+      subtitle:'事业、感情、身心、钱财分别查看',
+      summary:'先点现在最牵动你的一项，不需要一次读完四个方向。',
+      customHtml:renderInsightListMarkup(lifeDimensions.map(function(item){
+        return {
+          key:'life_'+item.key,
+          title:item.title,
+          hint:(item.data && item.data.summary) || item.badge || '点开查看这个方向'
+        };
+      }), 'openBaZhaiInsight')
+    },
+    flow_magnet:{
+      title:'八星磁场观察',
+      subtitle:'命宫 '+mg.name+'宫 · 只作副层自我观察',
+      summary:'点一颗星看它容易放大的状态，不把星名直接当成吉凶结果。',
+      customHtml:renderInsightListMarkup(stars.map(function(star){
+        return {
+          key:'star_'+star.key,
+          title:star.name+' · '+(star.dir || '对应方位'),
+          hint:star.brief || star.scene || '查看这颗星的现实提醒'
+        };
+      }), 'openBaZhaiInsight')
+    },
+    flow_deep:{
+      title:'术语与原文',
+      subtitle:'想学传统依据时再进入',
+      summary:'这里保留命宫、本命卦、流年和术语说明；只想知道现实怎么用时，可以不读这一层。',
+      customHtml:renderInsightListMarkup((experienceModel.learn || []).map(function(item){
+        return {
+          key:item.key,
+          title:item.title,
+          hint:item.hint || ('查看'+benguaName+'相关说明')
+        };
+      }), 'openBaZhaiInsight')
+    }
+  };
+}
+
 function compactLifeAction(text){
   if(!text) return '先做一个低风险、当天能完成的小动作。';
   return String(text).replace(/^今天/, '').replace(/^先/, '先');
@@ -5676,6 +5807,13 @@ function openProfileInsight(key){
 function openBaZhaiInsight(key){
   if(!window._bazhaiInsightData || !window._bazhaiInsightData[key]) return;
   openInsightSheet(window._bazhaiInsightData[key]);
+}
+
+function openBaZhaiFlow(tabKey){
+  document.querySelectorAll('.bz-flow-tab').forEach(function(btn){
+    btn.classList.toggle('is-active', btn.getAttribute('data-flow')===tabKey);
+  });
+  openBaZhaiInsight('flow_'+tabKey);
 }
 
 function switchBzFlow(tabKey){
@@ -6883,6 +7021,7 @@ function showBaZhai(options){
   window._bazhaiInsightData = buildProfileInsightData(bmg, mg, ln, wxr);
   Object.assign(window._bazhaiInsightData, buildLifeDimensionInsights(lifeDimensions, mg, bmg, ln, wxr));
   Object.assign(window._bazhaiInsightData, buildBaZhaiStarInsights(starModel, mg, grp));
+  Object.assign(window._bazhaiInsightData, buildBaZhaiFlowInsights(experienceModel, lifeDimensions, starModel, window._bazhaiInsightData, mg, bmg, ln));
   window._minggongPractice = {
     action:experienceModel.actionNow,
     avoid:experienceModel.avoidNow,
@@ -6948,10 +7087,10 @@ function showBaZhai(options){
   html+='<div class="bz-flow-nav">';
   html+='<div class="bz-flow-nav-head"><strong>四层档案</strong><span>先看摘要；想学术语再展开。</span></div>';
   html+='<div class="bz-flow-tabs">';
-  html+='<button type="button" class="bz-flow-tab is-active" data-flow="focus" onclick="switchBzFlow(\'focus\')"><strong>底色</strong><span>默认反应</span><em>第 1 层</em></button>';
-  html+='<button type="button" class="bz-flow-tab" data-flow="scene" onclick="switchBzFlow(\'scene\')"><strong>现实</strong><span>四个生活方向</span><em>第 2 层</em></button>';
-  html+='<button type="button" class="bz-flow-tab" data-flow="magnet" onclick="switchBzFlow(\'magnet\')"><strong>八星</strong><span>磁场观察</span><em>第 3 层</em></button>';
-  html+='<button type="button" class="bz-flow-tab" data-flow="deep" onclick="switchBzFlow(\'deep\')"><strong>原文</strong><span>术语学习</span><em>第 4 层</em></button>';
+  html+='<button type="button" class="bz-flow-tab is-active" data-flow="focus" onclick="openBaZhaiFlow(\'focus\')"><strong>底色</strong><span>默认反应</span><em>第 1 层</em></button>';
+  html+='<button type="button" class="bz-flow-tab" data-flow="scene" onclick="openBaZhaiFlow(\'scene\')"><strong>现实</strong><span>四个生活方向</span><em>第 2 层</em></button>';
+  html+='<button type="button" class="bz-flow-tab" data-flow="magnet" onclick="openBaZhaiFlow(\'magnet\')"><strong>八星</strong><span>磁场观察</span><em>第 3 层</em></button>';
+  html+='<button type="button" class="bz-flow-tab" data-flow="deep" onclick="openBaZhaiFlow(\'deep\')"><strong>原文</strong><span>术语学习</span><em>第 4 层</em></button>';
   html+='</div>';
   html+='</div>';
   html+='<div class="bz-flow-status">';

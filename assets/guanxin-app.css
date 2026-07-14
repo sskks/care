@@ -17178,3 +17178,14 @@ body.modal-open .sc-toast{
     padding-top:8px!important;
   }
 }
+
+/* ===== Stage 7A · four profile layers open in sheets instead of expanding inline ===== */
+#bazhai-screen .bz-flow-status,
+#bazhai-screen .bz-flow-panel,
+#bazhai-screen .bz-next-panel{
+  display:none!important;
+}
+
+#bazhai-screen .bz-flow-nav{
+  margin-bottom:18px!important;
+}
