@@ -16121,6 +16121,173 @@ summary:focus-visible{
   }
 }
 
+/* ===== Stage 7C · quiet, single-action home ===== */
+#home-screen .home-settings-btn,
+#home-screen .home-v2-kicker,
+#home-screen .home-manuscript-edge,
+#home-screen .home-manuscript-meta,
+#home-screen .home-manuscript-copy,
+#home-screen .home-manuscript-guide,
+#home-screen .home-return-strip{
+  display:none!important;
+}
+
+#home-screen .home-v2-shell{
+  width:min(760px,100%);
+  min-height:calc(100dvh - 82px);
+  padding:34px 22px 104px;
+}
+
+#home-screen .home-v2-hero{
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-rows:auto auto auto;
+  justify-items:center;
+  gap:0;
+  min-height:0;
+  padding:12px 0 0;
+  text-align:center;
+}
+
+#home-screen .home-v2-brand{
+  display:contents;
+}
+
+#home-screen .home-v2-brand .home-title{
+  grid-row:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:34px;
+  margin:0!important;
+  color:var(--ink-deep);
+  font-family:'Xingkai SC','STXingkai','FZYaoti','STKaiti','KaiTi',var(--font-serif);
+  font-size:6rem;
+  font-weight:400;
+  line-height:1;
+  letter-spacing:0!important;
+  text-shadow:0 10px 24px rgba(36,28,19,.07);
+}
+
+#home-screen .home-v2-brand .home-title span:last-child{
+  transform:translateY(8px);
+}
+
+#home-screen .home-v2-taiji-field{
+  grid-row:2;
+  min-height:136px;
+  margin-top:12px;
+}
+
+#home-screen .home-ink-taiji{
+  width:122px;
+  height:122px;
+}
+
+#home-screen .home-v2-ink-line{
+  bottom:8px;
+  width:116px;
+  opacity:.18;
+}
+
+#home-screen .home-v2-brand .home-subtitle{
+  grid-row:3;
+  max-width:none;
+  margin:12px 0 0!important;
+  color:var(--stone-blue,var(--accent));
+  font-family:var(--font-serif);
+  font-size:17px;
+  line-height:1.6;
+  text-align:center!important;
+}
+
+#home-screen .home-v2-main{
+  display:block;
+  margin-top:24px;
+}
+
+#home-screen .home-manuscript#home-today-board{
+  width:min(420px,100%)!important;
+  margin:0 auto!important;
+  padding:0!important;
+  text-align:center;
+}
+
+#home-screen .home-manuscript-primary{
+  width:100%;
+  min-height:58px;
+  margin:0 auto;
+  border-radius:6px;
+  background:var(--ink-deep);
+  box-shadow:0 14px 30px rgba(36,28,19,.14);
+  font-size:17px;
+}
+
+#home-screen .home-manuscript-primary span{
+  padding-left:66px;
+}
+
+#home-screen .home-manuscript-primary i{
+  width:58px;
+  margin:0;
+  border-radius:0;
+  background:var(--cinnabar);
+}
+
+#home-screen .home-v2-boundary{
+  margin:14px 0 0;
+  color:var(--ink-light);
+  font-size:13px;
+  line-height:1.6;
+}
+
+@media (max-width:560px){
+  #home-screen .home-v2-shell{
+    min-height:calc(100dvh - 76px);
+    padding:22px 18px 94px;
+  }
+
+  #home-screen .home-v2-hero{
+    min-height:0;
+    padding:6px 0 0;
+  }
+
+  #home-screen .home-v2-brand .home-title{
+    gap:24px;
+    font-size:4.65rem;
+  }
+
+  #home-screen .home-v2-brand .home-title span:last-child{
+    transform:translateY(6px);
+  }
+
+  #home-screen .home-v2-taiji-field{
+    min-height:116px;
+    margin-top:8px;
+  }
+
+  #home-screen .home-ink-taiji{
+    width:104px;
+    height:104px;
+  }
+
+  #home-screen .home-v2-brand .home-subtitle{
+    max-width:none;
+    margin-top:10px!important;
+    font-size:15px;
+    line-height:1.55;
+  }
+
+  #home-screen .home-v2-main{
+    margin-top:22px;
+  }
+
+  #home-screen .home-manuscript-primary{
+    width:100%;
+    min-height:56px;
+  }
+}
+
 /* ===== Stage 6X · fixed navigation and progressive reading (2026-07-13) ===== */
 .app-bottom-nav{
   position:fixed;
@@ -17232,5 +17399,53 @@ body.modal-open .sc-toast{
   #divination-screen .result-landing-item{
     grid-template-columns:82px minmax(0,1fr)!important;
     column-gap:8px!important;
+  }
+}
+
+/* Stage 7C final overrides must follow legacy mobile rules. */
+#home-screen .home-manuscript#home-today-board{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+#home-screen .home-manuscript-primary{
+  border-radius:6px!important;
+}
+
+#home-screen .home-manuscript-primary i{
+  border-radius:0!important;
+}
+
+@media (max-width:820px){
+  #home-screen .home-v2-hero{
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto auto!important;
+    gap:0!important;
+    padding-right:0!important;
+  }
+
+  #home-screen .home-v2-brand .home-title{
+    width:100%!important;
+    justify-self:stretch!important;
+    gap:24px!important;
+    font-size:4.65rem!important;
+  }
+
+  #home-screen .home-v2-taiji-field{
+    width:100%!important;
+    justify-self:stretch!important;
+  }
+
+  #home-screen .home-ink-taiji{
+    width:104px!important;
+    height:104px!important;
+  }
+
+  #home-screen .home-v2-brand .home-subtitle{
+    width:100%!important;
+    max-width:none!important;
+    justify-self:stretch!important;
+    font-size:15px!important;
+    line-height:1.55!important;
   }
 }

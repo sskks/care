@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="guanxin-version" content="2026-07-14-stage-7b">
+<meta name="guanxin-version" content="2026-07-14-stage-7c">
 <title>观心 · 周易卦象</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F8F3E6'/%3E%3Cpath d='M32 2a30 30 0 0 1 0 60 15 15 0 0 1 0-30 15 15 0 0 0 0-30Z' fill='%232C2418'/%3E%3Ccircle cx='32' cy='17' r='5.5' fill='%232C2418'/%3E%3Ccircle cx='32' cy='47' r='5.5' fill='%23F8F3E6'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/guanxin-app.css?v=7b1">
+<link rel="stylesheet" href="assets/guanxin-app.css?v=7c1">
 </head>
 <body>
 <svg width="0" height="0" class="coin-relic-filter" aria-hidden="true" focusable="false">
@@ -189,9 +189,9 @@
         <span class="home-v2-ink-line"></span>
       </div>
       <div class="home-v2-brand">
-        <span class="home-v2-kicker">东方情绪觉察</span>
-        <h1 class="home-title">观心</h1>
-        <p class="home-subtitle">把困扰写下来，先稳住心，再看清下一步。</p>
+        <span class="home-v2-kicker" aria-hidden="true">东方情绪觉察</span>
+        <h1 class="home-title" aria-label="观心"><span>观</span><span>心</span></h1>
+        <p class="home-subtitle">把困扰写下，借卦看清当下。</p>
       </div>
     </header>
 
@@ -208,9 +208,11 @@
         </div>
 
         <button class="home-manuscript-primary" type="button" onclick="doQuestionHex()" aria-label="写下当下困扰并开始问案">
-          <span>写下当下困扰</span>
+          <span>写下困扰</span>
           <i aria-hidden="true">问</i>
         </button>
+
+        <p class="home-v2-boundary">不替你决定，只帮你看清下一步。</p>
 
         <div class="home-manuscript-guide" aria-label="写法提示">
           <div>
@@ -741,7 +743,7 @@
   </div>
 </div>
 
-<script src="assets/guanxin-app.js?v=7b1"></script>
+<script src="assets/guanxin-app.js?v=7c1"></script>
 
 <!-- 问卦输入弹窗 -->
 <div class="question-modal-overlay" id="question-modal-overlay" onclick="if(event.target===this)closeQuestionModal()">
