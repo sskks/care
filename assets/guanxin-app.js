@@ -1638,6 +1638,8 @@ function resetBamboo(){
   if(hint){ hint.style.display=''; hint.textContent='同一件事点满六枚即可，不需要反复重来。'; }
   const count = document.getElementById('coin-cast-count');
   if(count) count.textContent = '初爻起';
+  const guideTitle = document.getElementById('coin-cast-guide-title');
+  if(guideTitle) guideTitle.textContent = '从左下角初爻开始';
   const disc = document.getElementById('coin-disc');
   if(disc){
     disc.classList.remove('is-flipping','is-yang','is-yin');
@@ -1740,6 +1742,11 @@ function tossCoinYao(){
     if(count){
       var statusMap = ['初爻起','二爻候','三爻候','四爻候','五爻候','上爻候','成卦'];
       count.textContent = statusMap[coinCastThrows.length] || '成卦';
+    }
+    var guideTitle = document.getElementById('coin-cast-guide-title');
+    if(guideTitle){
+      var guideMap = ['从左下角初爻开始','下一枚：下排中间二爻','下一枚：下排右侧三爻','下一枚：上排左侧四爻','下一枚：上排中间五爻','下一枚：上排右侧上爻','六爻已定，正在合卦'];
+      guideTitle.textContent = guideMap[coinCastThrows.length] || '六爻已定，正在合卦';
     }
     if(text) text.textContent = lineIndex < 6 ? '第'+lineIndex+'枚已翻，继续点下一枚' : '六枚已定，正在合卦';
     if(hint) hint.textContent = lineIndex < 6 ? '按初爻到上爻的顺序点，不需要猜结果。' : '先等它合成一卦，再看完整解读。';

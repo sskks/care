@@ -17428,3 +17428,127 @@ body.modal-open .sc-toast{
     background:var(--paper-light);
   }
 }
+
+/* ===== Stage 7F · fast antique coin tray and first-use guidance ===== */
+#bamboo-screen .coin-cast-panel{
+  margin-top:4px;
+  padding:16px 14px 14px;
+  border-color:color-mix(in srgb,var(--ink-deep) 15%,transparent);
+  background:color-mix(in srgb,var(--paper-light) 86%,var(--paper-dark));
+  box-shadow:0 16px 36px color-mix(in srgb,var(--ink-deep) 9%,transparent);
+}
+
+#bamboo-screen .coin-cast-guide{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:minmax(128px,auto) minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+  margin:9px 0 8px;
+  padding:9px 10px;
+  border-left:2px solid var(--cinnabar);
+  background:color-mix(in srgb,var(--cinnabar) 5%,transparent);
+  text-align:left;
+}
+
+#bamboo-screen .coin-cast-guide strong{
+  color:var(--ink-deep);
+  font-family:var(--font-serif);
+  font-size:13px;
+  font-weight:600;
+  line-height:1.45;
+}
+
+#bamboo-screen .coin-cast-guide span{
+  color:var(--ink-light);
+  font-size:12px;
+  line-height:1.55;
+}
+
+#bamboo-screen .coin-hex-board{
+  gap:5px 5px;
+  padding-top:5px;
+}
+
+#bamboo-screen .coin-yao-row{
+  min-height:102px;
+}
+
+#bamboo-screen .coin-yao-row:nth-child(1){--coin-angle:-4deg;--coin-light:.88;--coin-sat:1.06}
+#bamboo-screen .coin-yao-row:nth-child(2){--coin-angle:3deg;--coin-light:.96;--coin-sat:.98}
+#bamboo-screen .coin-yao-row:nth-child(3){--coin-angle:-2deg;--coin-light:.92;--coin-sat:1.12}
+#bamboo-screen .coin-yao-row:nth-child(4){--coin-angle:4deg;--coin-light:.98;--coin-sat:1.02}
+#bamboo-screen .coin-yao-row:nth-child(5){--coin-angle:-3deg;--coin-light:.94;--coin-sat:1.14}
+#bamboo-screen .coin-yao-row:nth-child(6){--coin-angle:2deg;--coin-light:.87;--coin-sat:1.08}
+
+#bamboo-screen .coin-yao-slot,
+#bamboo-screen .coin-disc,
+#bamboo-screen .coin-yao-row.is-yang .coin-yao-slot,
+#bamboo-screen .coin-yao-row.is-yin .coin-yao-slot,
+#bamboo-screen .coin-yao-row.is-set .coin-yao-slot,
+#bamboo-screen .coin-yao-row.is-moving .coin-yao-slot{
+  background-color:var(--ink-deep);
+  background-image:url("qianlong-tongbao-antique-v3.webp");
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
+  filter:sepia(.18) brightness(var(--coin-light,1)) saturate(var(--coin-sat,1.06)) contrast(1.1);
+  transform:rotate(var(--coin-angle,0deg));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--paper-light) 18%,transparent),
+    0 8px 14px color-mix(in srgb,var(--ink-deep) 19%,transparent);
+}
+
+#bamboo-screen .coin-yao-slot::before,
+#bamboo-screen .coin-disc::before{
+  inset:0;
+  border:0;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--paper-light) 13%,transparent),transparent 42%,color-mix(in srgb,var(--ink-deep) 18%,transparent));
+  box-shadow:inset 0 0 8px color-mix(in srgb,var(--ink-deep) 20%,transparent);
+  opacity:.6;
+}
+
+#bamboo-screen .coin-yao-slot::after,
+#bamboo-screen .coin-disc::after{
+  display:none;
+}
+
+#bamboo-screen .coin-yao-row.is-next .coin-yao-slot{
+  filter:sepia(.18) brightness(calc(var(--coin-light,1) + .08)) saturate(var(--coin-sat,1.06)) contrast(1.1);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb,var(--paper-light) 20%,transparent),
+    0 0 0 2px color-mix(in srgb,var(--cinnabar) 44%,transparent),
+    0 10px 18px color-mix(in srgb,var(--ink-deep) 22%,transparent);
+}
+
+#bamboo-screen .coin-yao-row.is-flipping .coin-yao-slot{
+  animation:coinFlipAntique .46s cubic-bezier(.16,.84,.26,1);
+}
+
+@keyframes coinFlipAntique{
+  0%{transform:translateY(0) rotateX(0) rotateZ(var(--coin-angle,0deg))}
+  42%{transform:translateY(-16px) rotateX(520deg) rotateZ(calc(var(--coin-angle,0deg) + 8deg))}
+  100%{transform:translateY(0) rotateX(720deg) rotateZ(var(--coin-angle,0deg))}
+}
+
+#bamboo-screen .shake-text-area{
+  display:none;
+}
+
+@media (max-width:560px){
+  #bamboo-screen .coin-cast-panel{
+    padding:14px 10px 12px;
+  }
+
+  #bamboo-screen .coin-cast-guide{
+    grid-template-columns:1fr;
+    gap:2px;
+    margin-top:7px;
+    padding:7px 9px;
+  }
+
+  #bamboo-screen .coin-yao-row{
+    min-height:94px;
+  }
+}
