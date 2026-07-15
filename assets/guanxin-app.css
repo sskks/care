@@ -877,6 +877,38 @@ body::after{
   gap:8px;
   margin-top:12px;
 }
+
+.ai-suggestion-confirm-row{
+  display:grid;
+  grid-template-columns:minmax(180px,auto) minmax(0,1fr);
+  align-items:center;
+  gap:12px;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--ink-ghost);
+}
+
+.ai-suggestion-confirm-row .btn{
+  min-height:44px;
+}
+
+.ai-suggestion-confirm-row .btn[aria-pressed="true"]{
+  background:var(--jade);
+  color:var(--paper-light);
+  opacity:1;
+}
+
+.ai-suggestion-confirm-row span{
+  color:var(--ink-faint);
+  font-size:12px;
+  line-height:1.6;
+}
+
+@media (max-width:560px){
+  .ai-suggestion-confirm-row{
+    grid-template-columns:1fr;
+  }
+}
 .ai-feedback-btn{
   min-height:34px;
   padding:6px 10px;
@@ -17347,5 +17379,52 @@ body.modal-open .sc-toast{
   #splash-screen .splash-subtitle{
     margin-bottom:26px;
     font-size:15px;
+  }
+}
+
+/* ===== Stage 7E · six-part AI reading contract ===== */
+#ai-modal-grid.ai-modal-grid{
+  gap:0;
+  border-top:1px solid var(--ink-ghost);
+  border-bottom:1px solid var(--ink-ghost);
+}
+
+#ai-modal-grid .ai-modal-block{
+  padding:10px 2px;
+  border:0;
+  border-bottom:1px solid color-mix(in srgb,var(--ink-ghost) 72%,transparent);
+  border-radius:0;
+  background:transparent;
+}
+
+#ai-modal-grid .ai-modal-block:last-child{
+  border-bottom:0;
+}
+
+#ai-modal-grid .ai-modal-block strong{
+  margin-bottom:3px;
+  color:var(--jade);
+  font-size:13px;
+}
+
+#ai-modal-grid .ai-modal-block span{
+  font-size:13px;
+  line-height:1.65;
+}
+
+#ai-modal-primary-action[aria-pressed="true"]{
+  background:var(--jade);
+  color:var(--paper-light);
+  opacity:1;
+}
+
+@media (max-width:560px){
+  #ai-modal-overlay .ai-modal-actions{
+    position:sticky;
+    z-index:2;
+    bottom:0;
+    padding-top:10px;
+    padding-bottom:2px;
+    background:var(--paper-light);
   }
 }

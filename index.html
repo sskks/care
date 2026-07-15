@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="guanxin-version" content="2026-07-15-stage-7d">
+<meta name="guanxin-version" content="2026-07-15-stage-7e">
 <title>观心 · 周易卦象</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23F8F3E6'/%3E%3Cpath d='M32 2a30 30 0 0 1 0 60 15 15 0 0 1 0-30 15 15 0 0 0 0-30Z' fill='%232C2418'/%3E%3Ccircle cx='32' cy='17' r='5.5' fill='%232C2418'/%3E%3Ccircle cx='32' cy='47' r='5.5' fill='%23F8F3E6'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="assets/guanxin-app.css?v=7d1">
+<link rel="stylesheet" href="assets/guanxin-app.css?v=7e1">
 </head>
 <body>
 <svg width="0" height="0" class="coin-relic-filter" aria-hidden="true" focusable="false">
@@ -563,11 +563,16 @@
         </div>
         <div id="ai-followup-result" class="ai-followup-result">
         <div class="ai-followup-structure">
-          <div class="ai-followup-block"><strong>核心判断</strong><span id="ai-followup-core"></span></div>
-          <div class="ai-followup-block"><strong>对应你这件事</strong><span id="ai-followup-theme"></span></div>
-          <div class="ai-followup-block"><strong>今天先做</strong><span id="ai-followup-action"></span></div>
-          <div class="ai-followup-block"><strong>别急着做的决定</strong><span id="ai-followup-boundary"></span></div>
-          <div class="ai-followup-block"><strong>为什么这样说</strong><span id="ai-followup-basis"></span></div>
+          <div class="ai-followup-block"><strong>直接回答</strong><span id="ai-followup-answer"></span></div>
+          <div class="ai-followup-block"><strong>卦象证据</strong><span id="ai-followup-evidence"></span></div>
+          <div class="ai-followup-block"><strong>现实对应</strong><span id="ai-followup-reality"></span></div>
+          <div class="ai-followup-block"><strong>变化链路</strong><span id="ai-followup-chain"></span></div>
+          <div class="ai-followup-block"><strong>七日建议</strong><span id="ai-followup-suggestion"></span></div>
+          <div class="ai-followup-block"><strong>边界与反证</strong><span id="ai-followup-boundary"></span></div>
+        </div>
+        <div class="ai-suggestion-confirm-row">
+          <button type="button" class="btn btn-primary" id="ai-suggestion-confirm-btn" aria-pressed="false" onclick="confirmAISuggestion()">确认这条七日建议</button>
+          <span>确认后才会把这条建议记入本次记录。</span>
         </div>
         <div class="ai-feedback-row" aria-label="AI 回答反馈">
           <button type="button" class="ai-feedback-btn" onclick="queueAIFeedback('useful')">这条有帮助</button>
@@ -733,7 +738,7 @@
   </div>
 </div>
 
-<script src="assets/guanxin-app.js?v=7d1"></script>
+<script src="assets/guanxin-app.js?v=7e1"></script>
 
 <!-- 问卦输入弹窗 -->
 <div class="question-modal-overlay" id="question-modal-overlay" onclick="if(event.target===this)closeQuestionModal()">
@@ -854,13 +859,15 @@
         <span id="ai-modal-status-text">请稍等，生成完成后会停留在这里，不会让你错过内容。</span>
       </div>
       <div class="ai-modal-grid" id="ai-modal-grid" style="display:none">
-        <div class="ai-modal-block"><strong>核心判断</strong><span id="ai-modal-core"></span></div>
-        <div class="ai-modal-block"><strong>对应你这件事</strong><span id="ai-modal-theme"></span></div>
-        <div class="ai-modal-block"><strong>今天先做</strong><span id="ai-modal-action"></span></div>
-        <div class="ai-modal-block"><strong>别急着做的决定</strong><span id="ai-modal-boundary"></span></div>
+        <div class="ai-modal-block"><strong>直接回答</strong><span id="ai-modal-answer"></span></div>
+        <div class="ai-modal-block"><strong>卦象证据</strong><span id="ai-modal-evidence"></span></div>
+        <div class="ai-modal-block"><strong>现实对应</strong><span id="ai-modal-reality"></span></div>
+        <div class="ai-modal-block"><strong>变化链路</strong><span id="ai-modal-chain"></span></div>
+        <div class="ai-modal-block"><strong>七日建议</strong><span id="ai-modal-suggestion"></span></div>
+        <div class="ai-modal-block"><strong>边界与反证</strong><span id="ai-modal-boundary"></span></div>
       </div>
       <div class="ai-modal-actions">
-        <button class="btn btn-primary" id="ai-modal-primary-action" type="button" onclick="closeAIModal()">留在当前页继续看</button>
+        <button class="btn btn-primary" id="ai-modal-primary-action" type="button" onclick="confirmAISuggestion()">确认这条七日建议</button>
         <button class="btn btn-outline" id="ai-modal-secondary-action" type="button" onclick="focusAIFollowupInput()">继续追问此卦</button>
       </div>
     </div>
