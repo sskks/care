@@ -849,6 +849,11 @@ function renderDiagram(hex){
 }
 
 /* 爻辞弹窗 */
+function showYaoPopupForHex(hexId, yaoIndex){
+  currentHexId = Number(hexId) || null;
+  showYaoPopup(yaoIndex);
+}
+
 function showYaoPopup(yaoIndex){
   if(!currentHexId) return;
   const yaoData = YAO_CI[currentHexId];
@@ -925,11 +930,13 @@ function getHexDiagramMarkup(hex){
     const isUpper = i<=2;
     const cls = isUpper ? 'in-upper' : 'in-lower';
     const yaoLabel = '第'+(6-i)+'爻';
+    const yaoIndex = 5-i;
+    const clickAttr = 'role="button" tabindex="0" onclick="showYaoPopupForHex('+hex.id+','+yaoIndex+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();showYaoPopupForHex('+hex.id+','+yaoIndex+')}"';
     if(i===3) lineHtml += '<div class="hex-sep"></div>';
     if(allLines[i]===1){
-      lineHtml += '<div class="hex-line-row '+cls+'"><div class="hex-line-solid"></div><span class="line-num">'+yaoLabel+'</span></div>';
+      lineHtml += '<div class="hex-line-row '+cls+'" '+clickAttr+'><div class="hex-line-solid"></div><span class="line-num">'+yaoLabel+'</span></div>';
     }else{
-      lineHtml += '<div class="hex-line-row '+cls+'"><div class="hex-line-broken"><span></span><span></span></div><span class="line-num">'+yaoLabel+'</span></div>';
+      lineHtml += '<div class="hex-line-row '+cls+'" '+clickAttr+'><div class="hex-line-broken"><span></span><span></span></div><span class="line-num">'+yaoLabel+'</span></div>';
     }
   }
   return '<div class="daily-section daily-diagram">'
@@ -5705,9 +5712,14 @@ function setBaZhaiBoardActive(key){
 }
 
 function initBaZhaiBoard(){
-  if(window._bazhaiBoardDefaultKey){
-    setBaZhaiBoardActive(window._bazhaiBoardDefaultKey);
-  }
+  window._bazhaiBoardCurrentKey = '';
+  document.querySelectorAll('[data-bz-node]').forEach(function(node){
+    node.classList.remove('is-active','is-linked-active');
+    node.setAttribute('aria-pressed','false');
+  });
+  document.querySelectorAll('.bz-star-pill').forEach(function(card){
+    card.classList.remove('is-linked-active');
+  });
 }
 
 function openCurrentBaZhaiBoardInsight(){
@@ -5823,7 +5835,7 @@ function openInsightSheet(data){
       + '</div>'
       + '<div class="insight-sheet-footer"><button type="button" class="insight-sheet-footer-btn" onclick="closeInsightSheet()">看完了，返回上一层</button></div>'
     + '</div>';
-  document.body.appendChild(overlay);
+  (data.mount || document.body).appendChild(overlay);
   syncOverlayAccessibility();
   window._insightEscHandler = function(e){
     if(e.key==='Escape') closeInsightSheet();
@@ -5832,6 +5844,7 @@ function openInsightSheet(data){
 }
 
 function closeInsightSheet(){
+  restoreBaZhaiFlowPanel();
   var overlay = document.getElementById('insight-sheet');
   if(overlay) overlay.remove();
   if(window._insightEscHandler){
@@ -5986,11 +5999,42 @@ function openBaZhaiInsight(key){
   openInsightSheet(window._bazhaiInsightData[key]);
 }
 
-function openBaZhaiFlow(tabKey){
-  document.querySelectorAll('.bz-flow-tab').forEach(function(btn){
-    btn.classList.toggle('is-active', btn.getAttribute('data-flow')===tabKey);
+var activeBaZhaiFlowPanel=null;
+var activeBaZhaiFlowPlaceholder=null;
+
+function restoreBaZhaiFlowPanel(){
+  if(activeBaZhaiFlowPanel && activeBaZhaiFlowPlaceholder && activeBaZhaiFlowPlaceholder.parentNode){
+    activeBaZhaiFlowPanel.classList.remove('is-active','is-sheet-content');
+    activeBaZhaiFlowPlaceholder.parentNode.replaceChild(activeBaZhaiFlowPanel, activeBaZhaiFlowPlaceholder);
+  }
+  activeBaZhaiFlowPanel=null;
+  activeBaZhaiFlowPlaceholder=null;
+  document.querySelectorAll('#bazhai-screen .bz-flow-tab').forEach(function(btn){
+    btn.classList.remove('is-active');
+    btn.setAttribute('aria-pressed','false');
   });
-  openBaZhaiInsight('flow_'+tabKey);
+}
+
+function openBaZhaiFlow(tabKey){
+  closeInsightSheet();
+  var panel=document.querySelector('#bazhai-screen .bz-flow-panel[data-flow-panel="'+tabKey+'"]');
+  var data=window._bazhaiInsightData && window._bazhaiInsightData['flow_'+tabKey];
+  var screen=document.getElementById('bazhai-screen');
+  if(!panel || !data || !screen) return;
+  openInsightSheet(Object.assign({},data,{summary:'',chips:[],steps:[],sections:[],customHtml:'',mount:screen}));
+  document.querySelectorAll('#bazhai-screen .bz-flow-tab').forEach(function(btn){
+    var active=btn.getAttribute('data-flow')===tabKey;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+  activeBaZhaiFlowPlaceholder=document.createComment('bazhai-flow-'+tabKey);
+  panel.parentNode.insertBefore(activeBaZhaiFlowPlaceholder,panel);
+  activeBaZhaiFlowPanel=panel;
+  var body=document.querySelector('#insight-sheet .insight-sheet-body');
+  if(!body){ restoreBaZhaiFlowPanel(); return; }
+  panel.classList.add('is-active','is-sheet-content');
+  body.appendChild(panel);
+  if(tabKey==='magnet') initBaZhaiBoard();
 }
 
 function switchBzFlow(tabKey){
@@ -7222,7 +7266,7 @@ function showBaZhai(options){
     html+='<div><strong>建档完成</strong><span>回首页继续主路径，或先留在这里看解读。</span></div>';
     html+='<div class="bz-path-guide-actions">';
     html+='<button type="button" class="bz-path-guide-btn" onclick="goTo(\'home\')">进入主路径首页</button>';
-    html+='<button type="button" class="bz-path-guide-btn secondary" onclick="switchBzFlow(\'focus\')">先继续看个人解读</button>';
+    html+='<button type="button" class="bz-path-guide-btn secondary" onclick="openBaZhaiFlow(\'focus\')">先继续看个人解读</button>';
     html+='</div>';
     html+='</div>';
   }
@@ -7251,7 +7295,7 @@ function showBaZhai(options){
   html+='<div class="bz-hero-quote"><strong>'+experienceModel.quoteLabel+'</strong><span>'+heroAction+'</span></div>';
   html+='<div class="bz-next-actions">';
   html+='<button type="button" class="bz-next-btn secondary" onclick="openBaZhaiInsight(\'minggong\')">展开命宫说明</button>';
-  html+='<button type="button" class="bz-next-btn secondary" onclick="switchBzFlow(\'scene\')">看四个现实方向</button>';
+  html+='<button type="button" class="bz-next-btn secondary" onclick="openBaZhaiFlow(\'scene\')">看四个现实方向</button>';
   html+='</div>';
   html+='</div>';
 
@@ -7272,7 +7316,7 @@ function showBaZhai(options){
   html+='<div class="bz-flow-nav">';
   html+='<div class="bz-flow-nav-head"><strong>四层档案</strong><span>先看摘要；想学术语再展开。</span></div>';
   html+='<div class="bz-flow-tabs">';
-  html+='<button type="button" class="bz-flow-tab is-active" data-flow="focus" onclick="openBaZhaiFlow(\'focus\')"><strong>底色</strong><span>默认反应</span><em>第 1 层</em></button>';
+  html+='<button type="button" class="bz-flow-tab" data-flow="focus" aria-pressed="false" onclick="openBaZhaiFlow(\'focus\')"><strong>底色</strong><span>默认反应</span><em>第 1 层</em></button>';
   html+='<button type="button" class="bz-flow-tab" data-flow="scene" onclick="openBaZhaiFlow(\'scene\')"><strong>现实</strong><span>四个生活方向</span><em>第 2 层</em></button>';
   html+='<button type="button" class="bz-flow-tab" data-flow="magnet" onclick="openBaZhaiFlow(\'magnet\')"><strong>八星</strong><span>磁场观察</span><em>第 3 层</em></button>';
   html+='<button type="button" class="bz-flow-tab" data-flow="deep" onclick="openBaZhaiFlow(\'deep\')"><strong>原文</strong><span>术语学习</span><em>第 4 层</em></button>';
@@ -7286,7 +7330,7 @@ function showBaZhai(options){
   var tagCls='bi';
   if(wxr.rel==='生我'||wxr.rel==='我生') tagCls='sheng';
   else if(wxr.rel==='克我'||wxr.rel==='我克') tagCls='ke';
-  html+='<div class="bz-flow-panel is-active" data-flow-panel="focus">';
+  html+='<div class="bz-flow-panel" data-flow-panel="focus">';
   html+='<div class="bz-section-shell">';
   html+='<div class="bz-section-kicker">底色</div>';
   html+='<div class="bz-section-heading">你在压力里容易先怎样反应</div>';
@@ -7372,7 +7416,6 @@ function showBaZhai(options){
   /* 渲染 */
   document.getElementById('bz-content').innerHTML=html;
   initBaZhaiBoard();
-  switchBzFlow('focus');
   goTo('bazhai', {replace:!!options.replace});
 }
 

@@ -5688,7 +5688,7 @@ textarea[aria-invalid="true"],
 }
 /* ===== 爻辞弹窗 ===== */
 .yao-popup-overlay{
-  position:fixed;inset:0;z-index:1000;background:rgba(44,36,24,0.35);
+  position:fixed;inset:0;z-index:10030;background:rgba(44,36,24,0.35);
   display:flex;align-items:center;justify-content:center;
   animation:fadeIn 0.3s ease;backdrop-filter:blur(3px);
 }
@@ -17216,6 +17216,19 @@ body.modal-open .sc-toast{
 #bazhai-screen .bz-flow-panel,
 #bazhai-screen .bz-next-panel{
   display:none!important;
+}
+
+#bazhai-screen .insight-sheet .bz-flow-panel.is-sheet-content{
+  display:block!important;
+  width:100%;
+  max-width:none;
+  margin:0;
+}
+
+#bazhai-screen .insight-sheet .bz-flow-panel.is-sheet-content > *{
+  max-width:none;
+  margin-left:0;
+  margin-right:0;
 }
 
 #bazhai-screen .bz-flow-nav{
