@@ -2790,6 +2790,8 @@ function initSwipeBack(){
 
 function startPrimaryJourney(){
   localStorage.setItem('guanxin_onboarded','1');
+  warmCoinTexture();
+  scheduleDeferredStartup();
   var onboard=document.getElementById('onboard-overlay');
   if(onboard) onboard.classList.remove('active');
   if(localStorage.getItem('guanxin_birth')){
@@ -2865,6 +2867,43 @@ function relocateRetentionModules(){
   }
 }
 
+var deferredStartupScheduled=false;
+var deferredStartupComplete=false;
+
+function warmCoinTexture(){
+  if(window._guanxinCoinTexture) return;
+  var image=new Image();
+  image.decoding='async';
+  image.src='assets/qianlong-tongbao-antique-v3.webp';
+  window._guanxinCoinTexture=image;
+}
+
+function runDeferredStartup(){
+  if(deferredStartupComplete) return;
+  deferredStartupComplete=true;
+  loadExternalHexContentSeed();
+  updateCheckinBadge();
+  updateHomeReviewCard();
+  updateHomeArchiveCard();
+  updateTodayPracticeCard();
+  updateHomeJieQiCard();
+  checkFriendLink();
+}
+
+function scheduleDeferredStartup(){
+  if(deferredStartupScheduled || deferredStartupComplete) return;
+  deferredStartupScheduled=true;
+  var run=function(){
+    deferredStartupScheduled=false;
+    runDeferredStartup();
+  };
+  if('requestIdleCallback' in window){
+    window.requestIdleCallback(run,{timeout:1800});
+  } else {
+    window.setTimeout(run,120);
+  }
+}
+
 /* ===== 性别选择 ===== */
 document.addEventListener('DOMContentLoaded',()=>{
   initSwipeBack();
@@ -2881,20 +2920,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   }
   initBirthdayForm();
-  loadExternalHexContentSeed();
   /* 检查是否需要展示新手引导 */
   checkOnboard();
-  /* 更新打卡徽章 */
-  updateCheckinBadge();
-  updateHomeReviewCard();
-  updateHomeArchiveCard();
-  updateTodayPracticeCard();
-  updateHomeJieQiCard();
-  /* 检查好友分享链接 */
-  checkFriendLink();
   bindFastTapButton('splash-start-btn', startPrimaryJourney);
   bindFastTapButton('onboard-start-btn', closeOnboard);
   syncAppBottomNav();
+  scheduleDeferredStartup();
 });
 
 /* ===== 生日表单初始化 ===== */
